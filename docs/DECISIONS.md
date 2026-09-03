@@ -61,3 +61,18 @@
 **Decision:** Append a single correction entry naming every collision and stating which body governs at each address. Do not renumber.
 **Reasoning:** Rejected renumbering: it edits an append-only register and breaks every inbound citation. Rejected leaving it: an ambiguity that is written down is a different thing from one that is not.
 **Consequences:** The addresses stay ambiguous, knowingly. The entry is drafted by the compaction dry-run session after it has read all eleven bodies, and applied by the owner.
+
+## D-0009 — 2026-09-04 — Brief is offered at Close only when something is askable, not run at every Close
+
+**Context:** The owner asked for a decision brief "every time after each close". The audit's clearest finding about rituals is that the ones nobody needs decay into noise — the 40-line flag fired on 23 of 25 roots and was acted on once; a brief with nothing to brief is the canned adoption decision in a new shape.
+**Decision:** Brief runs on demand, and at Close is offered in one line only when STATUS carries an askable item — an open question not postponed, or a blocker gated on the owner. Otherwise nothing is said.
+**Reasoning:** Rejected running it at every Close: on a register with no open questions it produces a "nothing open" line every session, which the owner learns to skip, and then skips the one that matters. Rejected firing on any non-empty Blocked section: a vendor's delay is not a question for the owner. Rejected adding an offer bullet to the wiring block: it would make the six blocks re-synced this week stale again immediately; the mode text carries the offer.
+**Consequences:** The offer depends on the skill text rather than the always-loaded block. If the offer is measured to be missed in practice, the bullet goes into the block at the next block revision, with a re-sync.
+
+## D-0010 — 2026-09-04 — Doctor and Brief are modes of this skill, not a separate skill
+
+**Context:** The owner asked whether the health check and the decision brief should be a new skill or part of the protocol.
+**Decision:** Modes 4 and 5 of project-docs-protocol.
+**Reasoning:** Rejected a separate skill: Doctor's checks are the protocol's own red flags and thresholds and must run when a Bootstrap flag fires, which a second skill cannot be made to do; Brief reads and writes the same registers Close does and its record step is the DECISIONS entry with rejected alternatives named — a second skill would duplicate every format rule and drift from it. Both also depend on the wiring block's exact wording, which lives here.
+**Consequences:** SKILL.md grows from three modes to five and gains a `scripts/` directory; the trigger list gains six phrases. Anyone forking the skill gets both modes or neither.
+

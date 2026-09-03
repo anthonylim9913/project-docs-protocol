@@ -4,6 +4,10 @@
 
 ---
 
+## 2026-09-04 — v0.3.0 candidate: Doctor and Brief modes, on their own branch for review
+
+Mode 4, Doctor: `scripts/docs-doctor.py`, a standard-library, read-only health check that runs the Bootstrap red flags as a script — wiring block present and carrying the three current clauses, STATUS size and longest line, stacked session records, last-updated lag, dormancy, heading format, duplicate and mis-levelled decision ids, template residue, brand placeholders, nested and sibling registers, and STATUS churn where git exists. Built against the 25-root census and a 36-fixture break suite across two adversarial rounds; the first round found a hang on wide ids and a false FAIL on the one mature installation, both closed and confirmed by re-running, not by reading the diff. Mode 5, Brief: the ritual that turns STATUS's open questions into DECISIONS entries — fixed presentation shape, options that must trace to a source, an explicit-pick rule so silence is never recorded as consent, one CHANGELOG entry per brief, offered at Close only when something is askable. Templates: STATUS's open-questions section gains a line shape with a proposed option and a since-date; README names the third ritual and the brief entry format. A worked brief ships as `docs/BRIEF-EXAMPLE.md`. The skill's own docs README gained the install footer so Doctor passes on this repository with exit 0. A sixth wired project found by Doctor with a stale July block was re-synced.
+
 ## 2026-09-04 — v0.2.0, first public release
 
 README rewritten to lead with the design property and the population evidence; `docs/EVIDENCE.md` added with the audit's anonymised findings; repository description and topics set; visibility flipped to public. Every change on the audit branch is squashed into two clean commits on `main` so that no commit message or file names a project, product or person. Tag `v0.1.0` remains the pre-audit baseline.

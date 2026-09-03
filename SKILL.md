@@ -1,6 +1,6 @@
 ---
 name: project-docs-protocol
-description: "Lightweight documentation protocol for multi-session projects. Use when the user wants to bootstrap project docs, resume work on an existing project, or log completed work. Triggers on: 'set up project docs', 'initialize docs', 'install the project docs protocol', 'cold start', 'coldstart', 'bootstrap this project', 'catch me up on <project>', 'resume work', 'where were we', 'close out the session', 'log this session', 'update the changelog', and whenever a project folder contains STATUS.md + CHANGELOG.md + DECISIONS.md (at the root or under /docs/) AND either its CLAUDE.md/AGENTS.md carries the 'Project docs protocol' block or its docs README says it was installed by this skill — the signature of an installed system. Three matching filenames alone are not the signature: other conventions use them."
+description: "Lightweight documentation protocol for multi-session projects. Use when the user wants to bootstrap project docs, resume work on an existing project, or log completed work. Triggers on: 'set up project docs', 'initialize docs', 'install the project docs protocol', 'cold start', 'coldstart', 'bootstrap this project', 'catch me up on <project>', 'resume work', 'where were we', 'close out the session', 'log this session', 'update the changelog', 'check the docs', 'doctor', 'is the protocol wired', 'brief me', 'what do you need from me', 'what are you waiting on', and whenever a project folder contains STATUS.md + CHANGELOG.md + DECISIONS.md (at the root or under /docs/) AND either its CLAUDE.md/AGENTS.md carries the 'Project docs protocol' block or its docs README says it was installed by this skill — the signature of an installed system. Three matching filenames alone are not the signature: other conventions use them."
 ---
 
 # Coldstart — project documentation protocol
@@ -15,6 +15,8 @@ Invoke automatically, without asking, in any of these situations:
 2. **User returns to work on a project** that carries the signature of an installed system: `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` at the root or under `/docs/`, **and** either the `## Project docs protocol` block in `CLAUDE.md`/`AGENTS.md` or the footer *"Installed via the `project-docs-protocol` skill"* in the docs README. Three matching filenames alone are not enough — Keep-a-Changelog plus an ADR folder produces the same three names, and a register that predates this skill is not an installation of it. Always run **Bootstrap** before proposing work.
 3. **A meaningful unit of work just completed** on such a project — a spec drafted, a decision made, a blocker resolved, a major refactor landed. Run **Close** immediately; don't wait for the session to end. Session-end phrases ("close out," "log the session," "let's wrap") also trigger Close as a catch-all.
 4. **User asks to catch up or resume:** "where were we on X," "catch me up on X," "resume work on X." → Run **Bootstrap**.
+5. **User asks whether the install is healthy:** "check the docs," "doctor," "is the protocol wired here." → Run **Doctor**. Also run it, unasked, whenever a Bootstrap red flag fires.
+6. **User asks what they need to decide:** "brief me," "what do you need from me," "what are you waiting on." → Run **Brief**. At Close, offer it in one line only when STATUS carries an askable item; otherwise say nothing.
 
 **If a resume-style phrase fires but the signature is absent** — no files, or the three files without the block or footer — don't hunt indefinitely and don't adopt a register you did not install: say the protocol isn't installed here and offer Install instead (which, on pre-existing registers, means wiring and reconciling, not overwriting).
 
@@ -171,6 +173,130 @@ Non-obvious tradeoffs where a reasonable alternative was rejected: scope decisio
 
 ---
 
+## Mode 4 — Doctor (check an installed project)
+
+Doctor is a read-only health check for a project that already carries the protocol. It measures the register against the thresholds this skill states, prints one line per check, and stops. **Doctor never edits.** It reports, and the session proposes; the owner decides; any fix is then an ordinary Close (CHANGELOG entry first) or, for wiring, an Install step 2 re-sync.
+
+### When to run it
+
+- **On demand.** "Check the docs", "doctor", "is the protocol wired here", "how healthy is STATUS", "audit the register" → run Doctor.
+- **Automatically, when a Bootstrap red flag fires.** If step 1 of Bootstrap finds STATUS over ~60 lines or a line over ~1 KB, more than one session record at the top, a CHANGELOG newest entry over a month old, or contradicting DECISIONS — run Doctor before discussing the flag. It turns a hunch into a measured line the owner can act on, and it often finds the second problem behind the first (a dated "done" section, a stale wiring block, a nested register).
+- **After Install, once.** A fresh install should exit 0. If it does not, the install is not finished.
+- **Not** on every session start. Bootstrap already reads the register; Doctor is for when something looks wrong or the owner asks.
+
+### How to run it
+
+The checker is `scripts/docs-doctor.py` in this skill's directory. Python 3 standard library only; git is optional and used only to enrich one check.
+
+```
+python3 <skill-dir>/scripts/docs-doctor.py "<project-root>"
+python3 <skill-dir>/scripts/docs-doctor.py "<project-root>" --today 2026-09-04   # reproducible dormancy figure
+python3 <skill-dir>/scripts/docs-doctor.py "<project-root>" --no-git             # skip git even if present
+```
+
+Pass the **project root** — the directory that holds `CLAUDE.md` / `AGENTS.md`. The register is found at the root or under `docs/`; passing the `docs/` directory itself also works. Quote paths with spaces.
+
+Exit codes: **0** every check passed · **1** at least one WARN or FAIL · **2** the checker could not run (no such directory, no register, or a crash). INFO and SKIP lines never affect the exit code. Files with NUL bytes, CRLF endings, or no content are handled without crashing; the report prints under any locale (undecodable characters are replaced, never raised). A malformed decision id of any width is a WARN, not a hang: the id census is linear in the number of ids, whatever their values.
+
+### How to read the output
+
+One line per check: level, check name, measured value with its unit, and the threshold it was judged against. Thresholds are printed so they can be argued with. Read the lines top to bottom; the order is wiring → README → CHANGELOG → STATUS → DECISIONS → BRAND → nesting → siblings → git.
+
+| Line | What it measures | What to do about a WARN/FAIL |
+|---|---|---|
+| `wiring-block` | Whether `CLAUDE.md` and/or `AGENTS.md` at the root carries the skill's block. **PASS** needs the `## Project docs protocol` heading (level 2 or 3) or the sentence *This project uses the project-docs-protocol*. **WARN** *mentioned but no block* when a file names the skill without either. **WARN** *project-authored close instructions* when no block exists but a file names CHANGELOG then STATUS in a close-order sentence ("append CHANGELOG first, then update STATUS", or a numbered close ritual). **FAIL** when neither file exists or neither carries a block or any close-order instruction. | The block is the mechanism, not documentation: measured across every install, projects without it accrete history in STATUS. For FAIL and *mentioned but no block*, propose Install step 2 — append the block, adjusted for the docs path. For *project-authored close instructions*, the register is wired by the project's own text: confirm it says the same three things (CHANGELOG first, STATUS rewritten, registers append-only), then propose a re-sync so the precedence and rewritten-not-appended clauses are present verbatim. Do not call a wired project unwired. |
+| `wiring-clauses` | Whether the block carries the three current clauses: *rewritten, not appended*; the bounded read (*in full if under ~60 lines*); and *Precedence*. WARN names which file lacks which. SKIP when there is no skill block to compare (project-authored instructions are not clause-checked). | The block was copied from an older SKILL.md. Propose re-syncing it from Install step 2 and logging the re-sync as a CHANGELOG entry. |
+| `readme-footer` | The install footer in the register's README. WARN if absent. | Absent footer plus absent block means the register may predate the skill or come from another convention (Keep-a-Changelog plus ADRs looks identical). Confirm with the owner before treating it as an installation; Install on a pre-existing register means wiring and reconciling, not overwriting. |
+| `changelog-entries` | INFO: `##` entry count, distinct dates, span, bytes, and whether an install entry exists. WARN with *0 entries — nothing has been logged* only when the file has no `##` headings **and** no dated lines. A file with no `##` headings but dated lines (one-line bullets, `###` entries) gets *entries in another shape? check the README* — the project logs, just not in the template's shape; dormancy is then measured from those lines and the order and format checks are skipped. | Context for the lines below. For the *another shape* case, confirm the README declares the shape and which end is newest; Bootstrap's "last 3–5 entries" assumes `##` headings, so say how to find the newest entries. |
+| `changelog-dormancy` | Days since the newest dated heading (or dated line). WARN over 30. | Ask whether the project is dormant or discipline slipped, and whether to write a catch-up entry before continuing. Do not write one unasked. |
+| `changelog-order` | Whether the newest entry is at the top. | Bootstrap reads the top 3–5 entries; a bottom-appended CHANGELOG makes Bootstrap read the oldest work. Propose reversing on the next Close — as one entry, append-only rules still apply to bodies. |
+| `changelog-heading-format` | Fraction of `##` headings that match `## YYYY-MM-DD — summary`. PASS at 0.95 or better. Headings inside code fences are ignored and counted separately. | Undated headings cannot be found by date. Propose the format for future entries; never rewrite old headings. Fenced headings are template examples left behind — safe to delete. |
+| `status-size` | Lines and bytes. WARN over 60 lines, **FAIL** over 100. | Something is miscategorised — almost always past-tense history. Run the compaction in Close: retro-log completed items to CHANGELOG (check each already has an entry; write the missing ones first), demote stale in-flight to deferred, then rewrite the dashboard. Bytes are reported, not judged: a byte cap alone flags well-behaved mature files. |
+| `status-longest-line` | Longest line in bytes. WARN over 1,024. | A line that long is a session folded into a paragraph — it passes a line cap while carrying kilobytes of history. Name the line; propose moving its content to CHANGELOG. |
+| `status-session-stack` | Session-record lines (`LAST SESSION:`, `PRIOR SESSION`, …) above the first `##` heading. WARN at one, **FAIL** at more than one. | STATUS has become a second append-only log with no protection. **Stop the inflow first** — find the writer instruction that says "prepend" and change it to "replace; the record you displace must already be in CHANGELOG" — before discussing compaction. |
+| `status-last-updated` | The `Last updated:` date against the newest CHANGELOG date. WARN with the lag in days; WARN *line present but its date is unparseable* when the line exists with a bad date (`2026-13-45`, a month name); WARN *no line found* when it is absent. | A lag means the last Close wrote CHANGELOG and skipped the STATUS rewrite (or bumped nothing). One day of lag after a light entry is common; propose bumping at the next Close. An unparseable date is fixed in place — do not add a second line. A missing line means the close ritual has nothing to bump — propose restoring the template's line. |
+| `status-past-tense` | **Heuristic.** Lines containing *shipped / landed / deployed / done / fixed / closed* under a dated heading, plus the count of dated headings. WARN over 3 lines; INFO for 1–3. | Dated headings in STATUS are history in disguise. Read the sections it names before proposing anything — a "Blocked" table row saying "fixed upstream" is a false positive. |
+| `decisions-ids` | Decision ids at **both** `##` and `###` level, outside code fences. Recognised forms: `D-NNNN` (the template), `PREFIX-D-NNN` with any chain of upper-case prefixes (`PROJ-D-012`, `API-D-003`, `UX-D-002`), `D-XX-NNN` with a series tag (`D-FW-007`), `ADR-NNN` and `DEC-NNN` (prefixable the same way), optionally behind a bracketed tag (`[Phase 2B] D-0025`). A letter-suffixed id (`D-002b`) counts as a reuse of its base number. Reports count, distinct ids and max per series; **FAIL** on any id used twice at the same level, whichever level carries the ids. WARN when every id sits at `###` level. WARN when the file has headings but none carries a recognisable id — a project convention the doctor cannot census, or entries without ids. INFO *empty is fine* only when there are no headings at all. | Two bodies at one address is how a register contradicts itself. Propose a new numbered entry that names its target (`corrects D-XXXX`); never edit or merge the old ones. For the *no recognisable id* case, check the README for the project's convention and say there which form is used; the doctor cannot check what it cannot read. |
+| `decisions-id-malformed` | Ids whose number is wider than 6 digits (`D-20260904`, `D-99999999999999999999`). WARN; excluded from the duplicate, order and gap census. | A date or a typo used as a number. Propose a correction entry under the next real number; the malformed heading stays (append-only) and the correction names it. |
+| `decisions-id-reuse` | `##` ids reused with a qualifier at `###` level ("D-032 correction"). WARN. | The same defect in softer form; the fix is the same new-number entry. |
+| `decisions-id-level` | INFO: ids minted at `###` level, invisible to a `##`-only census. | Promote them or accept the convention in the README — but say which. |
+| `decisions-order` | Whether numbers run ascending (the template's rule), descending (consistent, note it in the README), or mixed (WARN), judged within each prefix series. | Mixed order means insertion out of sequence or reused numbers; check the ids line first. |
+| `decisions-gaps` | INFO: unused ids inside each series' span, counted arithmetically (no span is ever materialised). | Harmless unless something cites them. |
+| `decisions-template-residue` | Headings still reading `D-NNNN` / `ADR-NNN` / `YYYY-MM-DD`, headings inside code fences, and placeholder tokens such as `<decision in one line>` or `[POPULATE` outside fences. WARN. | Template example blocks that were never deleted. Safe to remove; they distort id counts and confuse a Bootstrap. |
+| `brand-placeholders` | `[POPULATE` markers in BRAND.md, and whether the file has changed since install day. WARN on any marker. | A BRAND with only placeholders is never filled in later (8 of 14 in the audit were untouched after install day). Propose one real value or deleting the file. |
+| `nested-register` | Another STATUS/CHANGELOG/DECISIONS set in an ancestor directory (or its `docs/`). WARN. Siblings — a second set beside the one read — are the next line. | Two registers with no ownership rule is how a session writes to the wrong one. Propose writing which register owns this work into **both** READMEs. |
+| `sibling-register` | A second full register at the other candidate location: at the root when the register read is under `docs/`, or under `docs/` when it is at the root. WARN, naming which set the doctor read. | Same hazard as nesting, one directory apart, and the pre-install interview's question 7 exactly: decide which register owns this work, write it into both READMEs, and retire or archive the other — never let sessions pick by proximity. |
+| `git-repository` | INFO: whether the project root is the repository root, or nested inside a larger repository. | Nested roots share one index with everything above them — relevant to the one-writer rule. |
+| `git-status-churn` | With git only: deleted/added lines over commits touching STATUS. WARN below 0.2 over 10 or more commits; INFO under 10 commits; SKIP without git. | Churn near 0.7–0.8 is a file being rewritten; near 0.1 is a file being appended to. The measured split in the audit was exactly this: every root with the wiring block rewrote, every root without it accreted. Fix the wiring first. |
+
+### Acting on it
+
+1. **Read every line, not just the FAILs.** A FAIL on `status-session-stack` with a FAIL on `wiring-block` is one problem, not two — the unwired project invented its own writer instruction. Say that.
+2. **Propose, in the order that stops the bleeding:** wiring (Install step 2) → writer instruction → compaction → residue clean-up. Present each as a named alternative with what it trades off, and let the owner decide.
+3. **Every fix is a Close.** The CHANGELOG entry for "re-synced the wiring block" or "compacted STATUS: N items retro-logged" is written first; STATUS is rewritten second. Doctor's own output is not a CHANGELOG entry — summarise what was found and what changed, not the transcript.
+4. **Re-run after the fix.** The owner's evidence that the fix landed is the exit code, not the session's word for it.
+5. **Do not fix what Doctor did not flag** and do not treat INFO lines as work. Restraint is part of the protocol.
+
+### What Doctor does not check
+
+Whether the content is true — a STATUS that is 40 lines of stale in-flight items passes. Whether DECISIONS entries contradict each other. Whether GLOSSARY matches usage. Whether project-authored close instructions are actually equivalent to the block — it reports them, and the session reads them. Those remain Bootstrap's judgement calls, and the one short confirmation with the owner ("Still focused on X?") is still the last step before substantive work.
+
+---
+
+## Mode 5 — Brief (turn open questions into decisions)
+
+A brief is the ritual that moves a question from STATUS's "Open questions (owner)" into DECISIONS. Measured across installs, owners keep such a list (6 of 24 invented one unprompted), but the answers rarely arrive as decisions: the largest register stacked six "open for the owner" sections and three "answered" sections in ten weeks, none of which was ever merged, removed or turned into a numbered entry. Brief is the missing step between asking and recording.
+
+**Triggers.** On demand, when the owner addresses the agent: "brief me", "what do you need from me", "what are you waiting on", "what decisions are you waiting on". If nothing is askable, say so in one line and stop. **Offered at Close** — one line, never forced — only when at least one item is *askable*: an Open question not marked postponed (or whose revisit condition has arrived), or a Blocked row whose blocker is the owner. Otherwise say nothing at Close. A blocker gated on a third party has nothing to ask; a postponed question re-offered every close teaches the owner to ignore the offer; a "nothing open" line printed every session is the unenforced ritual that decays into noise. Do not re-offer a brief the owner declined earlier in the same session. **Never manufacture a question**: a brief draws only from the registers, not from what the agent would like to ask.
+
+### Read
+
+If this session already bootstrapped, go straight to the questions — do not re-read what Bootstrap read. Otherwise:
+
+1. **STATUS** — "Open questions (owner)" in full; Blocked rows whose "Blocked by" is the owner; Deferred rows whose reason has lapsed (the "deferred to" date or condition has passed) — read on demand only; the Close-time offer does not fire on them.
+2. **The last 3–5 CHANGELOG entries** — work since the question was written may have answered or dissolved it. A dissolved question is dropped, with one line saying which entry dissolved it.
+3. **DECISIONS — search, don't skim.** For each question, grep the register for its key terms (`grep -n -i '<term>' DECISIONS.md`); a missed entry re-opens a settled decision with options, which is the re-litigation the mode exists to prevent. A settled question is **not** presented with options. List it in the brief's preamble as "settled by D-XXXX (chose X); the only move is a supersession — say so if you want one."
+
+### Present
+
+One message, all questions numbered Q1..Qn, so the owner answers in one exchange ("Q1 the second, Q2 as recommended"). Each question in this fixed shape, no fields skipped:
+
+- **Question** — one line, answerable by picking an option.
+- **Context** — plain language, at most five sentences. Every piece of jargon is defined inline the first time it appears ("register — one of the append-only log files"), even if the owner coined it. A future reader without the conversation must be able to follow.
+- **Options** — at least one real alternative to the recommendation, plus "do nothing" whenever it has a cost, labelled by that cost. **Never add an option to reach a count.** Every option must trace to a register line, a prior exchange with the owner, or a finding, and the Options line says where each came from ("from the STATUS row", "you raised this at the last close", "from the audit's finding") — an option with no stated source is padding, and a reader of the DECISIONS entry can tell. Label each by what it prioritises and what it trades off, per the protocol's own rule: "Fix the live templates — append-only history first, accept stale one-shots", never "Option B". Each carries its pros and cons.
+- **Recommendation** — one option, with the reason in one or two sentences. Never withheld: an agent that presents options without a view is offloading the work.
+- **What would change the answer** — the fact, measurement or event that would make a different option right. This is what makes a later supersession legible.
+
+A question with only one real option is not a question; it is a notice. Put it in the preamble as "I will do X unless you object" and leave it out of the numbered list. A question the agent can settle itself (implementation detail, naming, ordering) never reaches the brief.
+
+### Record
+
+**An answer is an explicit pick by the owner.** A question the owner did not address in their reply is unanswered: it stays in "Open questions (owner)" unchanged, gets no DECISIONS entry, and is listed in the CHANGELOG line as "Qn — not answered". Silence is not concurrence; the recommendation is not an answer; never infer a pick from the owner's tone or from "do the rest as you see fit" — ask again, in one line, for the specific numbers. Ask once and wait for the reply within the exchange; record whatever is explicit after that — one CHANGELOG entry, with the still-unanswered questions listed as not answered. Answers that arrive in a later session are a new brief. DECISIONS is append-only, so an entry minted from silence is permanent. With the explicit picks in hand, run as a Close, in Close's order:
+
+1. **CHANGELOG first — one entry for the whole brief**, not one per question: `## YYYY-MM-DD — brief: N of M questions answered; D-XXXX–D-YYYY logged` (omit the D-range when no entry was logged: `brief: 2 of 5 questions answered; no decision entries`), then one line per question giving the answer and where it was recorded, or "not answered". This is the record the owner asked for: what was asked, what was chosen, what happens next.
+2. **DECISIONS — one entry per answer that rejected a real alternative**, in the protocol's format, numbered from the highest existing id. **Reasoning** names the rejected options by their brief labels and says why each lost. The protocol's test — can you name the alternative the owner actually considered? — is met because the owner read those options and chose among them, not because the agent listed them; it holds only as far as the options were real, which is why padding is forbidden above. Use the owner's reason when they gave one. **If the owner picked the recommendation and gave no reason, ask once, in one line: "Was <the strongest other option> ever live for you?"** No → default, no entry (below). Yes → record the reason they give. **What would change the answer** becomes the entry's Consequences.
+   - Answer stands with an existing entry → no new entry; the CHANGELOG line cites it.
+   - Answer overturns an existing entry → a supersession entry, `supersedes D-XXXX`.
+   - Answer is a **default** — the owner says no other option was ever live for them, or the brief had only one real option → **no DECISIONS entry**; say so in the CHANGELOG line ("default, no decision entry").
+3. **STATUS rewritten** — every answered question leaves "Open questions (owner)"; an unblocked item moves to In flight or Next; a question the owner explicitly postponed stays, with "postponed by owner YYYY-MM-DD, revisit when <condition>"; an unanswered question stays exactly as it was. Never leave an "answered" section behind — that is the stacking failure this mode exists to prevent.
+4. **Then move.** State the next concrete action the answers unlock, in one line, and do it or queue it in Next.
+
+### How Brief differs from Bootstrap's "confirm current state"
+
+Bootstrap step 6 checks **facts**: is STATUS current, did anything land, is the focus unchanged. Its answers are yes/no/corrections and land in STATUS. Brief resolves **choices**: which of several defensible paths to take. Its answers are selections between named alternatives and land in DECISIONS. Keep them apart: a confirm exchange that surfaces a choice does not become a brief on the spot — it parks the choice in "Open questions (owner)" and offers a brief; a brief does not re-verify facts already confirmed.
+
+### Common failure modes
+
+- **Silence read as concurrence.** The owner answered Q1 and Q2; the agent logged entries for Q3–Q5 "as recommended". Append-only makes that permanent.
+- **Options padded to a count.** An option nobody proposed appears in Reasoning as "rejected", and the entry records a deliberation that never happened.
+- **Options without a recommendation**, or a recommendation without a reason. Both leave the owner doing the agent's job.
+- **Re-opening a settled decision** because the owner's phrasing sounded like a question. Grep DECISIONS before presenting anything.
+- **One CHANGELOG entry per question.** A brief is one unit of work; five entries for one exchange is noise that hides the record.
+- **Recording the owner's answers in STATUS** as an "answered" section instead of DECISIONS. STATUS is a dashboard; answers are history.
+- **Jargon left undefined** because the owner knows it. The brief is also the record a future session reads cold.
+
+---
+
 ## Operating principles
 
 **Append-only discipline.** CHANGELOG and DECISIONS are never edited retroactively. Wrong entries get appended corrections or supersessions — the audit trail is the point.
@@ -193,5 +319,7 @@ Per-project workflow norms (commit conventions, session hygiene) live in the pro
 
 ## Files in this skill
 
-- `SKILL.md` (this file) — all operating instructions for the three modes.
+- `SKILL.md` (this file) — all operating instructions for the five modes.
 - `templates/` — the starter files. Copy these when installing.
+- `scripts/docs-doctor.py` — the Doctor check. Python 3 standard library, read-only, git optional.
+- `docs/` — this skill's own registers (it runs the protocol it ships), the anonymised audit evidence, and a worked Brief.

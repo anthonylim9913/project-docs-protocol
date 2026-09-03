@@ -8,7 +8,7 @@
 
 ## How to use these docs
 
-This project runs on a lightweight documentation protocol: a small set of files, each with a single job, and two rituals — bootstrap at session start, close after each meaningful unit of work. The session-start and logging triggers also live in the project's agent-instructions file (`CLAUDE.md` / `AGENTS.md`) so they fire automatically.
+This project runs on a lightweight documentation protocol: a small set of files, each with a single job, and three rituals — bootstrap at session start, close after each meaningful unit of work, and a brief, on demand or offered at close when STATUS carries a question or owner-gated blocker that is not postponed, which turns those questions into DECISIONS entries. The session-start and logging triggers also live in the project's agent-instructions file (`CLAUDE.md` / `AGENTS.md`) so they fire automatically.
 
 ### Session bootstrap — do this FIRST, every time
 
@@ -52,6 +52,14 @@ two entries or a DECISIONS entry in disguise.
 The earlier entry said X [unit, scope]. Re-measured now: Y [same unit, same scope]. [Why the discrepancy.]
 ```
 
+**CHANGELOG brief entry** (one per brief, never one per question; omit the D-range when no entry was logged):
+
+```
+## YYYY-MM-DD — brief: N of M questions answered; D-XXXX–D-YYYY logged
+
+Qn <question> → <answer> (D-XXXX | stands with D-XXXX | default, no decision entry), or "Qn — not answered". One line per question. What the answers unlock next, in one sentence.
+```
+
 **DECISIONS entry** (numbered sequentially — check the highest existing D-number):
 
 ```
@@ -83,7 +91,7 @@ These are constants. Pattern-match to them — don't re-derive each session.
 
 **Options.** When presenting alternatives, label each by what it prioritizes and trades off — "Ship fast, accept debt" vs. "Ship slow, compound maintainability" — not "Option A" vs. "Option B." Recommend one, then let the owner decide.
 
-**Decisions.** [Populate — who is the decider? Default: the project owner.] Don't paper over ambiguity with a default; surface the choice.
+**Decisions.** [Populate — who is the decider? Default: the project owner.] Don't paper over ambiguity with a default; surface the choice. Open choices go in STATUS under Open questions (owner) and are resolved by a brief, not in passing. An answer is an explicit pick; a question the owner did not address stays open.
 
 **Session hygiene.** For tasks estimated over ~2 hours, prefer a fresh session plus the bootstrap ritual over continuing a long one — long sessions accumulate context that quietly degrades quality. Dispatch subagents only for genuinely independent units of work, not sequential work; integration cost outweighs fake parallelism.
 

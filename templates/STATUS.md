@@ -18,7 +18,7 @@
 
 ## Blocked
 
-*No items.* [Or a table: Item · Blocked by · Unblocks when — for work genuinely gated on external input.]
+*No items.* [Or a table: Item · Blocked by · Unblocks when — for work genuinely gated on external input. When the input is the owner's, also list the choice under Open questions.]
 
 ## Deferred
 
@@ -32,6 +32,8 @@
 
 ## Open questions (owner)
 
-[Decisions gated on the owner, numbered, each with a proposed default. Resolved ones become DECISIONS entries and leave this list.]
+*Choices gated on the owner. One line each; answered ones become DECISIONS entries via a brief and leave this list — never leave an "answered" section behind. A postponed question keeps its line and gains "— postponed YYYY-MM-DD, revisit when <condition>".*
+
+1. **[one-line question]** — proposed: [option label] — since YYYY-MM-DD
 
 *Bootstrap reminder: this is the first file to read each session. Close reminder: rewrite it AFTER the CHANGELOG entry — completed items out, new items in, past tense deleted.*

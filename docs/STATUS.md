@@ -6,16 +6,15 @@
 
 ## Current phase
 
-**v0.2.0 is the public baseline; v0.3.0 (Doctor and Brief modes) is in adversarial verification**
+**v0.3.0 candidate on branch `v0.3.0`, awaiting owner review; `main` is the public `v0.2.0`**
 
-The protocol as audited on 2026-09-02 is on `main` and tagged. Two new modes are drafted on the release scratch area and must pass a second verification round before they get a branch: Doctor, a dependency-free health check that runs the Bootstrap red flags as a script; and Brief, the ritual that turns STATUS's open questions into DECISIONS entries with the rejected alternatives named.
+Doctor (Mode 4) and Brief (Mode 5) are integrated on the branch with their template touches, a worked brief, and README paragraphs. Both passed a second adversarial verification round; the eleven remaining minor findings were applied and re-tested against the 25-root census and a 36-fixture break suite. The branch is pushed for review and is not merged.
 
 ## In flight
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Doctor mode (`scripts/docs-doctor.py` + Mode 4 text) | Claude | v0.3.0 | Round 1 found a hang on wide ids, a too-loose block detector, and a false FAIL on the mature installation; fixes under re-verification |
-| Brief mode (Mode 5 text + worked example) | Claude | v0.3.0 | Round 1: silence must not count as an answer; options must trace to a real source; the Close-time offer fires only on askable items |
+| Review and merge `v0.3.0`, then tag | owner | next session | `git diff v0.2.0..v0.3.0`; Doctor exits 0 on this repository |
 
 ## Blocked
 
@@ -26,12 +25,13 @@ The protocol as audited on 2026-09-02 is on `main` and tagged. Two new modes are
 | Item | Deferred to | Reason |
 |---|---|---|
 | Compaction procedure in Mode 3 | after a dry run on the largest retired register | Only one compaction has ever happened; write the procedure from that instance, not from theory |
+| Offer bullet for Brief in the wiring block | the next block revision | Would make six freshly re-synced blocks stale (D-0009) |
 
 ## Next
 
-1. Land v0.3.0 on a branch once both re-verifications pass; tag after review.
-2. Compaction dry run (separate long-running session; prompt written and handed over).
-3. Add `scripts/docs-doctor.py` to SKILL.md's file list when it ships.
+1. Merge and tag `v0.3.0` after review.
+2. Compaction dry run (separate long-running session; prompt handed over).
+3. Run Doctor across the population again after the next round of installs and compare with the census.
 
 ## Open questions (owner)
 

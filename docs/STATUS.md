@@ -2,20 +2,20 @@
 
 *Snapshot of where the work is right now. Rewrite this file at each close — never append to it. Keep it around ~40 lines and never over ~60. Past-tense content belongs in CHANGELOG.md, not here.*
 
-*Last updated: 2026-09-03*
+*Last updated: 2026-09-04*
 
 ## Current phase
 
-**Post-audit hardening, on branch `audit-2026-09-02`**
+**v0.2.0 is the public baseline; v0.3.0 (Doctor and Brief modes) is in adversarial verification**
 
-The skill was audited on 2026-09-02 against all 25 projects carrying its signature (report: `Parallel World City App/docs/DOCS-PROTOCOL-ANALYSIS-2026-09-02.md`). The changes ranked 1–3 and 5–8 in that report are applied on this branch and not yet merged to `main`. Tag `v0.1.0` marks the pre-audit state.
+The protocol as audited on 2026-09-02 is on `main` and tagged. Two new modes are drafted on the release scratch area and must pass a second verification round before they get a branch: Doctor, a dependency-free health check that runs the Bootstrap red flags as a script; and Brief, the ritual that turns STATUS's open questions into DECISIONS entries with the rejected alternatives named.
 
 ## In flight
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Review and merge `audit-2026-09-02` into `main` | Anthony | next session | Every change is one commit; `git diff v0.1.0` shows the whole delta |
-| Re-sync the five wired projects' CLAUDE.md/AGENTS.md blocks | Claude | this session | Daylighting, Ian Document, QA, Dungeon Keeper, Orc Invasion |
+| Doctor mode (`scripts/docs-doctor.py` + Mode 4 text) | Claude | v0.3.0 | Round 1 found a hang on wide ids, a too-loose block detector, and a false FAIL on the mature installation; fixes under re-verification |
+| Brief mode (Mode 5 text + worked example) | Claude | v0.3.0 | Round 1: silence must not count as an answer; options must trace to a real source; the Close-time offer fires only on askable items |
 
 ## Blocked
 
@@ -25,18 +25,16 @@ The skill was audited on 2026-09-02 against all 25 projects carrying its signatu
 
 | Item | Deferred to | Reason |
 |---|---|---|
-| Compaction procedure in Mode 3 (report rec 4) | after a dry run on the parent PWC STATUS | Only one compaction has ever happened; write the procedure from that instance, not from theory |
-| Public release | after `main` is merged and the README leads with the design property | Repo is private with 0 clones; every commit becomes an unpinned release once public |
+| Compaction procedure in Mode 3 | after a dry run on the largest retired register | Only one compaction has ever happened; write the procedure from that instance, not from theory |
 
 ## Next
 
-1. Merge the branch, tag `v0.2.0`.
-2. Dry-run compaction on the parent PWC STATUS with the SHA-multiset check; then write Mode 3's procedure.
-3. Decide the three Parallel World City questions in the report (writer instruction, public repo, parent id collisions).
+1. Land v0.3.0 on a branch once both re-verifications pass; tag after review.
+2. Compaction dry run (separate long-running session; prompt written and handed over).
+3. Add `scripts/docs-doctor.py` to SKILL.md's file list when it ships.
 
 ## Open questions (owner)
 
-1. Go public? Default: not until `v0.2.0` and the README rewrite.
-2. Fix the App's writer instruction (~20 prompt files) or only the template going forward? Default: template only.
+*None open.*
 
 *Bootstrap reminder: this is the first file to read each session. Close reminder: rewrite it AFTER the CHANGELOG entry — completed items out, new items in, past tense deleted.*

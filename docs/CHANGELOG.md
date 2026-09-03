@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-09-04 — v0.2.0, first public release
+
+README rewritten to lead with the design property and the population evidence; `docs/EVIDENCE.md` added with the audit's anonymised findings; repository description and topics set; visibility flipped to public. Every change on the audit branch is squashed into two clean commits on `main` so that no commit message or file names a project, product or person. Tag `v0.1.0` remains the pre-audit baseline.
+
+## 2026-09-04 — trigger narrowed: three filenames are no longer the signature
+
+The skill fired on any folder holding STATUS.md, CHANGELOG.md and DECISIONS.md. On this machine nine of the twenty-five matching folders had never run Install — registers that predate the skill, or that other tooling scaffolded in a different dialect — and elsewhere a Keep-a-Changelog file plus an ADR folder would produce the same three names. The signature is now the three files **and** either the wiring block in CLAUDE.md/AGENTS.md or the install footer in the docs README. Bootstrap on a non-installation now offers Install (wire and reconcile) instead of adopting a register it did not create.
+
+## 2026-09-04 — five owner decisions taken; the four affected registers on this machine updated
+
+The owner answered the five open questions from the audit (release, writer instruction, compaction, id collisions, provenance). Recorded as D-0006 to D-0008 below; two were operational and needed no decision entry. Outside this repository: the two live prompt templates in the largest project now say "replace STATUS line 1" instead of "prepend", and the two pre-skill registers carry a provenance line saying they are not installations.
+
 ## 2026-09-03 — templates: STATUS cut to 37 lines with Next and Open-questions sections; DECISIONS order fixed; README trimmed and given a correction form
 
 STATUS template dropped five horizontal rules and the note-plus-table duplication in Blocked (35 of 44 lines were chrome; a one-row fill exceeded the protocol's own 40-line rule) and gained `## Next` and `## Open questions (owner)`, which 6 and 7 of 24 installs had invented independently under other names. DECISIONS template now states entry order (bottom, oldest first; installs had split 14/7) and forbids reusing a number with a qualifier. README template: CHANGELOG corrections address by summary or token instead of date (the date form was used 0 times across 25 roots and is ambiguous for 90–98% of entries); a DECISIONS correction form added (the protocol mandated corrections in three places and formatted none); the Commits and External-comms subsections deleted (16 of 16 installs that kept the section had deleted both). Report recs 3, 5, 7.
@@ -12,9 +24,9 @@ STATUS template dropped five horizontal rules and the note-plus-table duplicatio
 
 The Step-2 wiring block now says STATUS is rewritten rather than appended and that the three design properties (CHANGELOG first, STATUS rewritten, registers append-only) are not overridable by project convention — measured across every install, the presence and wording of that block predicted STATUS churn (0.67–0.83 with it, 0.01–0.16 without or with a "top line" variant). Bootstrap step 1 reads STATUS in full only under ~60 lines (the full read cost ~153,000 tokens on the largest file). Red flags: threshold moved to ~60 lines (the literal 40 fired on 23 of 25 roots and on the template itself), a max-line signal added (one STATUS carried a 36 KB single line), stacked session records named, dormancy-on-return added. Mode 3: step 2 says rewrite; step 3 says corrections take a new number; the compaction trigger is size-based instead of quarterly (quarterly had fired once in 25 projects). Operating principles gain "one writer at a time". Install interview gains the BRAND value gate (8 of 14 BRAND files were never touched) and a nested-register question. Report recs 1, 2, 3, 4 (trigger only), 6, 8.
 
-## 2026-09-03 — baseline tagged v0.1.0; work branch opened; share-bundle installer guarded
+## 2026-09-03 — baseline tagged v0.1.0; work branch opened; an older distribution bundle's installer guarded
 
-Tagged the pre-audit state as `v0.1.0` (first tag; the repo had two commits and no version). Opened `audit-2026-09-02` so `main` stays at the baseline until reviewed. Patched `~/.codex/skills/Share Skills/project-docs-protocol-share/install.sh` (outside this repo) to refuse a symlink or git-clone target and to back up rather than `rm -rf` — its default mode would have replaced the Codex symlink with the July snapshot, and `--claude` would have deleted this clone.
+Tagged the pre-audit state as `v0.1.0` (first tag; the repo had two commits and no version). Opened `audit-2026-09-02` so `main` stays at the baseline until reviewed. Patched the installer of a separate, older distribution bundle (outside this repository) to refuse a symlink or git-clone target and to back up rather than delete — its default mode would have replaced the live skill directory with a July snapshot, and its other mode would have deleted this clone.
 
 ## 2026-09-03 — initialized project documentation system
 

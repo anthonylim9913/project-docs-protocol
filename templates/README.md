@@ -14,11 +14,11 @@ This project runs on a lightweight documentation protocol: a small set of files,
 
 Before proposing work or writing content, read in this order:
 
-1. `STATUS.md` in full — current state, in-flight items, blockers, deferred work.
+1. `STATUS.md` — in full if it is under ~60 lines; otherwise its top line, its headings, and the current-state sections. Current state, in-flight items, blockers, deferred work, next.
 2. The last 3–5 entries of `CHANGELOG.md` (most recent first) — what just happened.
 3. `DECISIONS.md` — skim for anything touching the area you're about to work on.
 4. `GLOSSARY.md` if a term is unfamiliar. Check here before guessing or asking.
-5. `SPEC_TEMPLATE.md` if writing or reviewing a spec.
+5. `SPEC_TEMPLATE.md` if writing or reviewing a spec (only present in spec-driven projects).
 6. Confirm current state before substantive work. STATUS can lag by a session.
 
 ### Close — do this after each meaningful unit of work
@@ -26,7 +26,7 @@ Before proposing work or writing content, read in this order:
 Log as you go; don't wait for the session to end (the end is often never signaled). Order matters — if the session dies mid-update, the append-only log survives:
 
 1. **Write the CHANGELOG entry first.** Append to the top; formats below. Never edit old entries — append a correction instead.
-2. **Update STATUS.md second.** Move completed items out of in-flight. Add new items. Update blockers. Keep it under ~40 lines.
+2. **Update STATUS.md second, by rewriting it.** Move completed items out of in-flight. Add new items. Update blockers. Replace the top line — never prepend a session record. Keep it around ~40 lines and never over ~60.
 3. **Add a DECISIONS.md entry only if a non-obvious choice was made.** If you can't name the rejected alternative, it's a default — don't log it.
 4. `ROADMAP.md`, `BRAND.md`, `GLOSSARY.md`, and this `README.md` only update when the session's work specifically required it.
 
@@ -44,12 +44,12 @@ or decision IDs. If an entry needs more than three sentences, it's probably
 two entries or a DECISIONS entry in disguise.
 ```
 
-**CHANGELOG correction** (when an earlier entry was wrong — never edit it):
+**CHANGELOG correction** (when an earlier entry was wrong — never edit it). Name the target by its summary or a stable token, not by its date alone — most days carry several entries:
 
 ```
-## YYYY-MM-DD — correction to entry from YYYY-MM-DD
+## YYYY-MM-DD — correction to "<the earlier entry's summary or token>"
 
-The earlier entry said X. Actual situation is Y. [Why the discrepancy.]
+The earlier entry said X [unit, scope]. Re-measured now: Y [same unit, same scope]. [Why the discrepancy.]
 ```
 
 **DECISIONS entry** (numbered sequentially — check the highest existing D-number):
@@ -63,7 +63,11 @@ The earlier entry said X. Actual situation is Y. [Why the discrepancy.]
 **Consequences:** what this commits to, or forecloses.
 ```
 
+**DECISIONS correction** (when a past decision's *record* was wrong but the decision stands): a new numbered entry titled `D-NNNN — YYYY-MM-DD — corrects D-XXXX`, saying what was wrong. Never reuse D-XXXX's number with a qualifier — two entries at one address is how a register ends up contradicting itself.
+
 **DECISIONS supersession** (when a past decision is overturned): same format, titled `D-NNNN — YYYY-MM-DD — supersedes D-XXXX`. Never delete the superseded entry — the historical record matters.
+
+New DECISIONS entries go at the **bottom** (oldest first, so numbers read in order). New CHANGELOG entries go at the **top** (newest first). The two files run in opposite directions on purpose; a session appending blind to both gets one wrong.
 
 ---
 
@@ -81,11 +85,7 @@ These are constants. Pattern-match to them — don't re-derive each session.
 
 **Decisions.** [Populate — who is the decider? Default: the project owner.] Don't paper over ambiguity with a default; surface the choice.
 
-**Commits.** [Git projects only — delete otherwise.] Atomic commits per meaningful chunk, prefixed with spec ID or phase shortname: `feat(PROJ-SPEC-0014): add email confirmation flow`. The git log is a second-tier audit trail aligned with CHANGELOG entries. No catch-all "WIP" commits — if a chunk isn't worth a one-line description, it isn't a unit worth logging.
-
 **Session hygiene.** For tasks estimated over ~2 hours, prefer a fresh session plus the bootstrap ritual over continuing a long one — long sessions accumulate context that quietly degrades quality. Dispatch subagents only for genuinely independent units of work, not sequential work; integration cost outweighs fake parallelism.
-
-**External comms conventions.** [Populate — headers, numbering, closing phrases, any recurring formats. Delete this subsection if not applicable.]
 
 **What doesn't need to be asked.** Assume: concise over long, direct answers before caveats, strongest argument before hedged version, the actual artifact created rather than a description of what it would contain.
 

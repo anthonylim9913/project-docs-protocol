@@ -8,8 +8,8 @@ The problem it solves: working with an AI agent across many sessions on the same
 
 Two rituals, three core files, one design property that makes the whole thing hold up over time:
 
-- **Bootstrap** (session start) — read `STATUS.md` in full, skim the last few `CHANGELOG.md` entries, check `DECISIONS.md` for anything relevant. Confirm state with the user before starting work.
-- **Close** (after each meaningful unit of work, not just at session end) — append a `CHANGELOG.md` entry first, then update `STATUS.md`, then log a `DECISIONS.md` entry only if a real alternative was rejected.
+- **Bootstrap** (session start) — read `STATUS.md` (in full while it is short; past ~60 lines, its top line, headings and current-state sections), skim the last few `CHANGELOG.md` entries, check `DECISIONS.md` for anything relevant. Confirm state with the user before starting work.
+- **Close** (after each meaningful unit of work, not just at session end) — append a `CHANGELOG.md` entry first, then rewrite `STATUS.md` (never prepend to it), then log a `DECISIONS.md` entry only if a real alternative was rejected.
 
 The core design property: **`CHANGELOG.md` and `DECISIONS.md` are append-only; `STATUS.md` is the one file edited aggressively every session.** Append-only logs can't be corrupted by a bad edit and survive a session that dies mid-update — CHANGELOG is written *first*, before STATUS, for exactly that reason. Splitting the "grows forever" content from the "gets rewritten constantly" content is what keeps the system from decaying into either a bloated status file or a lost history.
 

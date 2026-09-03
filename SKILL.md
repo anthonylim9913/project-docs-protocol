@@ -1,6 +1,6 @@
 ---
 name: project-docs-protocol
-description: "Lightweight documentation protocol for multi-session projects. Use when the user wants to bootstrap project docs, resume work on an existing project, or log completed work. Triggers on: 'set up project docs', 'initialize docs', 'install the project docs protocol', 'cold start', 'coldstart', 'bootstrap this project', 'catch me up on <project>', 'resume work', 'where were we', 'close out the session', 'log this session', 'update the changelog', and whenever a project folder contains STATUS.md + CHANGELOG.md + DECISIONS.md at the root or under /docs/ (the signature of an installed project-docs-protocol system)."
+description: "Lightweight documentation protocol for multi-session projects. Use when the user wants to bootstrap project docs, resume work on an existing project, or log completed work. Triggers on: 'set up project docs', 'initialize docs', 'install the project docs protocol', 'cold start', 'coldstart', 'bootstrap this project', 'catch me up on <project>', 'resume work', 'where were we', 'close out the session', 'log this session', 'update the changelog', and whenever a project folder contains STATUS.md + CHANGELOG.md + DECISIONS.md (at the root or under /docs/) AND either its CLAUDE.md/AGENTS.md carries the 'Project docs protocol' block or its docs README says it was installed by this skill — the signature of an installed system. Three matching filenames alone are not the signature: other conventions use them."
 ---
 
 # Coldstart — project documentation protocol
@@ -12,11 +12,11 @@ This skill installs and operates a small-file documentation protocol designed fo
 Invoke automatically, without asking, in any of these situations:
 
 1. **User asks to set up project docs** for a new or existing project. Phrases like "set up the docs folder," "initialize project docs," "install the project-docs-protocol system," "bootstrap this project." → Run **Install**.
-2. **User returns to work on a project** whose root (or `/docs/`) contains `STATUS.md`, `CHANGELOG.md`, and `DECISIONS.md` — the signature of an installed system. Always run **Bootstrap** before proposing work.
+2. **User returns to work on a project** that carries the signature of an installed system: `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` at the root or under `/docs/`, **and** either the `## Project docs protocol` block in `CLAUDE.md`/`AGENTS.md` or the footer *"Installed via the `project-docs-protocol` skill"* in the docs README. Three matching filenames alone are not enough — Keep-a-Changelog plus an ADR folder produces the same three names, and a register that predates this skill is not an installation of it. Always run **Bootstrap** before proposing work.
 3. **A meaningful unit of work just completed** on such a project — a spec drafted, a decision made, a blocker resolved, a major refactor landed. Run **Close** immediately; don't wait for the session to end. Session-end phrases ("close out," "log the session," "let's wrap") also trigger Close as a catch-all.
 4. **User asks to catch up or resume:** "where were we on X," "catch me up on X," "resume work on X." → Run **Bootstrap**.
 
-**If a resume-style phrase fires but no signature files exist** in the project, don't hunt indefinitely — say the protocol isn't installed here and offer Install instead.
+**If a resume-style phrase fires but the signature is absent** — no files, or the three files without the block or footer — don't hunt indefinitely and don't adopt a register you did not install: say the protocol isn't installed here and offer Install instead (which, on pre-existing registers, means wiring and reconciling, not overwriting).
 
 ---
 
@@ -30,8 +30,9 @@ Ask these before creating any files (or confirm from memory/conversation). Keep 
 2. **Doc location.** Default: `/docs/` at the repo root. Alternatives: `./` (root) for small projects, `~/<project>/docs/` for non-code projects.
 3. **Current phase.** Truly new, or mid-flight? Mid-flight installs seed STATUS with approximate in-flight items (flagged as approximate).
 4. **Primary reader.** Default: the user + future agent sessions. Formality target: "wouldn't embarrass in a review." Any additional reviewers?
-5. **Does brand matter?** If the project has a brand dimension (products, public comms, design assets), keep BRAND.md. Otherwise skip it — don't keep placeholder files that rot.
+5. **Does brand matter, and is anything known yet?** Keep BRAND.md only if the project has a brand dimension *and* at least one concrete value can be written today — a font, a colour, a path to a brand system. A BRAND.md with only `[POPULATE]` markers is never filled in later (measured: 8 of 14 were untouched after install day). Otherwise skip it and add it when a value exists.
 6. **Spec-driven?** If the project will use written specs, confirm the spec ID prefix (default `PROJ-SPEC-NNNN`) and include SPEC_TEMPLATE.md. Otherwise skip it.
+7. **Is there already a register above this folder?** If the repository root or a parent folder has its own STATUS/CHANGELOG/DECISIONS, decide which register owns this work and write the answer into both READMEs. Two registers in one repository with no ownership rule is how a session writes to the wrong one.
 
 ### Step 1 — Create the folder and copy templates
 
@@ -53,21 +54,32 @@ Personalize each template with the project name, reader audience, working prefer
 
 ### Step 2 — Wire up auto-triggering
 
-This is the step that makes the protocol survive. Skill-trigger phrases are unreliable; instructions files are loaded every session. Append this block (adjusted for the actual docs path) to the project's agent-instructions file — `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex and other agents. Update whichever exist; if neither exists, create the one(s) matching the tools the user works with — when in doubt, create both with identical content:
+This is the step that makes the protocol survive. Skill-trigger phrases are unreliable; instructions files are loaded every session. It is also the step that decides whether STATUS stays a dashboard: measured across every install, projects whose instructions file carries this block rewrite STATUS each close, and projects without it — or with a project-authored block that names a "top line" — accrete history there until the file is unreadable. Append this block (adjusted for the actual docs path) to the project's agent-instructions file — `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex and other agents. Update whichever exist; if neither exists, create the one(s) matching the tools the user works with — when in doubt, create both with identical content:
 
 ```markdown
 ## Project docs protocol
 
 This project uses the project-docs-protocol (docs in `<docs-path>/`).
 
-- **Session start:** before proposing or doing any work, read `STATUS.md` in
-  full and the last 3–5 entries of `CHANGELOG.md`; skim `DECISIONS.md` for
-  entries touching the area you're about to work on.
+- **Session start:** before proposing or doing any work, read `STATUS.md`
+  (in full if it is under ~60 lines; otherwise its top line, its heading
+  list, and the current-state sections only) and the last 3–5 entries of
+  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're
+  about to work on.
 - **After each meaningful unit of work** (spec drafted, decision made, blocker
   resolved, major refactor): append a CHANGELOG entry, then update STATUS.
   Do this as you go — do not wait for the session to end.
+- **STATUS is rewritten, not appended.** Replace the current-state sections
+  and bump the last-updated date. Never prepend a session record or leave a
+  dated "done" section behind: that record belongs in CHANGELOG, and it must
+  already be there before STATUS changes.
 - CHANGELOG and DECISIONS are append-only: never edit past entries; append
   corrections or supersessions instead.
+- **Precedence.** The three properties above — CHANGELOG before STATUS,
+  STATUS rewritten, registers append-only — are the protocol's and are not
+  overridden by project convention. Paths, id formats and entry shapes are
+  this project's to set, here. If this file and the protocol disagree on a
+  property, the disagreement is a CHANGELOG entry, not a habit.
 ```
 
 ### Step 3 — Seed from existing context
@@ -108,7 +120,7 @@ Tell the user: "Installed and wired into `CLAUDE.md`/`AGENTS.md` — future sess
 
 Read in this order — do not skip or reorder:
 
-1. **`STATUS.md` in full.** The current-state dashboard: current phase, in-flight (owners, blockers), blocked (what gates each), deferred (why). Past-tense content doesn't belong here, so don't look for history in it.
+1. **`STATUS.md` — in full when it is under ~60 lines.** Past that, read its top line, its heading list (`grep -n '^## ' STATUS.md`), and the current-state sections: current phase, in flight (owners, blockers), blocked (what gates each), deferred (why), next. Do not read the history a bloated STATUS has accumulated — a 600 KB STATUS read in full costs more than the whole rest of the bootstrap, and the history in it belongs to CHANGELOG. Its size is a red flag (below), not context.
 2. **Last 3–5 entries of `CHANGELOG.md`** (newest at top). Three is usually enough; go to five if recent sessions were light or the thread is hard to follow. Watch for corrections to earlier entries (they flag where the mental model was wrong) and referenced decision IDs — follow those into DECISIONS.md.
 3. **`DECISIONS.md` — skim, don't read whole.** Look for: decisions touching the area you're about to work on, decisions referenced in recent CHANGELOG entries, and the most recent 2–3 regardless of topic (they often set frame). **Do not re-litigate resolved decisions.** If a D-entry chose X over Y, build on X; if the user wants to revisit, the move is a supersession entry, not a rewrite.
 4. **`GLOSSARY.md` as a dictionary** — look up terms you don't recognize; don't guess and don't ask the user for a term defined here. Project definitions override general knowledge. Watch for flagged overloaded terms.
@@ -119,8 +131,9 @@ Only after bootstrap: propose what you're going to do — proposals now fit wher
 
 ### Red flags during bootstrap
 
-- **STATUS well over ~40 lines.** Something is miscategorized. Flag it gently; suggest moving stale items to CHANGELOG or deferred.
-- **CHANGELOG has a multi-month gap.** Discipline slipped. Ask whether to write a catch-up entry before continuing.
+- **STATUS over ~60 lines, or any single line over ~1 KB.** Something is miscategorized — almost always past-tense history kept in STATUS: dated "done" or "shipped" sections, stacked session records at the top, a last-updated line that has become a paragraph. Name the sections; suggest moving them to CHANGELOG. (The template is ~30 lines; a healthy mature STATUS sits near 40. A 40-line cap alone is not the signal — one file folded thirteen sessions into a single 36 KB line and would pass it.)
+- **More than one session record at the top of STATUS.** History is being stacked in the one file designed to be rewritten. Stop the inflow first — fix the writer instruction — before discussing compaction.
+- **CHANGELOG has a multi-month gap, or its newest entry is more than a month old.** Discipline slipped, or the project was dormant. Ask whether to write a catch-up entry before continuing.
 - **DECISIONS entries contradict without supersession links.** The log has lost integrity — flag it.
 - **GLOSSARY contradicts usage in STATUS.** Glossary is authoritative; ask whether the definition is stale or the usage is wrong.
 
@@ -137,8 +150,8 @@ If the work was trivial (one-off question, no artifacts, no decisions), no close
 **Order matters.** If the session dies mid-update, the append-only log is what survives:
 
 1. **Write the CHANGELOG entry first** (append to top — formats are in the project README): date, one-line summary, 1–3 sentences of what and why. Never edit old entries; append a correction instead.
-2. **Update STATUS.md second.** Move completed items out of in-flight; add new in-flight items; add/remove blockers (log unblocks in CHANGELOG) and deferrals (with reasons); bump the last-updated date. Keep STATUS under ~40 lines — past that, something is miscategorized: an in-flight item that's really deferred, a resolved blocker, completed items never moved out.
-3. **Add a DECISIONS entry only if a non-obvious choice was made.** Test: can you name the rejected alternative the user actually considered? If not, it's a default — don't log it. Context → Decision → Reasoning → Consequences, numbered sequentially (check the highest existing D-number first).
+2. **Update STATUS.md second, by rewriting it.** Move completed items out of in-flight; add new in-flight items; add/remove blockers (log unblocks in CHANGELOG) and deferrals (with reasons); bump the last-updated date. Replace the top line; never prepend a session record above it. Delete every past-tense sentence you find — it is already in the CHANGELOG entry you just wrote, or it should be. Keep STATUS around ~40 lines and never over ~60: past that, something is miscategorized — an in-flight item that's really deferred, a resolved blocker, a "done" section never moved out.
+3. **Add a DECISIONS entry only if a non-obvious choice was made.** Test: can you name the rejected alternative the user actually considered? If not, it's a default — don't log it. Context → Decision → Reasoning → Consequences, numbered sequentially (check the highest existing D-number first), appended at the bottom so the numbering reads in order. A correction to a past decision is a **new** numbered entry that names its target (`corrects D-XXXX`), never the old number with a qualifier — two entries under one id is how a register ends up with contradictory bodies at the same address.
 4. **ROADMAP, BRAND, GLOSSARY, README** only when the session's work required it: ROADMAP at phase boundaries; BRAND on visual/voice changes; GLOSSARY for new, stale, or overloaded terms; README for working-preference or convention changes. Restraint is part of the protocol.
 
 ### What counts as CHANGELOG-worthy
@@ -154,7 +167,7 @@ Non-obvious tradeoffs where a reasonable alternative was rejected: scope decisio
 - **Close skipped because "nothing substantive happened."** If an artifact was created or a decision made, close. The bar is lower than you think.
 - **STATUS updated before the CHANGELOG entry.** Wrong order — the append-only log must be the thing that got through if the session dies.
 - **A default logged as a decision.** No nameable rejected alternative → no entry.
-- **STATUS grows unbounded.** Once a quarter, compact: retro-log completed items to CHANGELOG, demote stale in-flight to deferred.
+- **STATUS grows unbounded.** Compact when it passes ~60 lines or when a bootstrap red flag fires — not "once a quarter", which in practice has meant never: retro-log completed items to CHANGELOG (check each one already has an entry; write the missing ones first, append-only), demote stale in-flight to deferred, then rewrite the dashboard. Do it from the rewritten file's point of view, not by trimming the old one.
 
 ---
 
@@ -162,9 +175,11 @@ Non-obvious tradeoffs where a reasonable alternative was rejected: scope decisio
 
 **Append-only discipline.** CHANGELOG and DECISIONS are never edited retroactively. Wrong entries get appended corrections or supersessions — the audit trail is the point.
 
-**Heavy edits concentrated in STATUS.** STATUS is the one file edited aggressively; everything else grows monotonically. This split is the design property that makes the discipline survive.
+**Heavy edits concentrated in STATUS.** STATUS is the one file edited aggressively — rewritten, never appended to; everything else grows monotonically. This split is the design property that makes the discipline survive, and it fails silently the moment a project starts prepending session records to STATUS: the file becomes a second append-only log with no protection.
 
-**STATUS stays under ~40 lines.** Past that, something is miscategorized.
+**STATUS stays around ~40 lines and never over ~60.** Past that, something is miscategorized. A single line over ~1 KB is history in disguise.
+
+**One writer at a time.** The protocol assumes a single session writes the registers. Parallel agents on one working tree defeat its id allocation ("check the highest number" is not atomic), its append discipline (uncommitted work in a shared tree is not durable), and any sense of who owns STATUS. Isolate concurrent agents in their own worktrees; do not add lanes to a shared tree and expect the registers to survive.
 
 **Prose over bullets unless bullets earn it.** Tables for genuinely table-shaped data (status rows, glossary); not as a substitute for two sentences of explanation.
 

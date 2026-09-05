@@ -8,7 +8,7 @@
 
 ## How to use these docs
 
-This project runs on a lightweight documentation protocol: a small set of files, each with a single job, and three rituals — bootstrap at session start, close after each meaningful unit of work, and a brief, on demand or offered at close when STATUS carries a question or owner-gated blocker that is not postponed, which turns those questions into DECISIONS entries. The session-start and logging triggers also live in the project's agent-instructions file (`CLAUDE.md` / `AGENTS.md`) so they fire automatically.
+This project runs on a lightweight documentation protocol: a small set of files, each with a single job, and three rituals — bootstrap at session start, close after each meaningful unit of work, and a brief, on demand or offered at close when STATUS carries a question or owner-gated blocker that is not postponed (or whose revisit condition has arrived), which records each answer — a DECISIONS entry when a real alternative was rejected, otherwise the brief's CHANGELOG line. The session-start and logging triggers also live in the project's agent-instructions file (`CLAUDE.md` / `AGENTS.md`) so they fire automatically.
 
 ### Session bootstrap — do this FIRST, every time
 
@@ -52,7 +52,7 @@ two entries or a DECISIONS entry in disguise.
 The earlier entry said X [unit, scope]. Re-measured now: Y [same unit, same scope]. [Why the discrepancy.]
 ```
 
-**CHANGELOG brief entry** (one per brief, never one per question; omit the D-range when no entry was logged):
+**CHANGELOG brief entry** (one per brief, never one per question; recorded CHANGELOG, then DECISIONS, then STATUS — the entry must exist before the STATUS rewrite removes the question; omit the D-range when no entry was logged):
 
 ```
 ## YYYY-MM-DD — brief: N of M questions answered; D-XXXX–D-YYYY logged

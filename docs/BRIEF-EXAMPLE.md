@@ -1,14 +1,16 @@
 # Brief — worked example
 
-The five questions the skill's own STATUS carried on 2026-09-04, presented in the Mode 5 shape, then recorded. The project is the protocol skill itself; the evidence comes from a 25-project audit run two days earlier. No other project is named. The D-0006 to D-0008 shown under "The record" are a rendering in the brief's format, written to show how the losers are named; they are not the entries as they stand in the skill's register, which differ in wording.
+The five items the skill's own STATUS carried on 2026-09-04 — four presented as questions in the Mode 5 shape, one already settled and said so in the preamble — then recorded. The project is the protocol skill itself; the evidence comes from a 25-project audit run two days earlier. No other project is named. The D-0006 to D-0008 shown under "The record" are a rendering in the brief's format, written to show how the losers are named and whose words each reason is in; they are not the entries as they stand in the skill's register, which differ in wording.
 
 ---
 
 ## The brief as presented
 
-**Read:** this session had already bootstrapped, so the read went straight to the questions. STATUS "Open questions (owner)" — five items, none postponed. Blocked — empty. Deferred — one row (compaction procedure), reason still current. Last five CHANGELOG entries — the audit's SKILL and template changes landed; nothing dissolves a question. DECISIONS — a grep for each question's key terms ("publish", "prepend", "compaction", "renumber", "signature") across D-0001 to D-0005 hits once: **D-0005 already settles Q3**, so Q3 is listed as settled below and not re-opened.
+**Read:** this session had already bootstrapped, so the read went straight to the questions. STATUS "Open questions (owner)" — five items, none postponed. Blocked — empty. Deferred — one row (compaction procedure), reason still current. Last five CHANGELOG entries — the audit's SKILL and template changes landed; nothing dissolves a question. DECISIONS — a grep for each question's key terms ("publish", "prepend", "compaction", "renumber", "signature") across D-0001 to D-0005 hits once: **D-0005 already settles the compaction-procedure item**, so it goes in the preamble as settled, gets no number and no options, and the four remaining items are Q1 to Q4.
 
-**Notices (no choice involved, will do unless you object):** none.
+**Settled:** the compaction procedure — settled by D-0005 (chose: defer until the dry run). Not asked. Say so if you want a supersession.
+
+**Notices (one real option, ordinary work, stated as the plan):** none.
 
 ### Q1 — Publish the skill now, after hardening, or never?
 
@@ -36,11 +38,7 @@ The five questions the skill's own STATUS carried on 2026-09-04, presented in th
 
 **What would change the answer.** If a dated prompt were observed being reused *and* producing a prepend despite the precedence rule, fix that prompt too — one at a time, as observed, not all 23 pre-emptively.
 
-### Q3 — Write the compaction procedure now, or after a dry run? — *settled by D-0005*
-
-D-0005 (2026-09-03) decided to "defer the step-by-step procedure until it has been dry-run against the largest retired register's five archive sections with a lossless check": the procedure is written from the one compaction that has actually happened rather than from theory, because that register has a mechanical consumer — a script that scans every STATUS line — that a naive split would silence. **Not re-opened.** Its Consequences, as written in the register: "Deferred item in STATUS. The procedure, when written, should generalise that instance rather than invent one." The only move is a supersession. *What would change the answer — the brief's suggestion, not the entry's text:* a second project hitting the ~60-line red flag before the dry run happens would make waiting cost more than writing from theory. Answer "stands" or "supersede".
-
-### Q4 — Four decision ids resolve to more than one body: renumber, one correction entry, or leave it?
+### Q3 — Four decision ids resolve to more than one body: renumber, one correction entry, or leave it?
 
 **Context.** In the largest retired register, four decision ids (the `D-NNN` addresses that other documents cite) each head more than one entry — three head two bodies, one heads four — because amendments and corrections were filed under the original number with a qualifier instead of a new number. Nothing in the register acknowledges this. An "inbound citation" is any place — a CHANGELOG line, a prompt, a status row — that refers to the id and expects one answer.
 
@@ -53,7 +51,7 @@ D-0005 (2026-09-03) decided to "defer the step-by-step procedure until it has be
 
 **What would change the answer.** If the register were being migrated to a new format anyway, renumber during the migration with a mapping table — the citations break once, deliberately, with a key.
 
-### Q5 — Does a register that pre-dates the skill count as an installation?
+### Q4 — Does a register that pre-dates the skill count as an installation?
 
 **Context.** The skill's trigger fired on three filenames. Nine of the 25 matching folders on this machine never ran Install: their registers were created by hand or by other tooling before the skill's text existed, and none carries the wiring block (defined under Q2). When the skill adopted such a register it applied rules the register never agreed to, and in the largest case wrote to the wrong one of two registers in the same repository. "Installation" here means: the skill created or wired the register and is entitled to run Bootstrap and Close on it.
 
@@ -69,20 +67,20 @@ D-0005 (2026-09-03) decided to "defer the step-by-step procedure until it has be
 
 ## The owner's answers
 
-First reply: "Q1 after hardening. Q2 the two live templates. Q3 stands. Q4 one correction entry. Q5 not an installation — that was never really a question; the audit answered it."
+First reply: "Q1 after hardening. Q2 the two live templates. Q3 one correction entry. Q4 not an installation — that was never really a question; the audit answered it." Nothing on the settled item, which was not asked.
 
-Q1, Q2 and Q4 took the recommendation without a reason, so the agent asked once, in one line: "Q1, Q2, Q4 — were 'publish now', 'fix all 25' and 'renumber' ever live for you?" Second reply: "Q1 yes, I had the visibility setting open before the audit. Q2 yes, I asked for all 25 before I saw the count. Q4 yes, renumbering was my first instinct." Q5 needed no such question: the owner's own words say the alternative was never live.
+Q1, Q2 and Q3 took the recommendation without saying which alternatives were live, so the agent asked once, in one line, naming every presented alternative: "Q1 — were 'publish now' or 'stay private' live for you? Q2 — 'fix all 25' or 'fix none'? Q3 — 'renumber' or 'leave it'?" Second reply: "Q1 publish now was live — I had the visibility setting open before the audit, and the trigger finding is what stopped me; stay private never was. Q2 all 25 was live — I asked for it before I saw the count, and twenty-three of those are dated documents I don't want rewritten; fix none, never. Q3 renumbering was my first instinct; the broken citations changed my mind. Leaving it, no." Q4 needed no such question: the owner's own words say the alternative was never live.
 
-## The record, in Close order
+## The record, in the brief's recording order
 
-Every numbered question received an explicit pick, so none is carried as "not answered". Had the first reply stopped at Q2, Q3 to Q5 would have stayed in STATUS unchanged, received no DECISIONS entry, and appeared in the CHANGELOG line as "Q3 — not answered", and so on; the agent would then have asked, in one line, for those three numbers. Silence is not concurrence, and the recommendation is not an answer.
+The order is CHANGELOG, then DECISIONS, then STATUS (Mode 5, Record). Every numbered question received an explicit pick, so none is carried as "not answered". Had the first reply stopped at Q2, Q3 and Q4 would have stayed in STATUS unchanged, received no DECISIONS entry, and appeared in the CHANGELOG line as "Q3 — not answered" and "Q4 — not answered"; the agent would then have asked, in one line, for those two numbers. Silence is not concurrence, and the recommendation is not an answer.
 
 ### 1. CHANGELOG — one entry for the brief
 
 ```
-## 2026-09-04 — brief: 5 of 5 questions answered; D-0006–D-0008 logged
+## 2026-09-04 — brief: 4 of 4 questions answered; D-0006–D-0008 logged; one settled item noted
 
-Q1 publish → after hardening (D-0006). Q2 "prepend" instruction → the two live templates only (D-0007). Q3 compaction procedure → stands with D-0005, no new entry. Q4 colliding decision ids → one correction entry, no renumber (D-0008). Q5 pre-existing register → not an installation; default, no decision entry — the trigger narrowing is its own entry. Unlocks: merge, tag v0.2.0, publish.
+Q1 publish → after hardening (D-0006). Q2 "prepend" instruction → the two live templates only (D-0007). Q3 colliding decision ids → one correction entry, no renumber (D-0008). Q4 pre-existing register → not an installation; default, no decision entry — the trigger narrowing is its own entry. Settled, not asked: compaction procedure stands with D-0005; its line leaves Open questions. Unlocks: merge, tag v0.2.0, publish.
 ```
 
 ### 2. DECISIONS — three entries, appended after D-0005 (rendered in the brief's format; see the note at the top)
@@ -92,29 +90,29 @@ Q1 publish → after hardening (D-0006). Q2 "prepend" instruction → the two li
 
 **Context:** The repository is private with no clones; `main` holds the pre-audit text, whose trigger fires on three filenames alone; the README leads with the problem and there is no evidence page.
 **Decision:** Publish only after the audit branch is merged and tagged `v0.2.0`, the trigger is narrowed, the README leads with the design property, and an anonymised `docs/EVIDENCE.md` exists.
-**Reasoning:** Rejected "publish now — reach first", which the owner had been about to do before the audit: it ships the over-firing trigger to other people's machines and publishes without the measurement that is the pitch. Rejected "stay private": the audit is done and unpublished evidence is wasted evidence.
+**Reasoning:** Rejected "publish now — reach first", which the owner said was live: "I had the visibility setting open before the audit, and the trigger finding is what stopped me." Presented, not chosen: "stay private — zero exposure" — agent's assessment: the audit is done and unpublished evidence is wasted evidence; the owner said it was never live.
 **Consequences:** Every commit to `main` is an unpinned release to anyone who followed the clone instruction; tag before every behavioural change. Would be revisited if hardening slipped more than a couple of sessions.
 
 ## D-0007 — 2026-09-04 — the prepend instruction is fixed in live templates only, never in historical prompts
 
 **Context:** Twenty-five files in the largest project instruct "prepend a session line to STATUS". Two are reusable templates; twenty-three are dated one-shot prompts, register entries and audit snapshots.
 **Decision:** Fix the two live templates to say "replace STATUS's top line"; leave the twenty-three untouched.
-**Reasoning:** Rejected "fix all 25 — consistency first", which the owner had asked for before seeing the count: rewriting dated prompts to hide a past convention is the retroactive edit the protocol forbids in registers, applied to their inputs. Rejected "fix none": STATUS was growing at about five records a day and the templates are the only live source. The wiring block's precedence rule covers the residual case of a reused old prompt.
+**Reasoning:** Rejected "fix all 25 — consistency first", which the owner said was live: "I asked for it before I saw the count, and twenty-three of those are dated documents I don't want rewritten." Presented, not chosen: "fix none — untouched history" — agent's assessment: STATUS was growing at about five records a day and the templates are the only live source; the owner said it was never live.
 **Consequences:** A reused historical prompt still says "prepend"; precedence, not the prompt, decides. If one is observed producing a prepend anyway, fix that prompt then.
 
 ## D-0008 — 2026-09-04 — colliding decision ids get one correction entry, not a renumber
 
 **Context:** Four ids in the largest retired register head more than one entry — three head two bodies, one heads four — and nothing acknowledges it.
 **Decision:** Append a single correction entry naming every collision and stating which body governs at each address. Do not renumber.
-**Reasoning:** Rejected "renumber — clean addresses", the owner's first instinct: it edits an append-only register and breaks every inbound citation. Rejected "leave it": an ambiguity that is written down is a different thing from one that is not.
+**Reasoning:** Rejected "renumber — clean addresses", which the owner said was live: "renumbering was my first instinct; the broken citations changed my mind." Presented, not chosen: "leave it — zero edits" — agent's assessment: an ambiguity that is written down is a different thing from one that is not; the owner said it was never live.
 **Consequences:** The addresses stay ambiguous, knowingly, with a written reading rule. The entry is drafted by the session that reads every colliding body during the compaction dry run, and applied by the owner. Renumbering becomes right only inside a format migration with a mapping table.
 ```
 
-**Q3** gets no entry: the answer stands with D-0005 and the CHANGELOG line cites it. **Q5** gets no entry: the owner took the recommendation and said the alternative was never live — the DECISIONS test ("name the rejected alternative the owner actually considered") fails, so it is a default. Its effect on the skill's text is a change of work, logged under its own CHANGELOG entry, not a decision.
+The settled item gets no entry: it stands with D-0005 and the CHANGELOG line cites it. **Q4** gets no entry: the owner took the recommendation and said the alternative was never live — the DECISIONS test ("name the rejected alternative the owner actually considered") fails, so it is a default. Its effect on the skill's text is a change of work, logged under its own CHANGELOG entry, not a decision. In all three entries the reason for each rejection is the owner's, quoted from the second reply; the assessment of each option the owner never called live is the agent's and is marked as such, so a future reader can tell the two apart.
 
 ### 3. STATUS — rewritten
 
-"Open questions (owner)" goes from five numbered lines to: *None open. The five questions of 2026-09-04 are logged as D-0006 to D-0008 and in the brief entry.* No "answered" section. "Next" gains: 1. merge, tag `v0.2.0`, publish; 2. the two-template fix and the correction entry are outside this repository and are queued where they belong. Deferred row for the compaction procedure is unchanged — D-0005 stands.
+"Open questions (owner)" goes from five numbered lines to: *None open. The four questions of 2026-09-04 are logged as D-0006 to D-0008 and in the brief entry; the compaction-procedure line was already settled by D-0005 and is removed.* No "answered" section. "Next" gains: 1. merge, tag `v0.2.0`, publish; 2. the two-template fix and the correction entry are outside this repository and are queued where they belong. Deferred row for the compaction procedure is unchanged — D-0005 stands.
 
 ### 4. Next action
 
@@ -124,4 +122,4 @@ Merge the audit branch and tag `v0.2.0`.
 
 ## What this example demonstrates
 
-Three record outcomes from one brief: a new decision entry with the losers named and the owner's own reason for rejecting them (Q1, Q2, Q4 — after one liveness question, not by assumption); a question already settled that is presented as settled rather than re-opened, quoting the entry rather than paraphrasing it (Q3); and an answer that is a default and gets no entry, said out loud (Q5, which also shows a two-option question — no third option was invented to fill the list). One CHANGELOG entry carries all five. STATUS ends with the list empty rather than with an "answered" section — the failure the mode exists to prevent.
+Three record outcomes from one brief: new decision entries whose Reasoning quotes the owner's own words for each alternative they called live, and marks every other presented option as the agent's assessment (Q1, Q2, Q3 — after one liveness question that named every presented alternative, not only the strongest, and not by assumption); an item already settled by an existing entry, listed in the preamble as settled with no number and no options, and removed from STATUS without being asked (the compaction procedure, D-0005); and an answer that is a default and gets no entry, said out loud (Q4, which also shows a two-option question — no third option was invented to fill the list). One CHANGELOG entry carries the four questions and the settled item. The record is written CHANGELOG, then DECISIONS, then STATUS, so the entries exist before the STATUS rewrite removes the questions. STATUS ends with the list empty rather than with an "answered" section — the failure the mode exists to prevent.

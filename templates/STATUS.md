@@ -32,8 +32,8 @@
 
 ## Open questions (owner)
 
-*Choices gated on the owner. One line each; answered ones become DECISIONS entries via a brief and leave this list — never leave an "answered" section behind. A postponed question keeps its line and gains "— postponed YYYY-MM-DD, revisit when <condition>".*
+*Choices gated on the owner. One line each; answered ones are recorded by a brief (a DECISIONS entry when a real alternative was rejected, otherwise the CHANGELOG line) and leave this list — never leave an "answered" section behind. A postponed question keeps its line and gains "— postponed by owner YYYY-MM-DD, revisit when <condition>"; a question the owner declined to be briefed on gains "— declined YYYY-MM-DD" and is not re-offered until the owner asks or the line changes.*
 
-1. **[one-line question]** — proposed: [option label] — since YYYY-MM-DD
+1. **[one-line question — delete this line if there is none]** — proposed: [option label] — since YYYY-MM-DD
 
 *Bootstrap reminder: this is the first file to read each session. Close reminder: rewrite it AFTER the CHANGELOG entry — completed items out, new items in, past tense deleted.*

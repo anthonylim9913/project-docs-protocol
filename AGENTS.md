@@ -11,8 +11,8 @@ This project uses the project-docs-protocol (docs in `docs/`).
   list, and the current-state sections only) and the last 3–5 entries of
   `docs/CHANGELOG.md`; skim `docs/DECISIONS.md` for entries touching the
   area you're about to work on.
-- **After each meaningful unit of work** (a rule changed, a template changed,
-  a decision made): append a CHANGELOG entry, then update STATUS.
+- **After each meaningful unit of work** (spec drafted, decision made, blocker
+  resolved, major refactor): append a CHANGELOG entry, then update STATUS.
   Do this as you go — do not wait for the session to end.
 - **STATUS is rewritten, not appended.** Replace the current-state sections
   and bump the last-updated date. Never prepend a session record or leave a
@@ -23,5 +23,6 @@ This project uses the project-docs-protocol (docs in `docs/`).
 - **Precedence.** The three properties above — CHANGELOG before STATUS,
   STATUS rewritten, registers append-only — are the protocol's and are not
   overridden by project convention. Paths, id formats and entry shapes are
-  this project's to set, here. If this file and the protocol disagree on a
-  property, the disagreement is a CHANGELOG entry, not a habit.
+  this project's to set, here. If this file and the protocol disagree on one
+  of those three properties, the disagreement is a CHANGELOG entry, not a
+  habit.

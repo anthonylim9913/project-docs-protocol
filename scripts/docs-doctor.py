@@ -12,8 +12,9 @@ measured value and its unit, then a summary line.
 
 Exit codes:
     0   every check passed (INFO and SKIP lines do not count)
-    1   at least one WARN or FAIL
-    2   the checker itself could not run (no such root, no register, crash)
+    1   at least one WARN and no FAIL — advisory drift, judge each line
+    2   at least one FAIL — a protocol property is broken
+    3   the checker itself could not run (no such root, no register, crash)
 
 The doctor never modifies anything. It reads files, runs read-only git
 commands when git and a repository are available, and prints. Standard
@@ -31,13 +32,13 @@ import shutil
 import subprocess
 import sys
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 REGISTER = ("STATUS.md", "CHANGELOG.md", "DECISIONS.md")
 INSTRUCTION_FILES = ("CLAUDE.md", "AGENTS.md")
 
 # --- thresholds (from the audit) ---------------------------------------
-STATUS_LINES_WARN = 60         # lines; template is ~30, healthy mature ~40
+STATUS_LINES_WARN = 60         # lines; template is ~40, healthy mature ~40
 STATUS_LINES_FAIL = 100
 STATUS_MAXLINE_WARN = 1024     # bytes; one line over ~1 KB is history in disguise
 PAST_TENSE_WARN = 3            # lines; heuristic, see check
@@ -49,8 +50,11 @@ ID_MAX_DIGITS = 6              # a decision number wider than this is malformed
                                # (a date, a typo) and never enters the span
 
 DATE_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
-HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
+# CommonMark allows up to three spaces of indentation before an ATX heading.
+HEADING_RE = re.compile(r"^ {0,3}(#{1,6})\s+(.*)$")
 FENCE_RE = re.compile(r"^\s*(```|~~~)")
+BLOCKQUOTE_RE = re.compile(r"^\s*>")
+LIST_LINE_RE = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s")
 # A dated heading: any level, carrying an ISO date or an ISO week anywhere.
 DATED_HEADING_RE = re.compile(r"\d{4}-\d{2}-\d{2}|\d{4}-W\d{2}")
 # Session-record prefixes seen in the wild at the top of STATUS files.
@@ -63,21 +67,37 @@ PAST_TENSE_RE = re.compile(
     r"\b(shipped|landed|deployed|done|fixed|closed)\b", re.IGNORECASE
 )
 CHANGELOG_HEADING_OK_RE = re.compile(r"^## \d{4}-\d{2}-\d{2}\s*[—–·:-]")
-# DECISIONS id at heading level 2 or 3. Covered forms:
+# DECISIONS id. Covered forms:
 #   D-NNNN            the template's default
 #   PREFIX-D-NNN      any chain of upper-case/digit prefixes: PROJ-D-012, API-D-003, UX-D-002
 #   D-XX-NNN          a series tag between D and the number: D-FW-007
 #   ADR-NNN, DEC-NNN  the common alternative conventions, prefixable the same way
 #   [tag] D-NNNN      an optional bracketed tag before the id: [Phase 2B] D-0025
 #   D-NNNNb           a letter-suffixed id reuses its base number (counted as a reuse)
-# Group 1 is everything before the digits (the "prefix"), group 2 the digits.
-DECISION_ID_RE = re.compile(
-    r"^#{2,3}\s+(?:\[[^\]]*\]\s*)?((?:[A-Z][A-Z0-9]*-)*(?:D|ADR|DEC)-(?:[A-Z]+-)?)(\d+)([a-z])?\b"
-)
+# Group 1 is everything before the digits (the "prefix"), group 2 the digits,
+# group 3 the optional letter suffix. DECISION_ID_RE is the heading form at
+# level 2 or 3; DECISION_TITLE_RE the same on a bare title (any level);
+# DECISION_CITE_RE finds the id forms anywhere in a line of text.
+DECISION_ID_CORE = r"((?:[A-Z][A-Z0-9]*-)*(?:D|ADR|DEC)-(?:[A-Z]+-)?)(\d+)([a-z])?\b"
+DECISION_ID_RE = re.compile(r"^#{2,3}\s+(?:\[[^\]]*\]\s*)?" + DECISION_ID_CORE)
+DECISION_TITLE_RE = re.compile(r"^(?:\[[^\]]*\]\s*)?" + DECISION_ID_CORE)
+DECISION_CITE_RE = re.compile(r"(?<![A-Za-z0-9])" + DECISION_ID_CORE)
 ID_FORMS_TEXT = "D-NNNN, PREFIX-D-NNN, D-XX-NNN, ADR-NNN, DEC-NNN"
 TEMPLATE_HEADING_RE = re.compile(r"D-NNNN|YYYY-MM-DD|D-XXXX|ADR-NNN|ADR-MMM|DEC-NNN|D-XX-NNN|<title>")
 PLACEHOLDER_RE = re.compile(r"<decision in one line>|\[POPULATE|<path>|<one[- ]line")
+# STATUS template placeholders: the bracketed prompts the template ships, and
+# any list item whose bold text opens with a bracket ("1. **[one-line question]**").
+STATUS_PLACEHOLDER_RE = re.compile(
+    r"\[one-line question|\[option label\]|\[The ordered queue|\[Section name|\[Item\b"
+    r"|^\s*(?:[-*+]|\d+[.)])\s+\*\*\["
+)
 INSTALL_ENTRY_RE = re.compile(r"initiali[sz]ed\b.*\bdocumentation system", re.IGNORECASE)
+# The README install footer, judged on a visible line with any leading
+# emphasis or quote marker removed; it must open the line.
+FOOTER_LINE_RE = re.compile(r"^Installed via the `?project-docs-protocol`? skill")
+FOOTER_PHRASE_RE = re.compile(r"Installed via the `?project-docs-protocol`? skill", re.IGNORECASE)
+FOOTER_NEGATION_RE = re.compile(r"not installed|was not|never installed|wasn't|isn't|is not|\bnever\b|\bnot\b|\bno\b", re.IGNORECASE)
+LINE_PREFIX_RE = re.compile(r"^[\s*_>]+")
 
 # The three clauses the current Step-2 wiring block carries. A block that
 # lacks one was copied from an older SKILL.md and should be re-synced.
@@ -87,10 +107,15 @@ WIRING_CLAUSES = (
     ("precedence", re.compile(r"\*\*\s*Precedence\s*\.?\s*\*\*|^\s*-\s*Precedence\b", re.IGNORECASE | re.MULTILINE)),
 )
 # The block is present when its heading (level 2 or 3) or its opening
-# sentence is present. A bare mention of the skill's name is not a block.
-WIRING_HEADING_RE = re.compile(r"^#{2,3}\s+Project docs protocol\b", re.IGNORECASE | re.MULTILINE)
+# sentence is present on a visible, unquoted line. A bare mention of the
+# skill's name is not a block. The block's span is bounded (see
+# wiring_block_span) and only text inside the span is clause- and path-checked.
+WIRING_HEADING_RE = re.compile(r"^ {0,3}(#{2,3})\s+Project docs protocol\b", re.IGNORECASE)
 WIRING_SENTENCE_RE = re.compile(r"This project uses the project-docs-protocol", re.IGNORECASE)
 WIRING_MENTION_RE = re.compile(r"project-docs-protocol", re.IGNORECASE)
+WIRING_SENTENCE_SPAN_MAX = 40  # lines after the sentence, when there is no heading
+# "(docs in `docs/`)" — the block's declaration of where the register lives.
+DOCS_PATH_RE = re.compile(r"\(\s*docs\s+(?:in|at|under)\s+`?([^`)]*?)`?\s*\)", re.IGNORECASE)
 # Project-authored close instructions: CHANGELOG named before STATUS within a
 # few lines, with a verb or ordering cue nearby ("append CHANGELOG first, then
 # update STATUS", or a numbered list). Not the skill's block, but evidence the
@@ -118,7 +143,11 @@ class Report:
         print("%-4s  %-26s %s" % (level, check, value))
 
     def exit_code(self):
-        return 1 if (self.counts["WARN"] or self.counts["FAIL"]) else 0
+        if self.counts["FAIL"]:
+            return 2
+        if self.counts["WARN"]:
+            return 1
+        return 0
 
 
 def read_text(path):
@@ -174,14 +203,27 @@ def visible_lines(lines):
         if comment:
             if COMMENT_CLOSE in line:
                 comment = False
+                rest = line[line.index(COMMENT_CLOSE) + len(COMMENT_CLOSE):]
+                if rest.strip():
+                    yield i, rest, fenced
             continue
         if FENCE_RE.match(line):
             fenced = not fenced
             continue
         if not fenced and COMMENT_OPEN in line:
+            # A comment that opens and closes on one line is cut out of it; the
+            # text around it is still a live line. One that opens mid-line hides
+            # only what follows it.
+            head = line[:line.index(COMMENT_OPEN)]
             after = line[line.index(COMMENT_OPEN) + len(COMMENT_OPEN):]
-            if COMMENT_CLOSE not in after:
-                comment = True
+            if COMMENT_CLOSE in after:
+                rest = head + after[after.index(COMMENT_CLOSE) + len(COMMENT_CLOSE):]
+                if rest.strip():
+                    yield i, rest, fenced
+                continue
+            comment = True
+            if head.strip():
+                yield i, head, fenced
             continue
         yield i, line, fenced
 
@@ -223,6 +265,25 @@ def same_path(a, b):
     return os.path.realpath(a) == os.path.realpath(b)
 
 
+def normalise_docs_path(s):
+    """Reduce a docs-path spelling to a comparable token: 'docs', 'root', or
+    the cleaned path. `./docs/`, `docs`, `docs/` -> docs; `./`, `.`, `root`,
+    `the root`, `` -> root."""
+    s = (s or "").strip().strip("`\"'").strip().lower()
+    # "the root", "project root", "repository root", "repo root" all name the root.
+    s = re.sub(r"^(?:(?:the|this|project|repository|repo)\s+)+", "", s).strip()
+    while s.startswith("./"):
+        s = s[2:]
+    s = s.strip("/")
+    if s in ("", ".", "root"):
+        return "root"
+    return s
+
+
+def docs_path_label(token):
+    return "./" if token == "root" else token + "/"
+
+
 def gap_census(nums):
     """Unused ids inside the span of `nums`, without materialising the span.
 
@@ -244,10 +305,9 @@ def gap_census(nums):
     return count, examples
 
 
-def close_order_found(text):
-    """True when the text names CHANGELOG before STATUS within a few lines,
+def close_order_found(lines):
+    """True when the lines name CHANGELOG before STATUS within a few lines,
     with an action or ordering cue in the same window."""
-    lines = split_lines(text)
     for i, line in enumerate(lines):
         m = CHANGELOG_MENTION_RE.search(line)
         if not m:
@@ -259,6 +319,55 @@ def close_order_found(text):
         if found and CLOSE_CUE_RE.search("\n".join(window)):
             return True
     return False
+
+
+def wiring_block_span(vis):
+    """Locate the wiring block in a list of visible, unquoted lines.
+
+    Returns (form, start, end) with end exclusive, or None. The heading form
+    spans from the heading to the next heading of the same or higher level.
+    The sentence form spans the sentence's paragraph through the bullet list
+    that follows it: it stops at a heading, at a blank line followed by a
+    non-list line, or WIRING_SENTENCE_SPAN_MAX lines after the sentence.
+    """
+    for i, line in enumerate(vis):
+        m = WIRING_HEADING_RE.match(line)
+        if not m:
+            continue
+        level = len(m.group(1))
+        end = len(vis)
+        for j in range(i + 1, len(vis)):
+            h = HEADING_RE.match(vis[j])
+            if h and len(h.group(1)) <= level:
+                end = j
+                break
+        return "heading", i, end
+    for i, line in enumerate(vis):
+        if not WIRING_SENTENCE_RE.search(line):
+            continue
+        start = i
+        while start > 0 and vis[start - 1].strip() and not HEADING_RE.match(vis[start - 1]):
+            start -= 1
+        limit = min(len(vis), i + 1 + WIRING_SENTENCE_SPAN_MAX)
+        end = limit
+        j = i + 1
+        while j < limit:
+            cur = vis[j]
+            if HEADING_RE.match(cur):
+                end = j
+                break
+            if not cur.strip():
+                k = j + 1
+                while k < limit and not vis[k].strip():
+                    k += 1
+                if k >= limit or not LIST_LINE_RE.match(vis[k]):
+                    end = j
+                    break
+                j = k
+                continue
+            j += 1
+        return "sentence", start, end
+    return None
 
 
 def run_git(root, args, timeout=30):
@@ -292,15 +401,22 @@ def check_wiring(rep, root, register_label):
         rep.add("FAIL", "wiring-block",
                 "no CLAUDE.md or AGENTS.md at the project root — nothing loads the protocol each session (Install step 2)")
         rep.add("SKIP", "wiring-clauses", "no wiring block to compare")
+        rep.add("SKIP", "wiring-path", "no wiring block to compare")
         return
-    # Only text outside code fences and comments counts: a quoted block is not a block.
-    visible = {n: "\n".join(unfenced_lines(split_lines(t))) for n, t in present.items()}
-    wired = [n for n, t in visible.items()
-             if WIRING_HEADING_RE.search(t) or WIRING_SENTENCE_RE.search(t)]
+    # Only text outside code fences, HTML comments and blockquotes counts:
+    # a quoted or fenced block is not a block.
+    visible = {n: [l for l in unfenced_lines(split_lines(t)) if not BLOCKQUOTE_RE.match(l)]
+               for n, t in present.items()}
+    spans = {}
+    for n, vis in visible.items():
+        found = wiring_block_span(vis)
+        if found:
+            spans[n] = "\n".join(vis[found[1]:found[2]])
+    wired = sorted(spans)
     if not wired:
         files = ", ".join(sorted(present))
-        close_order = sorted(n for n, t in present.items() if close_order_found(t))
-        mention = sorted(n for n, t in present.items() if WIRING_MENTION_RE.search(t))
+        close_order = sorted(n for n, vis in visible.items() if close_order_found(vis))
+        mention = sorted(n for n, vis in visible.items() if any(WIRING_MENTION_RE.search(l) for l in vis))
         if close_order:
             extra = "" if not mention else "; %s also name(s) the skill without its block" % ", ".join(mention)
             rep.add("WARN", "wiring-block",
@@ -312,37 +428,67 @@ def check_wiring(rep, root, register_label):
         elif mention:
             rep.add("WARN", "wiring-block",
                     "%s mention(s) project-docs-protocol but no block: neither the '## Project docs protocol' heading nor "
-                    "'This project uses the project-docs-protocol' is present (%d instructions files: %s) — mentioned but no block; "
-                    "propose Install step 2"
+                    "'This project uses the project-docs-protocol' is present on a visible, unquoted line (%d instructions files: %s) "
+                    "— mentioned but no block; propose Install step 2"
                     % (", ".join(mention), len(present), files))
             rep.add("SKIP", "wiring-clauses", "no wiring block to compare")
         else:
             rep.add("FAIL", "wiring-block",
                     "0 of %d instructions files (%s) carry the 'Project docs protocol' block or any close-order instruction "
-                    "naming CHANGELOG then STATUS — the register is not wired"
+                    "naming CHANGELOG then STATUS on a visible, unquoted line — the register is not wired"
                     % (len(present), files))
             rep.add("SKIP", "wiring-clauses", "no wiring block to compare")
+        rep.add("SKIP", "wiring-path", "no wiring block to compare")
         return
     unwired = sorted(set(present) - set(wired))
     note = "" if not unwired else " (missing from %s)" % ", ".join(unwired)
     rep.add("PASS", "wiring-block",
-            "present in %d of %d instructions files: %s%s" % (len(wired), len(present), ", ".join(sorted(wired)), note))
+            "present in %d of %d instructions files: %s%s" % (len(wired), len(present), ", ".join(wired), note))
 
-    # Clause currency: every wired file should carry all three current clauses.
+    # Clause currency: every wired file should carry all three current
+    # clauses inside the block's span; clauses elsewhere in the file do not count.
     stale = {}
     for name in wired:
-        missing = [label for label, rx in WIRING_CLAUSES if not rx.search(visible[name])]
+        missing = [label for label, rx in WIRING_CLAUSES if not rx.search(spans[name])]
         if missing:
             stale[name] = missing
     if stale:
         parts = ["%s lacks %s" % (n, "+".join(m)) for n, m in sorted(stale.items())]
         rep.add("WARN", "wiring-clauses",
-                "%d of 3 current clauses missing — %s; block predates the current SKILL.md, re-sync it"
+                "%d of 3 current clauses missing inside the block — %s; block predates the current SKILL.md, or its clauses "
+                "sit outside it; re-sync it"
                 % (max(len(m) for m in stale.values()), "; ".join(parts)))
     else:
         rep.add("PASS", "wiring-clauses",
-                "3 of 3 current clauses present (rewritten-not-appended, bounded-read, precedence) in %s"
-                % ", ".join(sorted(wired)))
+                "3 of 3 current clauses present inside the block (rewritten-not-appended, bounded-read, precedence) in %s"
+                % ", ".join(wired))
+
+    # Docs path: the block's "(docs in `X/`)" must name where the register was found.
+    actual = normalise_docs_path(register_label)
+    mismatched = []
+    unstated = []
+    for name in wired:
+        m = DOCS_PATH_RE.search(spans[name])
+        if not m:
+            unstated.append(name)
+            continue
+        declared = normalise_docs_path(m.group(1))
+        if declared != actual:
+            mismatched.append((name, declared))
+    if mismatched:
+        parts = ["%s says docs in %s" % (n, docs_path_label(d)) for n, d in mismatched]
+        rep.add("FAIL", "wiring-path",
+                "block says docs in %s, register found at %s — %s; a session following the block reads or writes a register "
+                "that is not there; fix the block's path (Install step 2)"
+                % (docs_path_label(mismatched[0][1]), docs_path_label(actual), "; ".join(parts)))
+    elif unstated:
+        rep.add("WARN", "wiring-path",
+                "block names no docs path in %s (expected '(docs in `%s`)'); register found at %s — add the path so the "
+                "block says where the register is"
+                % (", ".join(unstated), docs_path_label(actual), docs_path_label(actual)))
+    else:
+        rep.add("PASS", "wiring-path",
+                "block says docs in %s, register found at %s (%s)" % (docs_path_label(actual), docs_path_label(actual), ", ".join(wired)))
 
 
 def check_readme_footer(rep, register_dir):
@@ -350,9 +496,32 @@ def check_readme_footer(rep, register_dir):
     if text is None:
         rep.add("WARN", "readme-footer", "no README.md in the register directory — the map file is missing")
         return
-    if re.search(r"Installed via the `?project-docs-protocol`? skill", text):
-        rep.add("PASS", "readme-footer", "install footer present in README.md")
-    elif re.search(r"project-docs-protocol", text):
+    footer = negated = inline = mention = 0
+    for line in unfenced_lines(split_lines(text)):
+        bare = LINE_PREFIX_RE.sub("", line)
+        if FOOTER_LINE_RE.match(bare):
+            footer += 1
+            continue
+        m = FOOTER_PHRASE_RE.search(bare)
+        if m:
+            if FOOTER_NEGATION_RE.search(bare[:m.start()]):
+                negated += 1
+            else:
+                inline += 1
+            continue
+        if WIRING_MENTION_RE.search(bare):
+            mention += 1
+    if footer:
+        rep.add("PASS", "readme-footer", "install footer present in README.md on its own line")
+    elif negated:
+        rep.add("WARN", "readme-footer",
+                "README.md says the register was *not* installed via the skill (%d negated line(s)) — not an installation; "
+                "a pre-existing register the skill must wire and reconcile, never overwrite" % negated)
+    elif inline:
+        rep.add("WARN", "readme-footer",
+                "the install-footer phrase appears mid-line (%d line(s)) but not as its own line — quoted or described, not "
+                "declared; restore the template's footer line if this register was installed by the skill" % inline)
+    elif mention:
         rep.add("WARN", "readme-footer",
                 "README.md mentions project-docs-protocol but has no install footer — a bespoke or pre-skill register?")
     else:
@@ -391,12 +560,20 @@ def check_status(rep, register_dir, changelog_newest, today):
     else:
         rep.add("PASS", "status-longest-line", "%s B (warn >%d)" % ("{:,}".format(longest), STATUS_MAXLINE_WARN))
 
+    # The content checks below read visible lines only: a commented-out or
+    # fenced template example is not a session record, a date, or history.
+    vis = list(unfenced_lines(lines))
+
     # Stacked session records at the top (before the first `## ` heading).
     # A session record written as a heading is still a record, not the dashboard's first heading.
-    first_h2 = next((i for i, lvl, _, fenced in headings(lines)
-                     if lvl == 2 and not fenced and not SESSION_RECORD_RE.match(lines[i])), n)
-    top_records = sum(1 for l in lines[:first_h2] if SESSION_RECORD_RE.match(l))
-    all_records = sum(1 for l in lines if SESSION_RECORD_RE.match(l))
+    first_h2 = len(vis)
+    for i, l in enumerate(vis):
+        m = HEADING_RE.match(l)
+        if m and len(m.group(1)) == 2 and not SESSION_RECORD_RE.match(l):
+            first_h2 = i
+            break
+    top_records = sum(1 for l in vis[:first_h2] if SESSION_RECORD_RE.match(l))
+    all_records = sum(1 for l in vis if SESSION_RECORD_RE.match(l))
     if top_records > 1:
         rep.add("FAIL", "status-session-stack",
                 "%d session records stacked above the first heading (%d in the whole file) — STATUS has become a second log; fix the writer instruction first"
@@ -408,20 +585,21 @@ def check_status(rep, register_dir, changelog_newest, today):
     else:
         rep.add("PASS", "status-session-stack", "0 session records at the top (%d in the whole file)" % all_records)
 
-    # Last-updated date versus the newest CHANGELOG heading date. A line that
-    # exists but carries no parseable date is a different defect from no line.
+    # Last-updated date versus the newest CHANGELOG heading date and today. A
+    # line that exists but carries no parseable date is a different defect
+    # from no line; a date ahead of the log or the clock is a third.
     status_date = None
     lu_line = None
-    for l in lines:
-        if re.search(r"last\s+updated", l, re.IGNORECASE):
-            if lu_line is None:
-                lu_line = l.strip()
-            m = re.search(r"last\s+updated", l, re.IGNORECASE)
-            tail = l[m.end():]
-            dates = [d for d in (parse_date(x) for x in DATE_RE.findall(tail) and [g for g in re.findall(r"\d{4}-\d{2}-\d{2}", tail)]) if d]
-            status_date = dates[0] if dates else None
-            if status_date:
-                break
+    for l in vis:
+        m = re.search(r"last\s+updated", l, re.IGNORECASE)
+        if not m:
+            continue
+        if lu_line is None:
+            lu_line = l.strip()
+        dates = [d for d in (parse_date(x) for x in re.findall(r"\d{4}-\d{2}-\d{2}", l[m.end():])) if d]
+        status_date = dates[0] if dates else None
+        if status_date:
+            break
     if status_date is None and lu_line is None:
         rep.add("WARN", "status-last-updated",
                 "no 'Last updated: YYYY-MM-DD' line found — the close ritual has nothing to bump")
@@ -430,8 +608,17 @@ def check_status(rep, register_dir, changelog_newest, today):
         rep.add("WARN", "status-last-updated",
                 "'Last updated' line present but its date is unparseable (%s) — not YYYY-MM-DD or not a real date; fix the line rather than adding another"
                 % shown)
+    elif status_date > today:
+        rep.add("WARN", "status-last-updated",
+                "%s is %d days ahead of today (%s) — a future date; a typo or a wrong clock, fix the line"
+                % (status_date, (status_date - today).days, today))
     elif changelog_newest is None:
         rep.add("INFO", "status-last-updated", "%s (no dated CHANGELOG heading to compare against)" % status_date)
+    elif status_date > changelog_newest:
+        rep.add("WARN", "status-last-updated",
+                "%s is %d days ahead of the newest CHANGELOG entry (%s) — a future date, or STATUS was bumped without the "
+                "CHANGELOG entry that must precede it"
+                % (status_date, (status_date - changelog_newest).days, changelog_newest))
     else:
         lag = (changelog_newest - status_date).days
         if lag > 0:
@@ -440,19 +627,13 @@ def check_status(rep, register_dir, changelog_newest, today):
                     % (status_date, lag, changelog_newest))
         else:
             rep.add("PASS", "status-last-updated",
-                    "%s, newest CHANGELOG entry %s (lag %d days)" % (status_date, changelog_newest, max(lag, 0)))
+                    "%s, newest CHANGELOG entry %s (lag %d days)" % (status_date, changelog_newest, lag))
 
     # Past-tense heuristic: lines under a dated heading carrying done-words.
     dated_headings = 0
     past_lines = 0
     open_level = None          # level of the dated section we are inside, or None
-    fenced = False
-    for l in lines:
-        if FENCE_RE.match(l):
-            fenced = not fenced
-            continue
-        if fenced:
-            continue
+    for l in vis:
         m = HEADING_RE.match(l)
         if m:
             lvl = len(m.group(1))
@@ -473,6 +654,17 @@ def check_status(rep, register_dir, changelog_newest, today):
     else:
         rep.add("PASS", "status-past-tense",
                 "%d past-tense lines under %d dated headings (warn >%d; heuristic)" % (past_lines, dated_headings, PAST_TENSE_WARN))
+
+    # Template residue: a bracketed placeholder still sitting in the dashboard
+    # reads as a real item to a Brief ("[one-line question]" is askable).
+    residue = [l.strip() for l in vis if STATUS_PLACEHOLDER_RE.search(l)]
+    if residue:
+        first = residue[0] if len(residue[0]) <= 60 else residue[0][:57] + "..."
+        rep.add("WARN", "status-template-residue",
+                "%d line(s) still carry a template placeholder (first: %s) — a Brief reads them as real questions or items; "
+                "delete or fill them at the next Close" % (len(residue), first))
+    else:
+        rep.add("PASS", "status-template-residue", "0 template placeholders on visible lines")
     return status_date
 
 
@@ -494,13 +686,23 @@ def report_dormancy(rep, newest, today):
         rep.add("PASS", "changelog-dormancy", "%d days since the newest entry (%s; warn >%d)" % (age, newest, DORMANT_DAYS_WARN))
 
 
+def cited_ids(titles):
+    """Decision ids cited in heading titles: [(prefix, number)], malformed widths dropped."""
+    out = []
+    for t in titles:
+        for p, digits, _s in DECISION_CITE_RE.findall(t):
+            if len(digits) <= ID_MAX_DIGITS:
+                out.append((p, int(digits)))
+    return out
+
+
 def check_changelog(rep, register_dir, today):
-    """Returns (newest_date, install_date)."""
+    """Returns (newest_date, install_date, cited_ids_in_headings)."""
     text, size = read_text(os.path.join(register_dir, "CHANGELOG.md"))
     lines = split_lines(text)
     if text is None:
         rep.add("FAIL", "changelog-entries", "CHANGELOG.md unreadable")
-        return None, None
+        return None, None, None
     h2 = [(i, title, fenced) for i, lvl, title, fenced in headings(lines) if lvl == 2]
     live = [(i, t) for i, t, f in h2 if not f]
     fenced_examples = len(h2) - len(live)
@@ -518,11 +720,11 @@ def check_changelog(rep, register_dir, today):
             report_dormancy(rep, newest, today)
             rep.add("SKIP", "changelog-order", "entries are not '##' headings — the README should say which end is newest")
             rep.add("SKIP", "changelog-heading-format", "no '##' headings to judge")
-            return newest, None
+            return newest, None, []
         rep.add("WARN", "changelog-entries",
                 "0 entries (%d lines, %s B%s) — nothing has been logged"
                 % (len(lines), "{:,}".format(size), fenced_note))
-        return None, None
+        return None, None, []
 
     dated = [(i, parse_date(t), t) for i, t in live]
     dated = [(i, d, t) for i, d, t in dated if d]
@@ -555,47 +757,79 @@ def check_changelog(rep, register_dir, today):
         rep.add("PASS", "changelog-heading-format",
                 "%d of %d headings match '## YYYY-MM-DD — summary' (%.2f, pass >=%.2f)%s" % (ok, len(live), frac, HEADING_CONFORMANCE_PASS, tail))
     else:
+        reason = ("an undecodable byte (U+FFFD) sits where the separator should be — not UTF-8?"
+                  if any("\ufffd" in str(x) for x in live) else "undated headings cannot be found by a bootstrap")
         rep.add("WARN", "changelog-heading-format",
-                "%d of %d headings match '## YYYY-MM-DD — summary' (%.2f, pass >=%.2f) — undated headings cannot be found by a bootstrap%s"
-                % (ok, len(live), frac, HEADING_CONFORMANCE_PASS, tail))
-    return newest, install
+                "%d of %d headings match '## YYYY-MM-DD — summary' (%.2f, pass >=%.2f) — %s%s"
+                % (ok, len(live), frac, HEADING_CONFORMANCE_PASS, reason, tail))
+    return newest, install, cited_ids(t for _, t in live)
 
 
-def check_decisions(rep, register_dir):
+ID_WIDTH = {}   # prefix -> widest zero-padded digit run seen in DECISIONS (so messages match the register)
+
+
+def fmt_id(p, n, s=""):
+    w = max(ID_WIDTH.get(p, 3), len(str(n)))
+    return ("%s%0*d" % (p, w, n)) + s
+
+
+def scan_decisions(register_dir):
+    """Read DECISIONS.md once and census its headings. Returns a dict, or
+    None when the file is unreadable."""
     text, size = read_text(os.path.join(register_dir, "DECISIONS.md"))
-    lines = split_lines(text)
     if text is None:
-        rep.add("FAIL", "decisions-ids", "DECISIONS.md unreadable")
-        return
-    entries = []         # (index, level, prefix, number, suffix) outside fences, levels 2-3
-    malformed = []       # ids wider than ID_MAX_DIGITS, kept out of every census
-    template_heads = 0
-    fenced_heads = 0
-    live_heads = 0       # '##'/'###' headings outside fences that are not template lines
-    deep_heads = 0       # headings at '####' or deeper — ids there are a level too deep
+        return None
+    lines = split_lines(text)
+    d = {
+        "lines": lines, "size": size,
+        "entries": [],        # (index, level, prefix, number, suffix) outside fences, levels 2-3
+        "malformed": [],      # ids wider than ID_MAX_DIGITS, kept out of every census
+        "deep_ids": [],       # ids at '####' or deeper: (prefix, number, suffix)
+        "template_heads": 0,  # headings still reading D-NNNN / YYYY-MM-DD with no real id
+        "fenced_heads": 0,
+        "live_heads": 0,      # '##'/'###' headings outside fences that are not template lines
+        "deep_heads": 0,      # non-template headings at '####' or deeper
+    }
     for i, lvl, title, fenced in headings(lines):
+        m = DECISION_TITLE_RE.match(title)
         if lvl not in (2, 3):
-            if lvl >= 4 and not fenced and not TEMPLATE_HEADING_RE.search(title):
-                deep_heads += 1
+            if lvl >= 4 and not fenced:
+                if m and len(m.group(2)) <= ID_MAX_DIGITS:
+                    d["deep_ids"].append((m.group(1), int(m.group(2)), m.group(3) or ""))
+                    d["deep_heads"] += 1
+                elif not TEMPLATE_HEADING_RE.search(title):
+                    d["deep_heads"] += 1
             continue
         if fenced:
-            fenced_heads += 1
+            d["fenced_heads"] += 1
             continue
-        if TEMPLATE_HEADING_RE.search(title):
-            template_heads += 1
-            continue
-        live_heads += 1
-        m = DECISION_ID_RE.match("#" * lvl + " " + title)
+        # A heading with a real id is never template residue, whatever else
+        # its title says ("D-002 — migrate YYYY-MM-DD parser" is D-002).
         if not m:
+            if TEMPLATE_HEADING_RE.search(title):
+                d["template_heads"] += 1
+            else:
+                d["live_heads"] += 1
             continue
+        d["live_heads"] += 1
         digits = m.group(2)
         if len(digits) > ID_MAX_DIGITS:
-            malformed.append(m.group(1) + digits + (m.group(3) or ""))
+            d["malformed"].append(m.group(1) + digits + (m.group(3) or ""))
             continue
-        entries.append((i, lvl, m.group(1), int(digits), m.group(3) or ""))
+        ID_WIDTH[m.group(1)] = max(ID_WIDTH.get(m.group(1), 0), len(digits))
+        d["entries"].append((i, lvl, m.group(1), int(digits), m.group(3) or ""))
+    return d
 
-    def fmt(p, n, s=""):
-        return ("%s%03d" % (p, n) if n < 1000 else "%s%d" % (p, n)) + s
+
+def check_decisions(rep, dec):
+    if dec is None:
+        rep.add("FAIL", "decisions-ids", "DECISIONS.md unreadable")
+        return
+    lines, size = dec["lines"], dec["size"]
+    entries, malformed = dec["entries"], dec["malformed"]
+    template_heads, fenced_heads = dec["template_heads"], dec["fenced_heads"]
+    live_heads, deep_heads, deep_ids = dec["live_heads"], dec["deep_heads"], dec["deep_ids"]
+    fmt = fmt_id
 
     def listing(items, cap):
         return ", ".join(items[:cap]) + (" ..." if len(items) > cap else "")
@@ -664,7 +898,9 @@ def check_decisions(rep, register_dir):
                     % (len(ids3), distinct, max_text, suffix_note))
 
         # '###'-level ids: reuse of a '##' id with a qualifier (the class the
-        # protocol forbids) versus new ids minted a level too deep.
+        # protocol forbids) versus new ids minted a level too deep. Ids at
+        # '####' or deeper are a level further down and never enter the census.
+        minted = []
         if ids3:
             reused = sorted({fmt(p, n) for _, _, p, n, _s in ids3 if (p, n) in seen[2]})
             minted = sorted({fmt(p, n) for _, _, p, n, _s in ids3 if (p, n) not in seen[2]})
@@ -672,10 +908,16 @@ def check_decisions(rep, register_dir):
                 rep.add("WARN", "decisions-id-reuse",
                         "%d '##' id(s) reused with a qualifier at '###' level (%s) — the protocol wants a new numbered entry that names its target, never the old number plus 'correction'"
                         % (len(reused), listing(reused, 6)))
-            if minted:
-                rep.add("INFO", "decisions-id-level",
-                        "%d id(s) minted at '###' level (%s) — invisible to a '##'-only census; promote or accept the convention"
-                        % (len(minted), listing(minted, 6)))
+        if deep_ids:
+            deep_list = sorted({fmt(p, n, s) for p, n, s in deep_ids})
+            minted_note = "" if not minted else "; %d id(s) also minted at '###' level (%s)" % (len(minted), listing(minted, 4))
+            rep.add("WARN", "decisions-id-level",
+                    "%d id(s) at '####' or deeper (%s) — ids at #### or deeper are invisible to a ##-only census; promote them%s"
+                    % (len(deep_list), listing(deep_list, 6), minted_note))
+        elif minted:
+            rep.add("INFO", "decisions-id-level",
+                    "%d id(s) minted at '###' level (%s) — invisible to a '##'-only census; promote or accept the convention"
+                    % (len(minted), listing(minted, 6)))
 
         # Monotonic order within each series at the level that carries the
         # ids: ascending (oldest first, the template's rule) or descending.
@@ -722,7 +964,7 @@ def check_decisions(rep, register_dir):
     body_placeholders = sum(1 for l in unfenced_lines(lines) if PLACEHOLDER_RE.search(l))
     problems = []
     if template_heads:
-        problems.append("%d heading(s) still read D-NNNN / ADR-NNN / YYYY-MM-DD / D-XXXX" % template_heads)
+        problems.append("%d heading(s) still read D-NNNN / ADR-NNN / YYYY-MM-DD / D-XXXX with no real id" % template_heads)
     if fenced_heads:
         problems.append("%d heading(s) inside code fences (fenced template example never deleted)" % fenced_heads)
     if body_placeholders:
@@ -731,6 +973,53 @@ def check_decisions(rep, register_dir):
         rep.add("WARN", "decisions-template-residue", "; ".join(problems) + " — delete them; they confuse id counts and bootstraps")
     else:
         rep.add("PASS", "decisions-template-residue", "0 template headings, 0 fenced examples, 0 placeholder tokens")
+
+
+def check_changelog_decision_refs(rep, cited, dec):
+    """Decision ids named in CHANGELOG '##' headings must exist in DECISIONS:
+    a brief entry logs "D-0006–D-0008" first, and the DECISIONS append comes
+    second, so a cited number above the register's highest is a brief that
+    died between the two writes. Headings only — bodies cite other projects."""
+    if cited is None or dec is None:
+        rep.add("SKIP", "changelog-decision-refs", "CHANGELOG or DECISIONS unreadable")
+        return
+    if not cited:
+        rep.add("SKIP", "changelog-decision-refs", "CHANGELOG '##' headings cite no decision ids")
+        return
+    highest = {}
+    for _, _, p, n, _s in dec["entries"]:
+        highest[p] = max(highest.get(p, 0), n)
+    for p, n, _s in dec["deep_ids"]:
+        highest[p] = max(highest.get(p, 0), n)
+    problems = []
+    foreign = []        # cited series this DECISIONS does not keep at all
+    for p in sorted({p for p, _ in cited}):
+        top = max(n for q, n in cited if q == p)
+        have = highest.get(p)
+        if have is None:
+            if highest:
+                # DECISIONS keeps other series: this one is another register's
+                # (a parent or sibling project) — a cross-reference, not a loss.
+                foreign.append("%sNNN (highest cited %s)" % (p, fmt_id(p, top)))
+            else:
+                problems.append("CHANGELOG names %s but DECISIONS holds no ids at all" % fmt_id(p, top))
+        elif top > have:
+            problems.append("CHANGELOG names %s but DECISIONS' highest is %s" % (fmt_id(p, top), fmt_id(p, have)))
+    if problems:
+        rep.add("WARN", "changelog-decision-refs",
+                "; ".join(problems) + " — a brief died between CHANGELOG and DECISIONS; write the missing entries under those ids")
+        return
+    resolved = sorted(p for p in {p for p, _ in cited} if p in highest)
+    parts = []
+    if resolved:
+        parts.append("%d id citation(s) in CHANGELOG headings resolve — highest cited %s, DECISIONS' highest %s"
+                     % (sum(1 for p, _ in cited if p in highest),
+                        ", ".join(fmt_id(p, max(n for q, n in cited if q == p)) for p in resolved),
+                        ", ".join(fmt_id(p, highest[p]) for p in resolved)))
+    if foreign:
+        parts.append("%d series not kept in this DECISIONS (%s) — another register's ids, not judged"
+                     % (len(foreign), ", ".join(foreign)))
+    rep.add("INFO", "changelog-decision-refs", "; ".join(parts))
 
 
 def check_brand(rep, register_dir, install_date):
@@ -843,12 +1132,12 @@ def run(root, today, no_git):
     root = os.path.abspath(root)
     if not os.path.isdir(root):
         print("docs-doctor: not a directory: %s" % root, file=sys.stderr)
-        return 2
+        return 3
     register_dir = find_register(root)
     if register_dir is None:
         print("docs-doctor: no register (STATUS.md + CHANGELOG.md + DECISIONS.md) at %s or %s/docs"
               % (root, root), file=sys.stderr)
-        return 2
+        return 3
     note = ""
     # The docs directory itself was passed: the instructions files live one up.
     if (register_dir == root and os.path.basename(root) == "docs"
@@ -858,11 +1147,13 @@ def run(root, today, no_git):
     print("docs-doctor %s — register at %s (relative to the project root), today %s%s"
           % (VERSION, rel_label(register_dir, root), today, note))
     print()
+    dec = scan_decisions(register_dir)
     check_wiring(rep, root, rel_label(register_dir, root))
     check_readme_footer(rep, register_dir)
-    newest, install = check_changelog(rep, register_dir, today)
+    newest, install, cited = check_changelog(rep, register_dir, today)
+    check_changelog_decision_refs(rep, cited, dec)
     check_status(rep, register_dir, newest, today)
-    check_decisions(rep, register_dir)
+    check_decisions(rep, dec)
     check_brand(rep, register_dir, install)
     check_ancestor_register(rep, root)
     check_sibling_register(rep, root, register_dir)
@@ -884,7 +1175,8 @@ def main(argv=None):
             pass
     ap = argparse.ArgumentParser(
         prog="docs-doctor",
-        description="Read-only health check for a project-docs-protocol installation.",
+        description="Read-only health check for a project-docs-protocol installation. "
+                    "Exit 0 all pass; 1 WARN only; 2 any FAIL; 3 could not run.",
     )
     ap.add_argument("root", help="project root (the directory holding CLAUDE.md/AGENTS.md; the register may be there or under docs/)")
     ap.add_argument("--today", help="date to measure dormancy from (YYYY-MM-DD); default: today", default=None)
@@ -894,12 +1186,12 @@ def main(argv=None):
     today = parse_date(args.today) if args.today else dt.date.today()
     if args.today and today is None:
         print("docs-doctor: --today must be YYYY-MM-DD", file=sys.stderr)
-        return 2
+        return 3
     try:
         return run(args.root, today, args.no_git)
-    except Exception as exc:  # noqa: BLE001 — a crash is exit 2, never a silent pass
+    except Exception as exc:  # noqa: BLE001 — a crash is exit 3, never a silent pass
         print("docs-doctor: checker error: %s: %s" % (type(exc).__name__, exc), file=sys.stderr)
-        return 2
+        return 3
 
 
 if __name__ == "__main__":

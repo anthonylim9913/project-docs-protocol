@@ -82,7 +82,7 @@ Open questions that resolve become DECISIONS.md entries and get removed here.
 
 ## Per-spec changelog
 
-Append-only, reverse chronological.
+Append-only, oldest first — newest at the bottom; this log is short and read whole, unlike the project CHANGELOG.
 
 ```
 ## YYYY-MM-DD — v0.1

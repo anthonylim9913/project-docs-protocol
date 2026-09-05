@@ -76,3 +76,23 @@
 **Reasoning:** Rejected a separate skill: Doctor's checks are the protocol's own red flags and thresholds and must run when a Bootstrap flag fires, which a second skill cannot be made to do; Brief reads and writes the same registers Close does and its record step is the DECISIONS entry with rejected alternatives named — a second skill would duplicate every format rule and drift from it. Both also depend on the wiring block's exact wording, which lives here.
 **Consequences:** SKILL.md grows from three modes to five and gains a `scripts/` directory; the trigger list gains six phrases. Anyone forking the skill gets both modes or neither.
 
+## D-0011 — 2026-09-06 — a brief records CHANGELOG, then DECISIONS, then STATUS — deliberately not Close's order
+
+**Context:** Mode 5 said "run as a Close, in Close's order" and then listed CHANGELOG, DECISIONS, STATUS, while Close is CHANGELOG, STATUS, DECISIONS. The independent review called the contradiction a durability defect and recommended one order everywhere.
+**Decision:** Briefs record CHANGELOG first, DECISIONS second, STATUS third, and the text says so and why.
+**Reasoning:** Rejected the reviewer's "same order everywhere": for a brief the STATUS rewrite removes the question, and the DECISIONS entry is the only other place it lives, so writing STATUS before DECISIONS turns a crash between them into a lost owner pick. Rejected reordering Close to match: Close's STATUS-before-DECISIONS is right for ordinary work, where STATUS is the dashboard and DECISIONS is optional. The crash window that remains — the log naming ids that were never written — is detectable, so Doctor gained `changelog-decision-refs`.
+**Consequences:** Two orders in the skill, each stated with its reason; a session that follows the README alone still gets the brief order from the brief entry format.
+
+## D-0012 — 2026-09-06 — Reasoning in a brief's DECISIONS entry carries only reasons the owner gave
+
+**Context:** The worked example's entries "rejected" alternatives with reasons the owner never stated, and the mode text said the protocol's test was met "because the owner read those options and chose among them". The reviewer showed an agent could mint a permanent, evidence-looking entry from its own pros and cons.
+**Decision:** Reasoning quotes the owner's reason; it names as rejected only the alternatives the owner called live, with the reason they gave; every other presented option is "presented, not chosen — agent's assessment: …"; no reason is attributed to the owner that the owner did not give; the liveness question names every presented alternative in one line.
+**Reasoning:** Rejected the reviewer's proposal of an explicit owner acknowledgement for every rejected alternative: it makes the owner ratify a list to satisfy the record, which is the ritual the restraint principle refuses, and one liveness question over the whole list gets the same honesty in one line. Rejected keeping the "owner read the options" test: it launders the agent's reasoning into an append-only register.
+**Consequences:** Entries minted by briefs may carry less reasoning; what they carry is the owner's. A future reader can tell the two apart.
+
+## D-0013 — 2026-09-06 — Doctor's exit code separates advisory drift from a broken property
+
+**Context:** On a 26-root sweep the checker exited 1 on 25 roots; nine of those carried only WARN lines. The reviewer read "exit 1" as "failed installation", and "a fresh install should exit 0" was unmeetable with any advisory present.
+**Decision:** 0 every check passed · 1 WARN only · 2 at least one FAIL · 3 the checker could not run.
+**Reasoning:** Rejected keeping one non-zero bit: a caller could not tell drift from a broken property. Rejected demoting thresholds to INFO so that more roots exit 0: the thresholds are the audit's measurements; the exit code was the wrong instrument, not the numbers.
+**Consequences:** Nothing keyed on the old contract — no release shipped it. The fresh-install promise becomes "exit 0, or 1 only for brand markers you chose to leave".

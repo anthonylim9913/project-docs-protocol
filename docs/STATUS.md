@@ -1,42 +1,39 @@
 # STATUS
 
-*Snapshot of where the work is right now. Rewrite this file at each close — never append to it. Keep it around ~40 lines and never over ~60. Past-tense content belongs in CHANGELOG.md, not here.*
-
-*Last updated: 2026-09-06*
+*Last updated: 2026-10-02*
 
 ## Current phase
 
-**v0.3.0 released — `main` is tagged `v0.3.0` and public; five modes, Doctor 1.3.0**
+**Companions and skill registry integrated and made private-safe; awaiting the owner's go-ahead on the public history rewrite.**
 
-The branch was hardened against an independent second-model review (17 findings, all reproduced first) and verified by three fresh reviewers before merging. The register that loads for Claude and, through the symlink, for Codex is now the five-mode skill.
+The research and Architect companions, the skill registry, Install question 9 and Doctor 1.5.0 are integrated, checked as one system (`SKILL.md`, *Optional companions*) and verified by three suites. The release-readiness process evidence is retained privately (D-0022).
 
 ## In flight
 
+`LEDGER.md` is authoritative: 3 live rows as of 2026-10-02, no P0/P1. LG-0044 and LG-0045 are open against public conditions; LG-0046 is blocked.
+
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| LEDGER (item-keyed tracker for long finding lists) as a `v0.4.0` candidate | agent | review branch, local, not pushed | Template + SKILL inserts + Doctor rows designed and twice verified; a third review found stale public figures and a stale migration base to fix before it becomes a branch |
+| Publish the cleaned history and tag `v0.4.0` | owner | next session | Needs an explicit choice: force-push rewritten history, or delete and recreate the repository so old commits stop resolving |
 
 ## Blocked
 
-*No items.*
+LG-0046 (fresh sessions discover and route project skills) — blocked on a safe sandbox for observing an authenticated fresh session.
 
 ## Deferred
 
 | Item | Deferred to | Reason |
 |---|---|---|
-| Compaction procedure in Mode 3 | after a dry run on the largest retired register | Only one compaction has ever happened; write the procedure from that instance, not from theory (D-0005) |
-| Offer bullet for Brief in the wiring block | the next block revision | Would make six freshly re-synced blocks stale (D-0009) |
-| Moving the Doctor table and Brief failure modes out of SKILL.md into reference files | when SKILL.md passes ~400 lines | The reviewer's length note is fair (330 lines), but every section is normative or cited; splitting now trades one bootstrap read for two |
-| Re-syncing the six externally wired roots for the precedence wording and the examples parenthetical | their next Close | Wording-only drift; the doctor's clause check keys on the clause markers, which are unchanged |
+| Compaction procedure in Mode 3 | after a dry run | D-0005 remains current |
+| Full CommonMark/GFM conformance | separate scope | Doctor and migration implement bounded, tested syntax |
+| Re-syncing externally wired projects | their next Close | The generic block did not change in a way any check requires |
 
 ## Next
 
-1. LEDGER `v0.4.0` candidate: apply the third review (Tags column, `extends D-XXXX` form, corrected figures, script-first migration), verify, land on a local branch for owner review.
-2. Compaction dry run (separate long-running session; prompt handed over).
-3. Run Doctor across the population after the next round of installs and compare with the 2026-09-06 sweep (2 / 7 / 17).
+1. Owner chooses how the cleaned history is published.
+2. Independent review of the public acceptance harness (LG-0044) and owner verification commands (LG-0045).
+3. Observe a fresh session using a registry once a safe sandbox exists (LG-0046).
 
 ## Open questions (owner)
 
-*None open.*
-
-*Bootstrap reminder: this is the first file to read each session. Close reminder: rewrite it AFTER the CHANGELOG entry — completed items out, new items in, past tense deleted.*
+1. **Publish the cleaned history by force-push, or by deleting and recreating the repository?** — proposed: recreate — since 2026-10-02

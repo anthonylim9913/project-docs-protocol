@@ -1,0 +1,119 @@
+{
+  "parser": "markdown-it-py 4.0.0; commonmark preset plus table extension",
+  "observations": [
+    {
+      "source": "<br>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\n- Actual finding.\n",
+      "blank_after_opener": false,
+      "pipe_table_is_live": false,
+      "boundary_tokens": [
+        {
+          "type": "html_block",
+          "lines": [
+            0,
+            4
+          ],
+          "content": "<br>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n"
+        }
+      ]
+    },
+    {
+      "source": "<br>\n\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\n- Actual finding.\n",
+      "blank_after_opener": true,
+      "pipe_table_is_live": true,
+      "boundary_tokens": [
+        {
+          "type": "html_block",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "<br>\n"
+        },
+        {
+          "type": "table_open",
+          "lines": [
+            2,
+            5
+          ],
+          "content": ""
+        }
+      ]
+    },
+    {
+      "source": "<div></div>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\n- Actual finding.\n",
+      "blank_after_opener": false,
+      "pipe_table_is_live": false,
+      "boundary_tokens": [
+        {
+          "type": "html_block",
+          "lines": [
+            0,
+            4
+          ],
+          "content": "<div></div>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n"
+        }
+      ]
+    },
+    {
+      "source": "<div></div>\n\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\n- Actual finding.\n",
+      "blank_after_opener": true,
+      "pipe_table_is_live": true,
+      "boundary_tokens": [
+        {
+          "type": "html_block",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "<div></div>\n"
+        },
+        {
+          "type": "table_open",
+          "lines": [
+            2,
+            5
+          ],
+          "content": ""
+        }
+      ]
+    },
+    {
+      "source": "<div/>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\n- Actual finding.\n",
+      "blank_after_opener": false,
+      "pipe_table_is_live": false,
+      "boundary_tokens": [
+        {
+          "type": "html_block",
+          "lines": [
+            0,
+            4
+          ],
+          "content": "<div/>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n"
+        }
+      ]
+    },
+    {
+      "source": "<div/>\n\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\n- Actual finding.\n",
+      "blank_after_opener": true,
+      "pipe_table_is_live": true,
+      "boundary_tokens": [
+        {
+          "type": "html_block",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "<div/>\n"
+        },
+        {
+          "type": "table_open",
+          "lines": [
+            2,
+            5
+          ],
+          "content": ""
+        }
+      ]
+    }
+  ]
+}

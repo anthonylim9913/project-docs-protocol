@@ -1,0 +1,12 @@
+script_sha256 dff2647f5e4594abaaff8d38f21791d421add7e1fb64d2247f73bc3e43c92d88
+A PASS actual CLI write, every-gate validation, source bytes, same/fresh idempotence owner sign-off
+C PASS actual CLI write, every-gate validation, source bytes, same/fresh idempotence provider quota; owner approval
+all_aliases PASS actual CLI write, every-gate validation, source bytes, same/fresh idempotence quota; legal; owner; finance; test
+B PASS unresolved complete row, CLI refusal with no writes
+B PASS requires fresh source reconciliation then gated write
+unknown_state PASS unresolved complete row, CLI refusal with no writes
+positive_controls PASS ordinary titles and bespoke no-state table write
+html_log PASS exact multiline source quoted in log; only real finding written
+protections PASS unreviewed/empty-close/old-unbound-plan/redirect/stale refusal, bytes unchanged
+recovery PASS log-first interruption, replay target binding, exactly-once log/row and source preservation
+ALL INDEPENDENT CORE PROBES PASS

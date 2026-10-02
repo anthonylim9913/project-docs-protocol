@@ -6,6 +6,10 @@ The five items the skill's own STATUS carried on 2026-09-04 — four presented a
 
 ## The brief as presented
 
+### Authorization controls
+
+These three small controls make the one-option rule explicit. **Authorized notice:** “Regenerate the checked-in fixture; this is within the delegated test-maintenance scope.” The agent may execute and logs ordinary work. **One option, owner gate:** “Choose the only supported migration path; ledger adoption still requires your approval.” The agent waits; silence or “do the rest as you see fit” does not authorize it. **Mixed brief:** Q1 is explicitly answered and recorded, while Q2 is unanswered; Q2 remains in `STATUS` and its gate is untouched.
+
 **Read:** this session had already bootstrapped, so the read went straight to the questions. STATUS "Open questions (owner)" — five items, none postponed. Blocked — empty. Deferred — one row (compaction procedure), reason still current. Last five CHANGELOG entries — the audit's SKILL and template changes landed; nothing dissolves a question. DECISIONS — a grep for each question's key terms ("publish", "prepend", "compaction", "renumber", "signature") across D-0001 to D-0005 hits once: **D-0005 already settles the compaction-procedure item**, so it goes in the preamble as settled, gets no number and no options, and the four remaining items are Q1 to Q4.
 
 **Settled:** the compaction procedure — settled by D-0005 (chose: defer until the dry run). Not asked. Say so if you want a supersession.
@@ -73,7 +77,7 @@ Q1, Q2 and Q3 took the recommendation without saying which alternatives were liv
 
 ## The record, in the brief's recording order
 
-The order is CHANGELOG, then DECISIONS, then STATUS (Mode 5, Record). Every numbered question received an explicit pick, so none is carried as "not answered". Had the first reply stopped at Q2, Q3 and Q4 would have stayed in STATUS unchanged, received no DECISIONS entry, and appeared in the CHANGELOG line as "Q3 — not answered" and "Q4 — not answered"; the agent would then have asked, in one line, for those two numbers. Silence is not concurrence, and the recommendation is not an answer.
+This example has no LEDGER installed, so its order is CHANGELOG, then DECISIONS, then STATUS (Mode 5, Record). When a ledger is installed, edit it after DECISIONS and before STATUS. Every numbered question received an explicit pick, so none is carried as "not answered". Had the first reply stopped at Q2, Q3 and Q4 would have stayed in STATUS unchanged, received no DECISIONS entry, and appeared in the CHANGELOG line as "Q3 — not answered" and "Q4 — not answered"; the agent would then have asked, in one line, for those two numbers. Silence is not concurrence, and the recommendation is not an answer.
 
 ### 1. CHANGELOG — one entry for the brief
 

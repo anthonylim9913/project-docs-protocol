@@ -1,0 +1,26 @@
+docs-doctor 1.4.0 — register at docs/ (relative to the project root), today 2026-09-11
+
+PASS  wiring-block               present in 1 of 1 instructions files: AGENTS.md
+PASS  wiring-clauses             3 of 3 current clauses present inside the block (rewritten-not-appended, bounded-read, precedence) in AGENTS.md
+PASS  wiring-path                block says docs in docs/, register found at docs/ (AGENTS.md)
+PASS  readme-footer              install footer present in README.md on its own line
+INFO  changelog-entries          2 entries on 1 distinct dates spanning 0 days (1,217 B); install entry dated 2026-09-11
+PASS  changelog-dormancy         0 days since the newest entry (2026-09-11; warn >30)
+PASS  changelog-order            newest entry (2026-09-11) is at the top
+PASS  changelog-heading-format   2 of 2 headings match '## YYYY-MM-DD — summary' (1.00, pass >=0.95)
+SKIP  changelog-decision-refs    CHANGELOG headings and bodies cite no decision ids
+PASS  status-size                31 lines, 847 B (warn >60, fail >100)
+PASS  status-longest-line        229 B (warn >1024)
+PASS  status-session-stack       0 session records at the top (0 in the whole file)
+PASS  status-last-updated        2026-09-11, newest CHANGELOG entry 2026-09-11 (lag 0 days)
+PASS  status-past-tense          0 past-tense lines under 0 dated headings (warn >3; heuristic)
+PASS  status-template-residue    0 template placeholders on visible lines
+INFO  decisions-ids              0 headings, 0 decision ids (9 lines, 806 B) — empty is fine if nothing was deliberated
+PASS  decisions-template-residue 0 template headings, 0 fenced examples, 0 placeholder tokens
+INFO  brand-placeholders         no BRAND.md (fine — keep it only when a real value exists)
+PASS  nested-register            no register in any ancestor directory
+PASS  sibling-register           no second register at ./
+SKIP  ledger                     no LEDGER.md (optional — install it when the findings list outgrows STATUS)
+SKIP  git-status-churn           not inside a git repository — churn cannot be measured (STATUS size and session-stack checks cover the same failure)
+
+22 checks: 16 pass, 0 warn, 0 fail, 3 info, 3 skipped — exit 0

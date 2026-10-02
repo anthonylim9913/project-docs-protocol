@@ -1,0 +1,677 @@
+#!/usr/bin/env python3
+"""Preview and review STATUS adoption before writing a ledger (stdlib only).
+
+Create a JSON plan with ``PROJECT --plan PATH``. Review each new mapping, fill
+its real closing condition and blockers, and set ``reviewed`` to true. Resolve
+unmapped prose as context or a duplicate with an explanation, or reconcile the
+source manually and create a new plan. Apply with ``PROJECT --write --plan PATH``.
+The source STATUS is preserved. Interrupted writes resume with that same plan.
+"""
+import argparse
+from datetime import date
+import hashlib
+import html as html_entities
+import json
+import os
+from pathlib import Path
+import re
+import sys
+import tempfile
+
+try:
+    import register_paths
+except ModuleNotFoundError:
+    from scripts import register_paths
+
+COLUMNS = ("ID", "P", "Status", "Date", "Title", "Tags", "Closes-when", "Blocked-on", "Touches", "Evidence")
+ROW_FIELDS = ("priority", "status", "date", "title", "tags", "closes_when", "blocked_on", "touches", "evidence")
+HEADER = "| " + " | ".join(COLUMNS) + " |\n|---|---|---|---|---|---|---|---|---|---|\n"
+JOURNAL = ".docs-migrate-journal.json"
+TABLE_ROW_RE = re.compile(r"^ {0,3}\|")
+ID_RE = re.compile(r"(?<![A-Za-z0-9_-])((?:[A-Z][A-Z0-9]*-)*)LG-([0-9]+)(?![A-Za-z0-9_])")
+SOURCE_RE = re.compile(r"migration:STATUS\.md#([a-f0-9]{64})")
+CONTEXT_RE = re.compile(r"migration-context:([a-f0-9]{64})")
+LIVE_STATUS = {"OPEN", "BLOCKED", "VERIFYING"}
+# Recognised STATUS table columns, case-folded. Any other label is ignored.
+COLUMN_ALIASES = {
+    "item": "text", "finding": "text", "issue": "text", "question": "text", "title": "text",
+    "status": "status", "state": "status",
+    "blocked on": "gate", "blocked-on": "gate", "blocked by": "gate", "gate": "gate", "blocker": "gate",
+    "unblocks when": "context", "deferred to": "context", "reason": "context", "notes": "context", "note": "context",
+    "owner": "owner", "target": "target",
+    "priority": "priority", "severity": "priority", "sev": "priority", "p": "priority",
+}
+DELIMITER_CELL_RE = re.compile(r":?-+:?")
+LIVE_SECTIONS = {"in flight", "in-flight", "blocked", "deferred", "next", "known issues", "known-issues", "open questions (owner)", "open questions", "findings"}
+EMPTY_RE = re.compile(r"(?:no (?:items|issues|findings|blockers|open questions)|none(?: open)?|nothing (?:open|blocked))[.!]?", re.I)
+
+
+def digest(text):
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def json_text(value):
+    return json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+
+
+def read(path):
+    if path.is_symlink():
+        raise ValueError(f"refusing symlink input or target: {path.name}")
+    return path.read_bytes().decode("utf-8") if path.exists() else None
+
+
+def valid_date(value, today):
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        raise ValueError(f"invalid date: {value!r}")
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(f"invalid date: {value}") from exc
+    if parsed > date.fromisoformat(today):
+        raise ValueError(f"future date: {value}")
+    return value
+
+
+def id_number(digits):
+    if len(digits) > 12:
+        raise ValueError("ledger ID exceeds the supported 12-digit allocation bound")
+    return int(digits)
+
+
+def canonical_id(ident):
+    match = ID_RE.fullmatch(ident)
+    if not match:
+        raise ValueError(f"invalid ledger ID: {ident[:80]}")
+    return f"{match.group(1)}LG-{id_number(match.group(2)):04d}"
+
+
+def fingerprints(docs):
+    # Every Markdown register can contain reservations, including nested history.
+    result = {}
+    for path in sorted(docs.rglob("*.md")):
+        if any(parent.is_symlink() for parent in path.parents if parent != docs.parent):
+            raise ValueError("symlinked register directories are not supported")
+        result[path.relative_to(docs).as_posix()] = digest(read(path))
+    for name in ("STATUS.md", "CHANGELOG.md", "LEDGER.md", "LEDGER-ARCHIVE.md"):
+        result.setdefault(name, None)
+    return result
+
+
+def cells(line):
+    return [cell.strip().replace(r"\|", "|") for cell in re.split(r"(?<!\\)\|", line.strip().strip("|"))]
+
+
+def delimiter_row(line):
+    """True for a GFM delimiter row: a table row whose cells are all dashes."""
+    if line is None or not TABLE_ROW_RE.match(line):
+        return False
+    values = cells(line.strip())
+    return bool(values) and all(DELIMITER_CELL_RE.fullmatch(value) for value in values)
+
+
+def table_columns(labels):
+    """Map each recognised field to every position carrying that field.
+
+    Extraction is by name, so an extra column never disables the columns the
+    migration does understand. No alias may shadow a later state or gate.
+    """
+    columns = {}
+    for position, label in enumerate(labels):
+        field = COLUMN_ALIASES.get(label.casefold())
+        if field is not None:
+            columns.setdefault(field, []).append(position)
+    return columns
+
+
+def state_token(value, *, ambiguity=False):
+    """Read only a whole state token, optionally inside simple inline markup.
+
+    Emphasis and code spans preserve a token's meaning. Strikethrough is only
+    an ambiguity signal, never evidence that its struck-out state is active.
+    No substring search or prose interpretation is performed.
+    """
+    token = value.strip()
+    if ambiguity:
+        # Unsupported markup can still announce a possible state. This is a
+        # refusal guard only: it never supplies the migrated row's state.
+        token = html_entities.unescape(token)
+        token = re.sub(r"</?[A-Za-z][^>]*>", "", token)
+        link = re.fullmatch(r"\[([^\]]+)\]\([^\n]*\)", token)
+        if link:
+            token = link.group(1)
+        token = token.strip("*_`~ ")
+    wrappers = r"\*{1,3}|_{1,3}|`+" + (r"|~~" if ambiguity else "")
+    while True:
+        wrapped = re.fullmatch(r"(" + wrappers + r")([^\s].*?[^\s]|\S)\1", token)
+        if not wrapped:
+            break
+        token = wrapped.group(2)
+    return token.upper()
+
+
+def html_depth(tag, line, depth):
+    """Track paired block tags conservatively, with raw-text HTML exceptions."""
+    if tag in {"pre", "script", "style", "textarea"}:
+        return 0 if re.search(r"</" + re.escape(tag) + r"\s*>", line, re.I) else 1
+    for marker in re.finditer(r"<(/?)" + re.escape(tag) + r"(?=[\s/>])([^>]*)>", line, re.I):
+        if marker.group(1):
+            depth -= 1
+        elif not marker.group(2).rstrip().endswith("/"):
+            depth += 1
+    return depth
+
+
+def visible_lines(lines, *, preserve_html=False):
+    """Yield text outside fences/comments; raw HTML is opaque to Markdown.
+
+    Inventory retains a block's exact lines as one unresolved record. Ledger
+    readers exclude it, so an example table cannot become a write target.
+    This conservative HTML boundary is not a general CommonMark parser.
+    """
+    fence = None
+    comment = False
+    html = None
+    html_lines = []
+    for index, original in enumerate(lines):
+        if html is not None:
+            html_lines.append(original.rstrip("\r\n"))
+            html = (html[0], html[1], html_depth(html[1], original, html[2]))
+            if html[2] <= 0:
+                if preserve_html:
+                    yield html[0], "\n".join(html_lines)
+                html = None
+                html_lines = []
+            continue
+        marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", original)
+        if fence is not None:
+            if marker and marker.group(1)[0] == fence[0] and len(marker.group(1)) >= fence[1] and not marker.group(2).strip():
+                fence = None
+            # Comment delimiters within a fence are literal code, including info.
+            continue
+        if not comment and marker and not (marker.group(1)[0] == "`" and "`" in marker.group(2)):
+            fence = (marker.group(1)[0], len(marker.group(1)))
+            continue
+        opening = None if comment else re.match(r"^ {0,3}<([A-Za-z][A-Za-z0-9-]*)(?=[\s/>])", original)
+        if not comment and TABLE_ROW_RE.match(original) and "<!--" in original and "-->" not in original:
+            # GFM treats an unclosed inline comment in a cell as literal text.
+            yield index, original
+            continue
+        # Comment markers after an HTML opener are literal block content.
+        visible = original if opening else ""
+        remaining = "" if opening else original
+        while remaining:
+            if comment:
+                end = remaining.find("-->")
+                if end < 0:
+                    remaining = ""
+                else:
+                    remaining = remaining[end + 3:]
+                    comment = False
+            else:
+                start = remaining.find("<!--")
+                if start < 0:
+                    visible += remaining
+                    remaining = ""
+                else:
+                    visible += remaining[:start]
+                    remaining = remaining[start + 4:]
+                    comment = True
+        opening = opening or re.match(r"^ {0,3}<([A-Za-z][A-Za-z0-9-]*)(?=[\s/>])", visible)
+        if opening:
+            tag = opening.group(1).casefold()
+            # A block can also begin after a preceding comment closes. Keep
+            # the physical source line, including its prefix, for reconciliation.
+            comment = False
+            depth = html_depth(tag, visible, 0)
+            if tag in {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"} or (">" in visible and depth <= 0):
+                if preserve_html:
+                    yield index, original
+            else:
+                html = (index, tag, max(1, depth))
+                html_lines = [original.rstrip("\r\n")]
+            continue
+        yield index, visible
+    if html is not None and preserve_html:
+        yield html[0], "\n".join(html_lines)
+
+
+def inventory(status):
+    """Extract records only inside named live sections; preserve all source text."""
+    records = []
+    section = None
+    occurrence = {}
+    table = None
+    entries = list(visible_lines(status.splitlines(), preserve_html=True))
+    for position, (index, visible) in enumerate(entries):
+        line_number = index + 1
+        heading = re.match(r"^ {0,3}(#{1,6})\s+(.+?)\s*#*\s*$", visible)
+        if heading:
+            if len(heading.group(1)) <= 2:
+                title = heading.group(2).strip().casefold()
+                section = title if title in LIVE_SECTIONS else None
+            table = None
+            continue
+        row = TABLE_ROW_RE.match(visible) is not None
+        if not row:
+            # Any other line — prose, a list item, a blank — ends the table.
+            table = None
+        text = visible.strip()
+        if section is None or not text or text.startswith(">"):
+            continue
+        if EMPTY_RE.fullmatch(text.strip("*_ ")):
+            continue
+        if re.fullmatch(r"[-*_ ]{3,}", text):
+            continue
+        kind = "unmapped"
+        explicit_status, explicit_gate = "", ""
+        if row:
+            values = cells(text)
+            if delimiter_row(visible):
+                # A delimiter row is table structure, never a record.
+                continue
+            if table is None:
+                # GFM: this row is a header only if the next visible line is its
+                # delimiter row, with the same number of cells. Labels play no
+                # part in the test, so an unfamiliar column cannot hide a table.
+                following = entries[position + 1][1] if position + 1 < len(entries) else None
+                if delimiter_row(following) and len(cells(following.strip())) == len(values):
+                    table = (table_columns(values), len(values))
+                    # The header row is never a record.
+                    continue
+                # No delimiter beneath: not a table. Never invent a header —
+                # leave the line to the non-table paths below.
+        if row and table is not None:
+            kind = "table"
+            columns, width = table
+            if len(values) < width:
+                # A row missing declared columns is malformed; a human resolves it.
+                kind = "unmapped"
+            else:
+                states = {state_token(values[position]) for position in columns.get("status", []) if values[position].strip()}
+                gates = [values[position] for position in columns.get("gate", []) if values[position].strip()]
+                explicit_status = next(iter(states)) if len(states) == 1 else ""
+                explicit_gate = "; ".join(gates)
+                if len(states) > 1:
+                    # Contradictory aliases need source reconciliation; picking
+                    # the first or the last could silently clear a live state.
+                    kind = "unmapped"
+                if "status" not in columns and any(state_token(value, ambiguity=True) in LIVE_STATUS for position, value in enumerate(values) if position not in columns.get("text", [])):
+                    # No column we can name carries the state, yet a cell holds a
+                    # standalone state token: the layout is ambiguous, so a human
+                    # dispositions it rather than let blocked work land as OPEN.
+                    kind = "unmapped"
+                if explicit_status and explicit_status not in LIVE_STATUS:
+                    kind = "unmapped"
+        elif re.match(r"^(?:[-*+]\s+|[0-9]+[.)]\s+)\S", text):
+            kind = "list"
+        # Template markers are unresolved input, never real rows.
+        if re.search(r"\[(?:item|one-line|section|populate)\b|YYYY-MM-DD", text, re.I):
+            kind = "unmapped"
+        if re.match(r"^(?: {4}| *\t)", visible):
+            # Migration does not resolve list-container indentation. Preserve
+            # potentially code-indented findings for explicit reconciliation.
+            kind = "unmapped"
+        identity = section + "\n" + text
+        occurrence[identity] = occurrence.get(identity, 0) + 1
+        source_id = digest("STATUS.md\n" + identity + "\n" + str(occurrence[identity]))
+        records.append({"key": source_id, "path": "STATUS.md", "section": section, "line": line_number, "text": text, "kind": kind, "status": explicit_status, "blocked_on": explicit_gate})
+    return records
+
+
+
+def live_table_span(text):
+    """Locate the sole uninterrupted ledger table, leaving footer prose intact."""
+    lines = text.splitlines(keepends=True)
+    visible = dict(visible_lines(lines))
+    headers = [index for index, line in visible.items() if TABLE_ROW_RE.match(line) and tuple(cells(line)) == COLUMNS]
+    if len(headers) != 1:
+        raise ValueError("LEDGER.md: expected exactly one ledger header")
+    start = headers[0]
+    if start + 1 not in visible or not TABLE_ROW_RE.match(visible[start + 1]) or len(cells(visible[start + 1])) != len(COLUMNS) or not all(re.fullmatch(r":?-+:?", value) for value in cells(visible[start + 1])):
+        raise ValueError("LEDGER.md: header must be followed by its separator")
+    end = start + 2
+    while end in visible and TABLE_ROW_RE.match(visible[end]):
+        end += 1
+    if any(visible[index].strip() != lines[index].strip() for index in range(start, end)):
+        raise ValueError("LEDGER.md: inline-comment table layout needs reconciliation")
+    if any(TABLE_ROW_RE.match(line) for index, line in visible.items() if index < start or index >= end):
+        raise ValueError("LEDGER.md: orphan rows or additional table need reconciliation")
+    return lines, start, end
+
+
+def ledger_rows(text, name):
+    if text is None:
+        return []
+    rows = []
+    headers = 0
+    for _, line in visible_lines(text.splitlines()):
+        if not TABLE_ROW_RE.match(line):
+            continue
+        values = cells(line)
+        if tuple(values) == COLUMNS:
+            headers += 1
+            continue
+        if values and all(re.fullmatch(r":?-+:?", value) for value in values):
+            continue
+        if len(values) != len(COLUMNS):
+            raise ValueError(f"{name}: malformed ledger table; reconcile it before migration")
+        canonical_id(values[0])
+        rows.append(values)
+    if headers != 1:
+        raise ValueError(f"{name}: expected exactly one ledger header")
+    if name == "LEDGER.md":
+        live_table_span(text)
+        ids = [canonical_id(row[0]) for row in rows]
+        if len(ids) != len(set(ids)):
+            raise ValueError("LEDGER.md: duplicate numeric ID aliases")
+    return rows
+
+
+def new_ledger():
+    template = Path(__file__).resolve().parents[1] / "templates/LEDGER.md"
+    text = template.read_text(encoding="utf-8")
+    # Copy the maintained schema, without its illustrative row.
+    return "\n".join(line for line in text.splitlines() if not line.startswith("| LG-0001 |")) + "\n"
+
+
+def register_dir(project, explicit=None, pre_install=False):
+    """Use the same complete-register ownership contract as Doctor."""
+    return register_paths.select_register(project, explicit, pre_install)
+
+
+def build_plan(docs, today=None):
+    docs = Path(docs)
+    today = today or date.today().isoformat()
+    valid_date(today, today)
+    status = read(docs / "STATUS.md")
+    if status is None or read(docs / "CHANGELOG.md") is None:
+        raise ValueError("STATUS.md and CHANGELOG.md must exist before migration")
+    inputs = fingerprints(docs)
+    highest = 0
+    for name, fingerprint in inputs.items():
+        if fingerprint is not None:
+            for match in ID_RE.finditer(read(docs / name)):
+                number = id_number(match.group(2))
+                if not match.group(1):
+                    highest = max(highest, number)
+    existing = {}
+    live_rows = ledger_rows(read(docs / "LEDGER.md"), "LEDGER.md")
+    archive_rows = ledger_rows(read(docs / "LEDGER-ARCHIVE.md"), "LEDGER-ARCHIVE.md")
+    overlap = {canonical_id(row[0]) for row in live_rows} & {canonical_id(row[0]) for row in archive_rows}
+    if overlap:
+        raise ValueError("live/archive ID collision; reconcile lifecycle records before migration")
+    for row in live_rows + archive_rows:
+        for match in SOURCE_RE.finditer(row[-1]):
+            ident = canonical_id(row[0])
+            if match.group(1) in existing and existing[match.group(1)] != ident:
+                raise ValueError("conflicting migration source-to-ID provenance")
+            existing[match.group(1)] = ident
+    resolved_context = set(CONTEXT_RE.findall(read(docs / "CHANGELOG.md")))
+    mappings, unmapped = [], []
+    records = inventory(status)
+    for source in records:
+        if source["kind"] == "unmapped":
+            unmapped.append({"source": source, "existing": source["key"] in resolved_context, "disposition": "", "reason": "", "maps_to": ""})
+            continue
+        ident = existing.get(source["key"])
+        already = ident is not None
+        if not already:
+            highest += 1
+            if len(str(highest)) > 12:
+                raise ValueError("ledger ID allocation exhausted the 12-digit bound")
+            ident = f"LG-{highest:04d}"
+        title = re.sub(r"^(?:[-*+]\s+|[0-9]+[.)]\s+)", "", source["text"])
+        blocked = source["section"] in {"blocked", "open questions", "open questions (owner)"} or source["status"] == "BLOCKED" or bool(source["blocked_on"])
+        row = None if already else {"priority": "P2", "status": "BLOCKED" if blocked else (source["status"] or "OPEN"), "date": today, "title": title, "tags": "", "closes_when": "", "blocked_on": source["blocked_on"] or ("owner" if source["section"].startswith("open questions") else ""), "touches": "STATUS.md", "evidence": ""}
+        mappings.append({"source": source, "id": ident, "existing": already, "reviewed": already, "row": row})
+    return {"version": 1, "register_dir": str(docs.resolve()), "date": today, "inputs": inputs, "counts": {"source_records": len(records), "mapped_records": len(mappings), "unmapped_records": len(unmapped), "existing_rows": len(live_rows), "new_rows": sum(not mapping["existing"] for mapping in mappings)}, "mappings": mappings, "unmapped": unmapped}
+
+
+def validate_plan(docs, plan, today):
+    validate_target(docs, plan)
+    valid_date(plan["date"], today)
+    if plan["inputs"] != fingerprints(docs):
+        raise ValueError("source or register changed since review; create and review a fresh plan")
+    current = build_plan(docs, plan["date"])
+    if plan["inputs"] != current["inputs"]:
+        raise ValueError("source or register changed since review; create and review a fresh plan")
+    if plan["version"] != 1 or plan["counts"] != current["counts"]:
+        raise ValueError("plan inventory/counts changed; create a fresh plan")
+    if len(plan["mappings"]) != len(current["mappings"]) or len(plan["unmapped"]) != len(current["unmapped"]):
+        raise ValueError("source inventory or mapping removed from plan")
+    tags = set(re.findall(r"\+[a-z][a-z0-9-]*", " ".join(re.findall(r"^\s*Tags:\s*(.*)$", read(docs / "LEDGER.md") or "", re.M))))
+    for mapping, expected in zip(plan["mappings"], current["mappings"]):
+        if any(mapping[field] != expected[field] for field in ("source", "id", "existing")):
+            raise ValueError("source-to-ID mapping changed; create a fresh plan")
+        if mapping["existing"]:
+            continue
+        if mapping["reviewed"] is not True:
+            raise ValueError(f"{mapping['id']}: review the row and set reviewed to true")
+        row = mapping["row"]
+        if set(row) != set(ROW_FIELDS) or any(not isinstance(value, str) or "\n" in value or "\r" in value for value in row.values()):
+            raise ValueError("row fields must be single-line strings with the documented schema")
+        for field in ("title", "closes_when", "touches"):
+            if not row[field].strip() or re.search(r"YYYY-MM-DD|\[POPULATE\]|define a yes/no close condition", row[field], re.I):
+                raise ValueError(f"{mapping['id']}: {field} needs a real reviewed value")
+        valid_date(row["date"], today)
+        if row["priority"] not in {"P0", "P1", "P2", "P3"} or row["status"] not in {"OPEN", "BLOCKED", "VERIFYING"}:
+            raise ValueError("migration rows require a live status and P0/P1/P2/P3 priority")
+        if bool(row["blocked_on"].strip()) != (row["status"] == "BLOCKED"):
+            raise ValueError("blocked_on must identify every remaining gate for BLOCKED rows only")
+        if expected["row"]["status"] == "BLOCKED" and row["status"] != "BLOCKED":
+            raise ValueError("blocked source needs reconciliation before migration can clear its gates")
+        source_gates = {gate.strip().casefold() for gate in re.split(r"[,;]", expected["row"]["blocked_on"]) if gate.strip()}
+        reviewed_gates = {gate.strip().casefold() for gate in re.split(r"[,;]", row["blocked_on"]) if gate.strip()}
+        if source_gates - reviewed_gates:
+            raise ValueError("explicit source gates require source reconciliation before migration can remove them")
+        if set(row["tags"].split()) - tags:
+            raise ValueError("row tags must use the existing declared Tags vocabulary")
+        if SOURCE_RE.search(row["evidence"]):
+            raise ValueError("migration provenance is generated; do not add it to reviewed evidence")
+    valid_ids = {mapping["id"] for mapping in plan["mappings"]}
+    for item, expected in zip(plan["unmapped"], current["unmapped"]):
+        if item["source"] != expected["source"] or item["existing"] != expected["existing"]:
+            raise ValueError("unmapped source inventory changed")
+        if item["existing"]:
+            continue
+        if item["disposition"] not in {"context", "duplicate"} or not isinstance(item["reason"], str) or not item["reason"].strip():
+            raise ValueError("unmapped record requires context/duplicate disposition and a reason; live findings must be reconciled in STATUS before replanning")
+        if "\n" in item["reason"] or "\r" in item["reason"]:
+            raise ValueError("unmapped disposition reason must be one line")
+        if item["disposition"] == "duplicate" and item["maps_to"] not in valid_ids:
+            raise ValueError("duplicate disposition must name an existing source-to-ID mapping")
+
+
+def atomic_write(path, content):
+    """Flush a sibling temporary file and atomically replace one register."""
+    path = Path(path)
+    if path.is_symlink():
+        raise ValueError(f"refusing symlink write target: {path.name}")
+    descriptor, temporary = tempfile.mkstemp(prefix="." + path.name + ".", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(content.encode("utf-8"))
+            handle.flush()
+            os.fsync(handle.fileno())
+        if path.exists():
+            os.chmod(temporary, path.stat().st_mode & 0o777)
+        os.replace(temporary, path)
+        directory = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+
+def validate_journal(journal):
+    """Reject malformed receipts before accessing nested values or writing files."""
+    required = {"version", "state", "plan_hash", "inputs", "order", "targets"}
+    if not isinstance(journal, dict) or set(journal) != required:
+        raise ValueError("invalid migration journal object")
+    if type(journal["version"]) is not int or journal["version"] != 1 or not isinstance(journal["state"], str) or journal["state"] not in {"prepared", "complete"}:
+        raise ValueError("invalid migration journal version/state")
+    def is_hash(value):
+        return isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value) is not None
+    if not is_hash(journal["plan_hash"]) or not isinstance(journal["inputs"], dict):
+        raise ValueError("invalid migration journal hash/input schema")
+    expected_inputs = {"STATUS.md", "CHANGELOG.md", "LEDGER.md", "LEDGER-ARCHIVE.md"}
+    if not expected_inputs <= set(journal["inputs"]):
+        raise ValueError("migration journal is missing required input fingerprints")
+    for name, value in journal["inputs"].items():
+        if not isinstance(name, str) or Path(name).is_absolute() or ".." in Path(name).parts or not name.endswith(".md") or (value is not None and not is_hash(value)):
+            raise ValueError("invalid migration journal input path/fingerprint")
+    targets, order = journal["targets"], journal["order"]
+    allowed_targets = {"CHANGELOG.md", "LEDGER.md", "LEDGER-ARCHIVE.md"}
+    if not isinstance(targets, dict) or not {"CHANGELOG.md", "LEDGER.md"} <= set(targets) or set(targets) - allowed_targets:
+        raise ValueError("invalid migration journal target schema")
+    expected_order = ["CHANGELOG.md"] + (["LEDGER-ARCHIVE.md"] if "LEDGER-ARCHIVE.md" in targets else []) + ["LEDGER.md"]
+    if not isinstance(order, list) or order != expected_order:
+        raise ValueError("invalid migration journal write order")
+    for target in targets.values():
+        if not isinstance(target, dict) or set(target) != {"content", "after"} or not isinstance(target["content"], str) or not is_hash(target["after"]):
+            raise ValueError("invalid migration journal target content schema")
+        if digest(target["content"]) != target["after"]:
+            raise ValueError("migration journal content hash conflict")
+
+
+def journal_replay(docs, journal):
+    """Verify all files before resuming; each may be exactly before or after."""
+    validate_journal(journal)
+    targets = journal["targets"]
+    now = fingerprints(docs)
+    expected_names = set(journal["inputs"]) | set(targets)
+    if set(now) != expected_names:
+        raise ValueError("register set changed during migration; preserve journal and resolve conflict")
+    for name, before in journal["inputs"].items():
+        allowed = {before}
+        if name in targets:
+            content = targets[name]["content"]
+            if digest(content) != targets[name]["after"]:
+                raise ValueError("migration journal content hash conflict")
+            allowed.add(targets[name]["after"])
+        if now.get(name) not in allowed:
+            raise ValueError(f"{name} changed during migration; preserve journal and resolve conflict")
+    if journal["state"] == "complete":
+        if any(now[name] != target["after"] for name, target in targets.items()):
+            raise ValueError("completed migration journal conflicts with current registers")
+        return
+    for name in journal["order"]:
+        if now.get(name) != targets[name]["after"]:
+            atomic_write(docs / name, targets[name]["content"])
+    journal["state"] = "complete"
+    atomic_write(docs / JOURNAL, json_text(journal))
+
+
+def validate_target(docs, plan):
+    if plan.get("register_dir") != str(Path(docs).resolve()):
+        raise ValueError("reviewed plan register target differs or is missing; create and review a fresh plan")
+
+
+def apply_plan(docs, plan, today=None):
+    docs = Path(docs)
+    validate_target(docs, plan)
+    today = today or date.today().isoformat()
+    plan_hash = digest(json_text(plan))
+    journal_text = read(docs / JOURNAL)
+    if journal_text is not None:
+        journal = json.loads(journal_text)
+        validate_journal(journal)
+        if journal["plan_hash"] == plan_hash:
+            journal_replay(docs, journal)
+            return
+        if journal["state"] != "complete":
+            raise ValueError("unfinished migration: resume with its original reviewed plan before new work")
+    validate_plan(docs, plan, today)
+    new = [mapping for mapping in plan["mappings"] if not mapping["existing"]]
+    dispositions = [item for item in plan["unmapped"] if not item["existing"]]
+    if not new and not dispositions:
+        return
+    ledger = read(docs / "LEDGER.md")
+    ledger = ledger if ledger is not None else new_ledger()
+    additions = ""
+    for mapping in new:
+        row = dict(mapping["row"])
+        marker = "migration:STATUS.md#" + mapping["source"]["key"]
+        row["evidence"] = (row["evidence"].strip() + "; " if row["evidence"].strip() else "") + marker
+        values = [mapping["id"]] + [row[field] for field in ROW_FIELDS]
+        additions += "| " + " | ".join(value.replace("|", r"\|") for value in values) + " |\n"
+    table_lines, _, end = live_table_span(ledger)
+    before = "".join(table_lines[:end])
+    ledger = before + ("" if before.endswith("\n") else "\n") + additions + "".join(table_lines[end:])
+    lines = [f"## {plan['date']} — reviewed STATUS-to-LEDGER migration", "", f"Migration {plan_hash}; before source records: {plan['counts']['source_records']}; existing live rows: {plan['counts']['existing_rows']}; new rows: {len(new)}; after live rows: {plan['counts']['existing_rows'] + len(new)}.", "STATUS.md is preserved until the dashboard adoption is separately reconciled.", "", "Reviewed source-to-ID mapping:"]
+    for mapping in plan["mappings"]:
+        source = mapping["source"]
+        lines.append(f"- {source['path']}:{source['line']} ({source['key']}) → {mapping['id']}: {source['text']}")
+    for item in dispositions:
+        suffix = f" → {item['maps_to']}" if item["disposition"] == "duplicate" else ""
+        # Opaque examples may span lines; quote their source so an example
+        # heading cannot turn into a fabricated CHANGELOG entry on application.
+        source_text = json.dumps(item["source"]["text"], ensure_ascii=False)
+        lines.append(f"- migration-context:{item['source']['key']}; {item['disposition']}{suffix}: {source_text} — {item['reason']}")
+    changelog = "\n".join(lines) + "\n\n" + read(docs / "CHANGELOG.md")
+    outputs = {"CHANGELOG.md": changelog}
+    if read(docs / "LEDGER-ARCHIVE.md") is None:
+        outputs["LEDGER-ARCHIVE.md"] = HEADER
+    outputs["LEDGER.md"] = ledger
+    journal = {"version": 1, "state": "prepared", "plan_hash": plan_hash, "inputs": plan["inputs"], "order": list(outputs), "targets": {name: {"after": digest(content), "content": content} for name, content in outputs.items()}}
+    # The journal is durable before log-first writes begin. It is retained as a
+    # local replay receipt; source provenance also survives later archive moves.
+    atomic_write(docs / JOURNAL, json_text(journal))
+    journal_replay(docs, journal)
+
+
+def show_plan(plan):
+    print(f"before live STATUS findings: {plan['counts']['source_records']}")
+    print(f"after proposed live ledger rows: {plan['counts']['existing_rows'] + plan['counts']['new_rows']}")
+    for mapping in plan["mappings"]:
+        state = "existing" if mapping["existing"] else "needs review"
+        print(f"{mapping['id']}\tSTATUS: {mapping['source']['text']} [{state}]")
+    for item in plan["unmapped"]:
+        print(f"unmapped: STATUS:{item['source']['line']}: {item['source']['text']}")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("project", type=Path)
+    parser.add_argument("--register-dir", help="explicit register directory, relative to project root or absolute")
+    parser.add_argument("--pre-install", action="store_true", help="allow an explicit STATUS/CHANGELOG source without DECISIONS")
+    parser.add_argument("--plan", type=Path, help="create a JSON plan, or read an existing reviewed plan")
+    parser.add_argument("--write", action="store_true", help="apply the explicitly reviewed plan")
+    parser.add_argument("--today", default=date.today().isoformat(), help="as-of date for reproducible runs (YYYY-MM-DD)")
+    args = parser.parse_args(argv)
+    try:
+        valid_date(args.today, args.today)
+        docs = register_dir(args.project, args.register_dir, args.pre_install)
+        print(f"Selected register: {docs}")
+        if args.plan and args.plan.resolve() == (docs / JOURNAL).resolve():
+            raise ValueError("--plan cannot use the reserved migration journal path")
+        if args.write and (args.plan is None or not args.plan.is_file()):
+            raise ValueError("--write requires an existing reviewed --plan file")
+        if args.plan and args.plan.exists():
+            plan = json.loads(read(args.plan))
+        else:
+            plan = build_plan(docs, args.today)
+            if args.plan:
+                if args.plan.suffix.casefold() != ".json":
+                    raise ValueError("--plan must name a JSON file, never a Markdown register")
+                if not args.plan.parent.is_dir():
+                    raise ValueError("--plan parent directory must already exist")
+                atomic_write(args.plan, json_text(plan))
+        show_plan(plan)
+        if args.write:
+            apply_plan(docs, plan, args.today)
+            print("Reviewed migration applied; repeat the same command to verify/replay. STATUS.md preserved.")
+        else:
+            print("Preview only. Review all new rows and unresolved records before --write --plan PATH.")
+        return 0
+    except (OSError, ValueError, KeyError, TypeError, UnicodeError) as exc:
+        print(f"migration stopped: {exc}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

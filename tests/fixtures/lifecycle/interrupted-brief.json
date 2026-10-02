@@ -1,0 +1,59 @@
+{
+  "evidence_kind": "authored-example-with-Doctor-replay",
+  "owner": "Q1 regional storage: global storage was live, but regional meets the locality requirement. Q2 fourteen days: seven days was live, but fourteen covers the review interval. Later ordinary Close: keep text diagnostics; images were live, but text is searchable.",
+  "before": {
+    "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Keep local audit evidence\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep local artifacts.\n**Reasoning:** Owner rejected external hosting because local review is sufficient.\n**Consequences:** Revisit if the stated assumption changes.\n",
+    "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Open questions (owner)\n\n1. Choose the storage region?\n2. Choose retention?\n"
+  },
+  "steps": [
+    {
+      "name": "reserve-brief-decisions",
+      "writes": {
+        "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — brief: 2 of 2 questions answered; D-0002–D-0003 logged\n\nReserved decisions: D-0002–D-0003\n\nQ1 — regional storage; D-0002.\nQ2 — fourteen-day retention; D-0003.\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n"
+      }
+    },
+    {
+      "name": "intervening-close-log",
+      "writes": {
+        "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — retain text diagnostics; D-0004 logged\n\nOwner chose text diagnostics over images to make review searchable. Reserved decisions: D-0004.\n\n## 2026-09-10 — brief: 2 of 2 questions answered; D-0002–D-0003 logged\n\nReserved decisions: D-0002–D-0003\n\nQ1 — regional storage; D-0002.\nQ2 — fourteen-day retention; D-0003.\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n"
+      }
+    },
+    {
+      "name": "intervening-close-dashboard",
+      "writes": {
+        "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Next\n\nReconcile the interrupted Brief before unrelated work.\n\n## Open questions (owner)\n\n1. Choose the storage region?\n2. Choose retention?\n"
+      }
+    },
+    {
+      "name": "intervening-close-decision",
+      "writes": {
+        "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Keep local audit evidence\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep local artifacts.\n**Reasoning:** Owner rejected external hosting because local review is sufficient.\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0004 — 2026-09-10 — Text diagnostics\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Retain text diagnostics.\n**Reasoning:** Owner: \"Images were live, but text is searchable.\"\n**Consequences:** Revisit if the stated assumption changes.\n"
+      }
+    },
+    {
+      "name": "recover-first-reserved-decision",
+      "writes": {
+        "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Keep local audit evidence\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep local artifacts.\n**Reasoning:** Owner rejected external hosting because local review is sufficient.\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0004 — 2026-09-10 — Text diagnostics\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Retain text diagnostics.\n**Reasoning:** Owner: \"Images were live, but text is searchable.\"\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0002 — 2026-09-10 — Regional storage\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Use regional storage.\n**Reasoning:** Owner: \"Global storage was live, but regional storage meets the locality requirement.\"\n**Consequences:** Revisit if the stated assumption changes.\n"
+      }
+    },
+    {
+      "name": "recover-second-reserved-decision",
+      "writes": {
+        "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Keep local audit evidence\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep local artifacts.\n**Reasoning:** Owner rejected external hosting because local review is sufficient.\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0004 — 2026-09-10 — Text diagnostics\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Retain text diagnostics.\n**Reasoning:** Owner: \"Images were live, but text is searchable.\"\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0002 — 2026-09-10 — Regional storage\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Use regional storage.\n**Reasoning:** Owner: \"Global storage was live, but regional storage meets the locality requirement.\"\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0003 — 2026-09-10 — Fourteen-day retention\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep fourteen days.\n**Reasoning:** Owner: \"Seven days was live, but fourteen covers the review interval.\"\n**Consequences:** Revisit if the stated assumption changes.\n"
+      }
+    },
+    {
+      "name": "recover-dashboard",
+      "writes": {
+        "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Next\n\nApply regional storage and fourteen-day retention.\n"
+      }
+    },
+    {
+      "name": "conflicting-decisions",
+      "writes": {
+        "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Keep local audit evidence\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep local artifacts.\n**Reasoning:** Owner rejected external hosting because local review is sufficient.\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0002 — 2026-09-10 — Unrelated retention choice\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep sixty days.\n**Reasoning:** A different explicit owner exchange selected sixty over thirty days.\n**Consequences:** Revisit if the stated assumption changes.\n\n## D-0003 — 2026-09-10 — Unrelated cache choice\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Keep an in-memory cache.\n**Reasoning:** A different explicit owner exchange rejected disk storage.\n**Consequences:** Revisit if the stated assumption changes.\n"
+      }
+    }
+  ],
+  "limits": "The conflicting-decisions step is an alternate branch. Recovered IDs append after the intervening Close; Doctor may warn about physical numeric order, while exact references resolve. Re-running Doctor proves read-only reconciliation, not automatic writer idempotence."
+}

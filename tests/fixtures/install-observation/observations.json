@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-11",
+  "contexts": 2,
+  "fork_turns": "none for each",
+  "path_normalization": {
+    "<scratch>": "isolated system temporary project",
+    "<skill>": "this repository, installed via Codex symlink"
+  },
+  "limitations": [
+    "Single sequential observed exercise, not a compliance estimate",
+    "Agent outputs are retained condensed reports, not complete tool transcripts",
+    "Snapshots prove final bytes; edit ordering is agent-reported, not an independently captured filesystem timing trace",
+    "Simple utility without Git, ledger, owner gates or interruption"
+  ],
+  "primary_checks": {
+    "doctor_exit": 0,
+    "utility_exit": 0,
+    "utility_stdout": "Maple Check describes local record checks.\n",
+    "historical_changelog_entry_is_unchanged_suffix": true,
+    "changelog_preamble_unchanged": true,
+    "decisions_unchanged": true
+  },
+  "artifacts": {
+    "after-close/AGENTS.md": "ffaf277245c89fa2974cbb5f408b6e3c7446243fe68ebc2c3c8d9dd52ac5a71d",
+    "after-close/check.py": "b8236224ceb4b178870c24ca226e8bbbbae21af8d001f4b7174ea56bfa892ada",
+    "after-close/docs/CHANGELOG.md": "2c8e6e2b49f80b1536b53fc9036f2b2a316fd84216d5a99cb1a499cfc2ce26ed",
+    "after-close/docs/DECISIONS.md": "b400229200ce3d75087be1772b6ec17853330a9a4a3b8ae9f8f806de44e75106",
+    "after-close/docs/README.md": "93aeb7db0df3d8a71e16c6a8448159e5341bee0b7fbb4487398f8a539099a8ee",
+    "after-close/docs/STATUS.md": "cbd515b96016f5702b54381e758563feff58701873efce195303405f4b3da92c",
+    "after-install/AGENTS.md": "ffaf277245c89fa2974cbb5f408b6e3c7446243fe68ebc2c3c8d9dd52ac5a71d",
+    "after-install/check.py": "ccb5e2bc3ec4b205e06ef71a0ebefffc03e730b1b0214103441f922160344945",
+    "after-install/docs/CHANGELOG.md": "7414baab35d7c620d2b07da323c73ba38fe493215f145d1c3c3492eb5b2aa323",
+    "after-install/docs/DECISIONS.md": "b400229200ce3d75087be1772b6ec17853330a9a4a3b8ae9f8f806de44e75106",
+    "after-install/docs/README.md": "719d164a5e90eb17fa08e67b003bb1abae8c7cb83f66aee8f3fcdbaa285d3ba5",
+    "after-install/docs/STATUS.md": "8f7e91e9b7b800b90b60a2bae0c46a1f2f2882c25051d252e4aa98d3d34dadd3",
+    "before-install/check.py": "ccb5e2bc3ec4b205e06ef71a0ebefffc03e730b1b0214103441f922160344945",
+    "install-output.txt": "35e98b854cc5cf473db7d2de66664c3ded10ef7a9cdb7ede3f8ee17e796eb21c",
+    "install-prompt.txt": "751024fba09b0e256e1d33772af5cfc1201936a41463a91c4891663cf3dcbfe0",
+    "primary-doctor-after-close.txt": "ac328422708a9d264178cfe1a363c6e67befecf227db71cf5c4841123d934459",
+    "resume-output.txt": "450040e991cac3f0a37b83470ea7922f5cb89cbaa28a1468ed3f4640f72cf362",
+    "resume-prompt.txt": "dc4e911ba77d218bfe62901af66f5fa73a18086e45f97298e7191fe89b18bcc6"
+  },
+  "skill_sha256": "2c61f35e1c341b47149940d79711e77cb9c5a233140ab18337d5f6fcc430acc9",
+  "template_sha256": {
+    "README.md": "14008176557cac1a33e6338cafc948f76231d5e898d1be98b8c45491fe0b27f4",
+    "STATUS.md": "e224faa86cf83e3ab92e11a8c3e508f5cf8c86f16f75b012fb807cbeec61b80a",
+    "CHANGELOG.md": "2c08fc9790a9d10ba90fbcaf78651fdc3f1ed0330c082fee7a7521c8eca5a45b",
+    "DECISIONS.md": "b400229200ce3d75087be1772b6ec17853330a9a4a3b8ae9f8f806de44e75106"
+  }
+}

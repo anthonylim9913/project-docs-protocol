@@ -1,0 +1,42 @@
+docs-doctor 1.4.0 — register at docs/ (relative to the project root), today 2026-09-11
+
+PASS  wiring-block               present in 2 of 2 instructions files: AGENTS.md, CLAUDE.md
+PASS  wiring-clauses             3 of 3 current clauses present inside the block (rewritten-not-appended, bounded-read, precedence) in AGENTS.md, CLAUDE.md
+PASS  wiring-path                block says docs in docs/, register found at docs/ (AGENTS.md, CLAUDE.md)
+PASS  readme-footer              install footer present in README.md on its own line
+INFO  changelog-entries          22 entries on 5 distinct dates spanning 8 days (21,728 B); install entry dated 2026-09-03
+PASS  changelog-dormancy         0 days since the newest entry (2026-09-11; warn >30)
+PASS  changelog-order            newest entry (2026-09-11) is at the top
+PASS  changelog-heading-format   22 of 22 headings match '## YYYY-MM-DD — summary' (1.00, pass >=0.95)
+INFO  changelog-decision-refs    7 id citation(s) in CHANGELOG headings and bodies resolve — highest cited D-0017, DECISIONS' highest D-0018
+PASS  status-size                35 lines, 1,310 B (warn >60, fail >100)
+PASS  status-longest-line        235 B (warn >1024)
+PASS  status-session-stack       0 session records at the top (0 in the whole file)
+PASS  status-last-updated        2026-09-11, newest CHANGELOG entry 2026-09-11 (lag 0 days)
+PASS  status-past-tense          0 past-tense lines under 0 dated headings (warn >3; heuristic)
+PASS  status-template-residue    0 template placeholders on visible lines
+PASS  decisions-ids              18 '##' entries, 18 distinct ids, max 18, 0 duplicates at '##' or '###' level
+PASS  decisions-order            ascending (oldest first, as the template prescribes), 0 out-of-order steps
+PASS  decisions-template-residue 0 template headings, 0 fenced examples, 0 placeholder tokens
+INFO  brand-placeholders         no BRAND.md (fine — keep it only when a real value exists)
+PASS  nested-register            no register in any ancestor directory
+PASS  sibling-register           no second register at ./
+PASS  ledger-header              10 of 10 header cells match the template, 10 rows x 10 cells, 1 table
+PASS  ledger-status-enum         10 rows: 10 Status cells in the six-token enum, 10 P cells in P0-P3
+PASS  ledger-terminal-leak       0 of 10 rows CLOSED/SUPERSEDED/NOT-AN-ISSUE in the live file
+PASS  ledger-references          all LG references use at most 12 digits
+PASS  ledger-schema              all 10 rows satisfy Blocked-on and SUPERSEDED successor invariants
+PASS  ledger-evidence            all CLOSED rows satisfy the structural evidence contract
+PASS  ledger-date                10 live rows have valid non-future Date cells
+PASS  ledger-closes-when         0 of 10 live rows with an empty or disposition-word Closes-when (warn >0)
+PASS  ledger-stale-open          0 of 10 OPEN/VERIFYING rows untouched over 60 days (warn: a P0/P1 row over 30 days, or over half of 10 non-terminal live rows over 60)
+INFO  ledger-ids                 10 rows, 10 distinct ids, highest LG-0031, 0 duplicates
+PASS  ledger-archive-ids         21 archived ids checked, 0 live/archive collisions
+PASS  ledger-tags                6 tokens declared on the Tags: line (warn >12), 0 undeclared Tags cell tokens, 0 +tokens outside the Tags cell
+PASS  ledger-blocked-on          0 BLOCKED rows, 0 with an empty Blocked-on, 0 gated only on ids absent from the live file
+PASS  ledger-live-size           10 live rows (warn >100, fail >250)
+PASS  decisions-tags             0 DECISIONS heading(s) end in +tags, 0 undeclared (6 tokens declared)
+INFO  git-repository             project root is the repository root
+INFO  git-status-churn           9 commits touching STATUS.md (+105/-68 lines) — fewer than 10, too few to judge churn
+
+38 checks: 32 pass, 0 warn, 0 fail, 6 info, 0 skipped — exit 0

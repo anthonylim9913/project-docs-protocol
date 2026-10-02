@@ -1,0 +1,13 @@
+{
+  "schema": 2,
+  "scope": "core-doctor-migration",
+  "today": "2026-09-14",
+  "cases": {
+    "doctor-a1": {"stages": [["doctor", 2]], "positive": "doctor-a1-positive", "positive_stages": [["doctor", 0]], "before_paths": ["AGENTS.md", "docs/README.md", "docs/STATUS.md", "docs/CHANGELOG.md", "docs/DECISIONS.md"], "allowed_additions": []},
+    "doctor-a2": {"stages": [["doctor", 2]], "positive": "doctor-a2-positive", "positive_stages": [["doctor", 0]], "before_paths": ["AGENTS.md", "docs/README.md", "docs/STATUS.md", "docs/CHANGELOG.md", "docs/DECISIONS.md"], "allowed_additions": []},
+    "migration-split-cdata": {"stages": [["preview", 0], ["write", 2]], "positive": "contiguous-cdata", "positive_stages": [["preview", 0]], "positive_fixture": "contiguous-cdata.md", "before_paths": ["docs/README.md", "docs/STATUS.md", "docs/CHANGELOG.md", "docs/DECISIONS.md"], "allowed_additions": ["plan.json"]},
+    "migration-split-pi": {"stages": [["preview", 0], ["write", 2]], "positive": "contiguous-pi", "positive_stages": [["preview", 0]], "positive_fixture": "contiguous-pi.md", "before_paths": ["docs/README.md", "docs/STATUS.md", "docs/CHANGELOG.md", "docs/DECISIONS.md"], "allowed_additions": ["plan.json"]}
+  },
+  "generic_control": {"name": "migration-20-safe-write", "stages": [["preview", 0], ["write", 0]], "source_records": 20, "new_rows": 20},
+  "refusal": "migration stopped: unmapped record requires context/duplicate disposition and a reason; live findings must be reconciled in STATUS before replanning"
+}

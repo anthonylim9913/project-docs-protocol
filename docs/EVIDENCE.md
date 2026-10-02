@@ -2,6 +2,8 @@
 
 On 2026-09-02 the protocol was measured, read-only, against every project on one machine whose folder carried its signature files. Sixteen investigation lanes and thirteen adversarial verifiers took every figure; the full report is private because it names projects, people and paths. This page carries what survives anonymisation: the population, the mechanisms, and the numbers with their units. Projects are described neutrally or by opaque labels (P01…). Nothing here identifies one.
 
+**Scope and provenance note (2026-09-10).** These are dated observations from one machine, not a current census or causal experiment. “Signature roots” means folders containing the three register filenames; it does not prove the current skill installed them. The wiring/churn comparison is an association and includes compatible hand-written instructions; it does not prove that this exact block caused the result. Later follow-up sweeps found 26 signature roots (15 non-git, 11 git), so the historical 25-root figures below remain valid only for the 2026-09-02 snapshot.
+
 Every count says whether it was taken from the working tree (the files as they sit on disk) or from committed history (git). Token figures are bytes ÷ 4, not tokenizer output.
 
 ## 1. The population
@@ -62,7 +64,7 @@ Churn = deleted ÷ added STATUS lines over committed history (git-tracked roots 
 | P01 — the largest project | 0.12 | project-authored: read STATUS's "top line + current phase" |
 | P02 — its parent register | 0.01 | project-authored: update the "top line" |
 
-Every root whose instructions file orders CHANGELOG-then-STATUS rewrites STATUS. Every root with no instructions file, or one that names a "top line", accretes. The install step that writes that block is not documentation of the protocol; it is the mechanism. The pre-audit text contained zero occurrences of "replace", "rewrite", "overwrite" or "prepend" — it said what STATUS should contain and never how it is written — so a project could invert the design property without contradicting a word. The current text says it.
+Within the dated seven-row sample, CHANGELOG-then-STATUS instructions are associated with rewriting, and absent instructions or a "top line" instruction with accumulation. Two high-churn rows have compatible hand-written instructions. These observations do not isolate a causal effect of the exact install block. The pre-audit text contained zero occurrences of "replace", "rewrite", "overwrite" or "prepend" — it said what STATUS should contain and never how it is written — so a project could invert the design property without contradicting a word. The current text says it.
 
 ## 5. What held
 

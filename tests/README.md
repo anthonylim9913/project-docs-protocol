@@ -1,0 +1,35 @@
+# Executable verification
+
+From the repository root, run either entry point:
+
+```sh
+python3 -B -m unittest discover -v
+python3 -B tests/run_regression.py
+```
+
+Both discover the same `test_*.py` suite and return a nonzero exit on failure. The explicit runner also refuses an empty suite. Tests use Python's standard library (Python 3.9 or newer). Most scratch projects live under ignored `tests/.tmp/`; Git checks and fresh-install checks use system temporary directories for their independent repositories and ancestor-free registers. Test cleanup removes those temporary projects. They need no private files, credentials or network service. The final local verification environment and actual test count are recorded in [the hardening review](../docs/HARDENING-REVIEW.md).
+
+| Suite | What executes | What the result establishes |
+|---|---|---|
+| `test_doctor.py` | Real Doctor CLI against controlled registers | Specific check levels/exits for malformed headers, IDs and references, numeric aliases, archives, fences, footers, dates, staleness, schema and decision citations; file bytes and paths remain unchanged. |
+| `test_doctor_markdown.py` | Complete authentic Install blocks in list and code contexts through Doctor | All three wiring checks, exit codes and read-only behavior; expectations compared separately with retained parser tokens. |
+| `test_register_selection.py` | Both CLIs select complete or explicit registers and migration applies reviewed plans | Competing-register ownership, explicit pre-install support, preservation of nonselected files and refusal to redirect a plan. |
+| `test_installation.py` | Four documents personalized from the shipped templates, authentic AGENTS wiring, and the real Doctor CLI | The minimum's file inventory, README index and local links, personalized fields, empty DECISIONS, real installation entry, install footer and exit 0. This is a deterministic fixture, not an agent installation. |
+| `test_migrate.py` | Real migration API and CLI, plus Doctor on generated rows | Review gates, source preservation, stable provenance, allocation, dates, complete twenty-finding write, same/fresh-plan no-ops, table placement, input drift and injected I/O failure/recovery. |
+| `test_migrate_semantics.py` and `test_migrate_opaque.py` | Reviewed validation, write and replay for semantic columns, HTML examples, and declaration/CDATA/processing-instruction boundaries | Every explicit gate survives, conflicting or unsupported state requires reconciliation, and example contents stay out of live mappings and ledger write targets. |
+| `test_lifecycle.py` | Recorded example edits followed by the real Doctor and a real artifact check | The retained examples preserve their explicit gates, IDs and provenance; Doctor diagnoses intermediate states; actual artifact content/hash checks detect corruption. |
+| `test_status_uniqueness.py` | Real Doctor CLI on handwritten dashboards | Repeated canonical peer headings and visible date fields warn with physical locations; hidden examples, custom headings and separate parent scopes do not collide. Read-only snapshots and ancestor-free projects keep unrelated warnings from making a negative test pass. |
+| `test_acceptance_manifest.py` and `test_acceptance_gates.py` | Frozen hardening fixture bytes plus the fail-closed acceptance validator under deliberate malformed/failure/skip/substitution/hash faults | A green child must have complete declared case identities, behavioral assertions, exit codes and runtime hashes; nonzero/error/skip/empty/malformed output is rejected. |
+| `run_acceptance.py` and `test_mutants.py` | The canonical four-case child runner against the real Doctor and migration CLIs, plus isolated source mutants | The unmutated runtime is accepted; each semantic mutant changes a targeted case and is rejected by the same validator with retained command, hash, stdout and stderr evidence. |
+
+`scenarios.json` is an index linking the eleven original scenario names to executable test methods. Several names share one mixed-answer test; the index is not counted as an additional passing test or as eleven independent agent executions.
+
+Lifecycle examples are **authored artifact replays**. There is no automatic Install/Brief/Close writer in this skill. The installation tests apply explicit fixture edits to templates; writing those files is not evidence that an arbitrary agent chooses those edits, that archive recovery is automatically idempotent, or that authorization can be inferred from prose. The four [independent skill-use observations](fixtures/forward/README.md) are recorded separately from the deterministic suite. See [lifecycle evidence](fixtures/lifecycle/README.md) for the per-example boundaries. A subsequent Install → Bootstrap → Close observation must retain its separate contexts, prompts and before/after artifacts, and is not counted as an automated test or a general compliance rate.
+
+Scratch projects under `tests/.tmp/` are nested inside this repository's own installed register. Doctor therefore reports the expected `nested-register` advisory; an otherwise-healthy nested fixture exits 1 and must have no other warning/failure. Fresh-install fixtures run outside that ancestry and assert exit 0 directly, as does the repository's own Doctor check. The retained six-document `FreshInstallTests` cases exercise extra scaffold and a pending brand-value warning; `MinimalInstallTests` separately proves D-0017's four-document contract. Recovery after an intervening Close can produce a `decisions-order` advisory. A deliberate reopen still triggers the conservative `ledger-archive-ids` collision check; its row/event identity needs manual verification. Tests assert these diagnostics rather than suppressing them.
+
+Doctor checks CLOSED evidence structure, not truth or the semantic identity of an occupied decision ID. The non-git lifecycle case runs its stated verification command and compares SHA-256 independently, then corrupts the artifact to demonstrate why those checks are necessary.
+
+The [observed installation and next session](fixtures/install-observation/README.md) use two fresh contexts, retained prompts and snapshots. This is one bounded exercise; ordering is agent-reported and final bytes are independently checked. The [Markdown oracle](fixtures/markdown-oracle/README.md) and [hardening evidence](fixtures/hardening-2026-09-11/README.md) retain targeted red/green checks and independent probes, separate from the standard-library suite.
+
+The frozen hardening inventory lives in `fixtures/hardening-2026-09-12/acceptance-cases.json`; `run_acceptance.py` executes its four real CLI cases, while `validate_acceptance.py` and `test_acceptance_gates.py` enforce declared case identities, behavioral assertions, child exits, and runtime hashes. The baseline comparator uses the corrected `edccbc2` source and includes `test_migrate_opaque.py`; its promoted baseline failures/errors are matched by identity rather than by a nonzero exit alone. Retained canonical control and mutant packets live under `fixtures/hardening-2026-09-12/final/acceptance-*.json`.

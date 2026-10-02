@@ -1,0 +1,23 @@
+{
+  "active_gate": null,
+  "architect_acceptance": null,
+  "contract": null,
+  "evidence_manifest": null,
+  "external_review": null,
+  "handoff": null,
+  "handoff_status": null,
+  "input_manifest": null,
+  "mode": "structural-example",
+  "open_findings": [],
+  "protocol": "architect-protocol",
+  "roles": {
+    "architect": "fixture-architect",
+    "developer": "fixture-developer",
+    "reviewer": "fixture-reviewer"
+  },
+  "schema": 2,
+  "stage": "scope",
+  "stages": [],
+  "subject_commit": null,
+  "subject_label": "Synthetic unfrozen scope"
+}

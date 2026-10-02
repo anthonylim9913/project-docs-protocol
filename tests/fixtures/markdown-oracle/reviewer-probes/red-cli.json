@@ -1,0 +1,29 @@
+{
+  "script_sha256": "dd191e78f5ec90d110ca2241bb8b7a7cc6a1a9b6e9cb1fc80b9cd4049ecfe658",
+  "cases": [
+    {
+      "name": "nested-1.-2.-2-False-4",
+      "source": "1. Outer\n  2. Inner\n\n    ## Project docs protocol\n\n    This project uses the project-docs-protocol (docs in `docs/`).\n\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3\u20135 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go \u2014 do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "oracle_live": false,
+      "doctor_exit": 0,
+      "doctor_wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "nested-1.-2.-2-False-7",
+      "source": "1. Outer\n  2. Inner\n\n       ## Project docs protocol\n\n       This project uses the project-docs-protocol (docs in `docs/`).\n\n       - **Session start:** before proposing or doing any work, read `STATUS.md`\n         (in full if it is under ~60 lines; otherwise its top line, its heading\n         list, and the current-state sections only) and the last 3\u20135 entries of\n         `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n         about to work on; then read live `LEDGER.md` rows if installed.\n       - **After each meaningful unit of work** (spec drafted, decision made, blocker\n         resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n         then rewrite STATUS. Brief records reserved DECISIONS entries between\n         CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n         Do this as you go \u2014 do not wait for the session to end.\n       - **STATUS is rewritten, not appended.** Replace the current-state sections\n         and bump the last-updated date. Never prepend a session record or leave a\n         dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n         already be there before STATUS changes.\n       - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n         corrections or supersessions instead.\n       - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n         (skip LEDGER when absent),\n         STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n         overridden by project convention. Paths, id formats and entry shapes are\n         this project's to set, here. If this file and the protocol disagree on one\n         of those three properties, the disagreement is a CHANGELOG entry, not a\n         habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 2,
+      "doctor_wiring_checks": {
+        "wiring-block": "FAIL",
+        "wiring-clauses": "SKIP",
+        "wiring-path": "SKIP"
+      },
+      "project_bytes_unchanged": true
+    }
+  ]
+}

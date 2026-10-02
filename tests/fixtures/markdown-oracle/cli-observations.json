@@ -1,0 +1,796 @@
+{
+  "before_revision": "328105fcbeada838284096bb883efb44907570a9",
+  "before_script_sha256": "45fac71a7d75d98b9a7a62befba52419142279c3999da044e6dd1cff665ac409",
+  "before_sibling_fix_visibility_region_sha256": "c9cdc7e39547bd74c1db5710d1ef7c231118cccdddff0c333acabe34bd579f07",
+  "after_visibility_region_sha256": "81878997247b97a70b2b9fdf3d10b0f8955d6b0ff3b11ae9e0c6b83e9630cbe7",
+  "command_arguments": [
+    "PROJECT",
+    "--today",
+    "2026-09-10",
+    "--no-git"
+  ],
+  "cases": [
+    {
+      "name": "nested-bullet-dash",
+      "live": true,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-bullet-plus",
+      "live": true,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-bullet-star",
+      "live": true,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-numbered",
+      "live": true,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-wide-numbered",
+      "live": true,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "ordered-sibling-indentation-code",
+      "live": false,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "ordered-sibling-indentation-live",
+      "live": true,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "wide-numbered-cannot-interrupt-paragraph",
+      "live": false,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-tab-padding",
+      "live": true,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "bullet-continuation",
+      "live": true,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "numbered-continuation",
+      "live": true,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-with-extra-blank",
+      "live": true,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-tight-heading",
+      "live": true,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "top-level-four-space-code",
+      "live": false,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "top-level-tab-code",
+      "live": false,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "bullet-marker-surplus-tight",
+      "live": false,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "bullet-marker-surplus-blank",
+      "live": false,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "numbered-marker-surplus-tight",
+      "live": false,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-marker-surplus-tight",
+      "live": false,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": false,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "code-after-nested-paragraph",
+      "live": false,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "nested-fenced-example",
+      "live": false,
+      "before": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 2,
+        "wiring_checks": {
+          "wiring-block": "FAIL",
+          "wiring-clauses": "SKIP",
+          "wiring-path": "SKIP"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "lazy-top-level-paragraph",
+      "live": true,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    },
+    {
+      "name": "lazy-nested-paragraph",
+      "live": true,
+      "before": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "before_sibling_fix": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      },
+      "after": {
+        "exit": 1,
+        "wiring_checks": {
+          "wiring-block": "PASS",
+          "wiring-clauses": "PASS",
+          "wiring-path": "PASS"
+        },
+        "matches_contract": true,
+        "later_checks_ran": true
+      }
+    }
+  ]
+}

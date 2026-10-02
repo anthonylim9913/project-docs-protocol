@@ -1,0 +1,98 @@
+{
+  "date": "2026-09-10",
+  "kind": "one independent agent run across four isolated cases",
+  "requests": [
+    {
+      "case": "mixed",
+      "request": "Record the owner reply to the existing Brief: \"Q1: use the default cache repair. No other option was live for me. Do the rest as you see fit.\" Finish recording this exchange with the information already provided; a follow-up to unanswered questions has already been asked once and received no further reply. Do not perform any project action beyond recording this exchange."
+    },
+    {
+      "case": "method",
+      "request": "Record the owner reply: \"The cache method is the only sensible option. I approve that method, but do not execute it yet.\" Finish recording the exchange; keep action scope to the docs."
+    },
+    {
+      "case": "recovery",
+      "request": "An earlier session stopped after writing the Brief CHANGELOG entry. Another Close has since recorded a separate decision. Complete the interrupted Brief from its saved owner statements and update the dashboard. Repeat the recovery check to confirm you have no further writes to make."
+    },
+    {
+      "case": "conflict",
+      "request": "An earlier Brief stopped mid-record. Complete its recording from the saved owner statements if the surviving records permit it. Preserve any unresolved conflict for human review."
+    }
+  ],
+  "before": {
+    "mixed": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — initialized project documentation system\n\nFixture installation.\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Open questions (owner)\n\n1. **Q1: Choose the cache repair (LG-0001)** — awaiting owner choice.\n2. **Q2: Authorize deployment (LG-0003)** — awaiting owner execution approval.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P2 | BLOCKED | 2026-09-10 | Cache repair | | fixture passes | owner and LG-0002 | sample.txt | origin |\n| LG-0002 | P2 | OPEN | 2026-09-10 | Dependency fixture | | fixture passes |  | sample.txt | origin |\n| LG-0003 | P2 | BLOCKED | 2026-09-10 | Deployment | | fixture passes | owner | sample.txt | origin |\n",
+      "docs/DECISIONS.md": "# DECISIONS\n"
+    },
+    "method": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — initialized project documentation system\n\nFixture installation.\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Open questions (owner)\n\n1. **Q1: Repair execution (LG-0001)** — waiting for approval of method and execution.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P2 | BLOCKED | 2026-09-10 | Cache repair | | fixture passes | owner method and owner execution | sample.txt | origin |\n",
+      "docs/DECISIONS.md": "# DECISIONS\n"
+    },
+    "recovery": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — intervening Close\n\nD-0004 records a separate storage decision.\n\n## 2026-09-10 — brief: 2 of 2 questions answered; D-0002–D-0003 logged\n\nReserved decisions: D-0002–D-0003\nQ1: Use the local cache (D-0002). Owner: \"Both the local cache and repeated reads were live options; choose local cache because it lowers repeat latency.\"\nQ2: Use retry once (D-0003). Owner: \"Both no retry and one retry were live options; choose one retry because the transient error is common.\"\n\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Open questions (owner)\n\n1. **Q1: Cache choice** — awaiting owner choice.\n2. **Q2: Retry choice** — awaiting owner choice.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Output\n\n**Context:** fixture.\n**Decision:** Keep text\n**Reasoning:** Owner chose text over binary for readability.\n**Consequences:** implement locally.\n\n## D-0004 — 2026-09-10 — Storage\n\n**Context:** fixture.\n**Decision:** Use a file\n**Reasoning:** Owner chose a file over memory for persistence.\n**Consequences:** implement locally.\n\n"
+    },
+    "conflict": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — intervening Close\n\nD-0004 records a separate storage decision.\n\n## 2026-09-10 — brief: 2 of 2 questions answered; D-0002–D-0003 logged\n\nReserved decisions: D-0002–D-0003\nQ1: Use the local cache (D-0002). Owner: \"Both the local cache and repeated reads were live options; choose local cache because it lowers repeat latency.\"\nQ2: Use retry once (D-0003). Owner: \"Both no retry and one retry were live options; choose one retry because the transient error is common.\"\n\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Open questions (owner)\n\n1. **Q1: Cache choice** — awaiting owner choice.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Output\n\n**Context:** fixture.\n**Decision:** Keep text\n**Reasoning:** Owner chose text over binary for readability.\n**Consequences:** implement locally.\n\n## D-0004 — 2026-09-10 — Storage\n\n**Context:** fixture.\n**Decision:** Use a file\n**Reasoning:** Owner chose a file over memory for persistence.\n**Consequences:** implement locally.\n\n## D-0002 — 2026-09-10 — Different action\n\n**Context:** fixture.\n**Decision:** Delete cached data\n**Reasoning:** Unrelated earlier choice.\n**Consequences:** implement locally.\n\n"
+    }
+  },
+  "after": {
+    "mixed": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — brief: 1 of 2 questions answered; no decision entries\n\nQ1: Choose the cache repair (LG-0001) → use the default cache repair. Owner: \"No other option was live for me.\" Default, no decision entry; this CHANGELOG line is the answer's provenance. Clear the owner-choice gate only; LG-0002 remains a blocker.\nQ2 — not answered. \"Do the rest as you see fit\" supplies no deployment authorization; the single follow-up received no further reply. LG-0003 retains its owner execution gate and its question remains unchanged.\nNext: resolve LG-0002 before the cache repair can proceed. This exchange records the reply only; no project action was performed.\n\n## 2026-09-10 — initialized project documentation system\n\nFixture installation.\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Live work\n\nAs of 2026-09-10: 3 live items in [LEDGER.md](LEDGER.md): 1 OPEN, 2 BLOCKED, 0 VERIFYING. No P0/P1 items.\n\n## Open questions (owner)\n\n2. **Q2: Authorize deployment (LG-0003)** — awaiting owner execution approval.\n\n## Next\n\nResolve the dependency fixture (LG-0002), then proceed with the default cache repair (LG-0001) once that gate clears. Deployment (LG-0003) requires explicit owner execution approval.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P2 | BLOCKED | 2026-09-10 | Cache repair | | fixture passes | LG-0002 | sample.txt | origin; 2026-09-10 CHANGELOG brief, Q1: owner chose the default cache repair with no other live option; default, no decision entry. Owner-choice gate resolved; LG-0002 remains. |\n| LG-0002 | P2 | OPEN | 2026-09-10 | Dependency fixture | | fixture passes |  | sample.txt | origin |\n| LG-0003 | P2 | BLOCKED | 2026-09-10 | Deployment | | fixture passes | owner | sample.txt | origin |\n",
+      "docs/DECISIONS.md": "# DECISIONS\n"
+    },
+    "method": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — brief: 1 of 1 questions answered; no decision entries\n\nQ1: Repair execution (LG-0001) → method approved; execution explicitly withheld. Owner: \"The cache method is the only sensible option. I approve that method, but do not execute it yet.\" Default, no decision entry; this CHANGELOG line is the answer's provenance. Clear only the owner method gate and retain owner execution.\nNext: await explicit owner execution approval before performing the cache repair. This exchange changes documentation only.\n\n## 2026-09-10 — initialized project documentation system\n\nFixture installation.\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Live work\n\nAs of 2026-09-10: 1 live item in [LEDGER.md](LEDGER.md): 0 OPEN, 1 BLOCKED, 0 VERIFYING. No P0/P1 items.\n\n## Open questions (owner)\n\n1. **Q1: Repair execution (LG-0001)** — waiting for owner execution approval; the cache method is approved.\n\n## Next\n\nAwait explicit owner execution approval for LG-0001 before performing the cache repair.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P2 | BLOCKED | 2026-09-10 | Cache repair | | fixture passes | owner execution | sample.txt | origin; 2026-09-10 CHANGELOG brief, Q1: owner approved the only sensible cache method but said \"do not execute it yet\"; default, no decision entry. Method gate resolved; execution approval remains. |\n",
+      "docs/DECISIONS.md": "# DECISIONS\n"
+    },
+    "recovery": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — recovered interrupted Brief decisions D-0002–D-0003\n\nCompleted the two missing entries reserved by \"brief: 2 of 2 questions answered; D-0002–D-0003 logged\" from its saved owner statements. D-0002 records the local cache over repeated reads; D-0003 records one retry over no retry. Both entries append after the intervening D-0004 to preserve append-only history, so the mixed decision order is an expected recovery advisory; no new IDs are allocated. The saved statements contain no revisit conditions, which the recovered entries make explicit.\nNext: queue local cache and one retry implementation; remove the resolved owner questions from STATUS. No project implementation is performed in this documentation recovery.\n\n## 2026-09-10 — intervening Close\n\nD-0004 records a separate storage decision.\n\n## 2026-09-10 — brief: 2 of 2 questions answered; D-0002–D-0003 logged\n\nReserved decisions: D-0002–D-0003\nQ1: Use the local cache (D-0002). Owner: \"Both the local cache and repeated reads were live options; choose local cache because it lowers repeat latency.\"\nQ2: Use retry once (D-0003). Owner: \"Both no retry and one retry were live options; choose one retry because the transient error is common.\"\n\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Live work\n\nAs of 2026-09-10: 0 live items in [LEDGER.md](LEDGER.md).\n\n## Next\n\nImplement the local cache per D-0002 and one retry per D-0003 when implementation work resumes.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Output\n\n**Context:** fixture.\n**Decision:** Keep text\n**Reasoning:** Owner chose text over binary for readability.\n**Consequences:** implement locally.\n\n## D-0004 — 2026-09-10 — Storage\n\n**Context:** fixture.\n**Decision:** Use a file\n**Reasoning:** Owner chose a file over memory for persistence.\n**Consequences:** implement locally.\n\n## D-0002 — 2026-09-10 — Use the local cache\n\n**Context:** Q1 of the interrupted Brief reserved this ID for the cache choice. The saved owner statement identifies local cache and repeated reads as live options.\n**Decision:** Use the local cache.\n**Reasoning:** Owner: \"Both the local cache and repeated reads were live options; choose local cache because it lowers repeat latency.\" Repeated reads was the live alternative not chosen.\n**Consequences:** Queue local cache implementation to lower repeat latency. The saved owner statement specifies no condition for revisiting this choice.\n\n## D-0003 — 2026-09-10 — Retry once\n\n**Context:** Q2 of the interrupted Brief reserved this ID for the retry choice. The saved owner statement identifies no retry and one retry as live options.\n**Decision:** Retry once.\n**Reasoning:** Owner: \"Both no retry and one retry were live options; choose one retry because the transient error is common.\" No retry was the live alternative not chosen.\n**Consequences:** Queue one retry for the transient error. The saved owner statement specifies no condition for revisiting this choice.\n\n"
+    },
+    "conflict": {
+      "AGENTS.md": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- Read STATUS in full if it is under ~60 lines.\n- STATUS is rewritten, not appended.\n- **Precedence.** CHANGELOG first, LEDGER second, STATUS third.\n",
+      "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/CHANGELOG.md": "## 2026-09-10 — intervening Close\n\nD-0004 records a separate storage decision.\n\n## 2026-09-10 — brief: 2 of 2 questions answered; D-0002–D-0003 logged\n\nReserved decisions: D-0002–D-0003\nQ1: Use the local cache (D-0002). Owner: \"Both the local cache and repeated reads were live options; choose local cache because it lowers repeat latency.\"\nQ2: Use retry once (D-0003). Owner: \"Both no retry and one retry were live options; choose one retry because the transient error is common.\"\n\n",
+      "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLocal fixture work.\n\n## Open questions (owner)\n\n1. **Q1: Cache choice** — awaiting owner choice.\n",
+      "docs/README.md": "*Installed via the `project-docs-protocol` skill.*\n\nThis is an isolated verification fixture; the ancestor register is owned by the test harness.\n",
+      "docs/LEDGER.md": "# LEDGER\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+      "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Output\n\n**Context:** fixture.\n**Decision:** Keep text\n**Reasoning:** Owner chose text over binary for readability.\n**Consequences:** implement locally.\n\n## D-0004 — 2026-09-10 — Storage\n\n**Context:** fixture.\n**Decision:** Use a file\n**Reasoning:** Owner chose a file over memory for persistence.\n**Consequences:** implement locally.\n\n## D-0002 — 2026-09-10 — Different action\n\n**Context:** fixture.\n**Decision:** Delete cached data\n**Reasoning:** Unrelated earlier choice.\n**Consequences:** implement locally.\n\n"
+    }
+  }
+}

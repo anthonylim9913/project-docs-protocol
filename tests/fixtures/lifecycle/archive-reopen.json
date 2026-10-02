@@ -1,0 +1,66 @@
+{
+  "evidence_kind": "authored-example-with-Doctor-replay-and-real-local-check",
+  "owner": "Record the stable observation using the local artifact. Reopen the original finding if a later observation changes.",
+  "before": {
+    "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | VERIFYING | 2026-09-10 | Durable observation | +brief | The stored result matches the check output. |  | docs | artifacts/result.txt; command: python3 -B checks/verify_result.py. |\n",
+    "artifacts/result.txt": "result is stable\n",
+    "checks/verify_result.py": "from pathlib import Path\nimport sys\nactual = (Path(__file__).resolve().parents[1] / 'artifacts/result.txt').read_text()\nif actual != 'result is stable\\n':\n    print('FAIL: result changed')\n    sys.exit(1)\nprint('PASS: result is stable')\n"
+  },
+  "steps": [
+    {
+      "name": "close-log",
+      "writes": {
+        "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — archive stable observation LG-0001\n\nThe durable artifact hash and reproducible command verify the row; archive the exact terminal row before removing it from the live ledger.\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n"
+      }
+    },
+    {
+      "name": "terminal-live-row",
+      "writes": {
+        "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | CLOSED | 2026-09-10 | Durable observation | +brief | The stored result matches the check output. |  | docs | artifacts/result.txt sha256:6bd8090366e6a77e1f0dfd0aa630618d5727a0454b4e389049c94704ff156609; command: python3 -B checks/verify_result.py; PASS: result is stable; exit 0. |\n"
+      }
+    },
+    {
+      "name": "archive-copy",
+      "writes": {
+        "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | CLOSED | 2026-09-10 | Durable observation | +brief | The stored result matches the check output. |  | docs | artifacts/result.txt sha256:6bd8090366e6a77e1f0dfd0aa630618d5727a0454b4e389049c94704ff156609; command: python3 -B checks/verify_result.py; PASS: result is stable; exit 0. |\n"
+      }
+    },
+    {
+      "name": "remove-live-row",
+      "writes": {
+        "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n"
+      }
+    },
+    {
+      "name": "close-dashboard",
+      "writes": {
+        "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Next\n\nReview durable evidence.\n"
+      }
+    },
+    {
+      "name": "reopen-log",
+      "writes": {
+        "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — reopen LG-0001 for a changed observation\n\nReopen archive event sha256:68570595f1b33f08345edc80bf80428bc98eaf930458276b49d9c45c289753ee; retain its original ID and append an identifying marker before restoring it to the live file.\n\n## 2026-09-10 — archive stable observation LG-0001\n\nThe durable artifact hash and reproducible command verify the row; archive the exact terminal row before removing it from the live ledger.\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n"
+      }
+    },
+    {
+      "name": "append-reopen-marker",
+      "writes": {
+        "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | CLOSED | 2026-09-10 | Durable observation | +brief | The stored result matches the check output. |  | docs | artifacts/result.txt sha256:6bd8090366e6a77e1f0dfd0aa630618d5727a0454b4e389049c94704ff156609; command: python3 -B checks/verify_result.py; PASS: result is stable; exit 0. |\n\nREOPENED 2026-09-10 LG-0001 archive-sha256:68570595f1b33f08345edc80bf80428bc98eaf930458276b49d9c45c289753ee → live\n"
+      }
+    },
+    {
+      "name": "restore-original-id",
+      "writes": {
+        "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | OPEN | 2026-09-10 | Durable observation | +brief | The stored result matches the check output. |  | docs | Reopened from archive-sha256:68570595f1b33f08345edc80bf80428bc98eaf930458276b49d9c45c289753ee; changed observation needs a new check. |\n"
+      }
+    },
+    {
+      "name": "conflicting-live-copy",
+      "writes": {
+        "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | OPEN | 2026-09-10 | Different finding incorrectly reusing the ID | +brief | The observation is reproducible. |  | docs | Source: local review. |\n"
+      }
+    }
+  ],
+  "limits": "The conflicting-live-copy step is an alternate branch. Doctor deliberately reports live/archive overlap for a legitimate reopen too: the row/event/hash identity is reviewed separately, not interpreted by Doctor."
+}

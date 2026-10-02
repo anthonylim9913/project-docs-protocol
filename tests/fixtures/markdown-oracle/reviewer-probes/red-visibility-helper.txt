@@ -1,0 +1,194 @@
+# --- Markdown visibility for the supported register syntax -----------------
+# Four columns of indentation past the current container's content baseline
+# make a code block. That is how a document *quotes* a block it is describing
+# instead of installing it, so those lines are as invisible as fenced ones.
+INDENT_CODE_WIDTH = 4
+# A bullet or ordered marker: up to three spaces, the marker, then its padding
+# and the rest of the line (both captured so `-foo` can be rejected).
+LIST_MARKER_RE = re.compile(r"^( {0,3})([-*+]|\d{1,9}[.)])( *)(.*)$")
+# `- - -`, `***`, `___`: a thematic break, which wins over a bullet marker.
+THEMATIC_BREAK_RE = re.compile(r"^ {0,3}(?:(?:\*[ \t]*){3,}|(?:-[ \t]*){3,}|(?:_[ \t]*){3,})$")
+
+
+def indent_width(line):
+    """Columns of leading whitespace, a tab advancing to the next four-column
+    tab stop, the way CommonMark measures indentation."""
+    col = 0
+    for ch in line:
+        if ch == " ":
+            col += 1
+        elif ch == "\t":
+            col += INDENT_CODE_WIDTH - (col % INDENT_CODE_WIDTH)
+        else:
+            break
+    return col
+
+
+def list_content_column(line):
+    """The column a list item's content starts at, or None if `line` is not a
+    list marker line.
+
+    CommonMark: content begins after the marker plus one to four spaces of
+    padding; an empty item, or five or more spaces, puts the content one
+    column past the marker (the surplus is code *inside* the item). `-foo`
+    and `1.x` are paragraphs, not markers, and a thematic break is not a
+    marker either.
+    """
+    if THEMATIC_BREAK_RE.match(line):
+        return None
+    m = LIST_MARKER_RE.match(line.expandtabs(INDENT_CODE_WIDTH))
+    if not m:
+        return None
+    pad, rest = m.group(3), m.group(4)
+    if not pad and rest:
+        return None
+    marker_end = len(m.group(1)) + len(m.group(2))
+    if rest and 1 <= len(pad) <= INDENT_CODE_WIDTH:
+        return marker_end + len(pad)
+    return marker_end + 1
+
+
+def fence_opener(line):
+    """(marker char, opener length) when `line` opens a code fence, else None."""
+    fm = FENCE_RE.match(line)
+    if not fm or (fm.group(2)[0] == "`" and "`" in fm.group(3)):
+        # A backtick opener cannot carry backticks anywhere in its info string.
+        return None
+    return fm.group(2)[0], len(fm.group(2))
+
+
+def visible_lines(lines):
+    """Yield visible (index, line, False), removing list-container indentation.
+
+    This is a small visibility filter, not a general Markdown parser. It
+    handles the fenced/indented examples, comments and list containers used
+    by the registers. List-relative headings must reach downstream checks as
+    headings; four columns *inside* a list item must remain hidden code. An
+    existing paragraph can continue indented without becoming code.
+
+    Authored CLI cases and a separate development-parser snapshot document
+    the supported boundaries in tests/fixtures/markdown-oracle/.
+    """
+    fenced = None   # (marker character, opener length, container baseline)
+    comment = False
+    code = None     # container baseline of an indented code block
+    stack = []      # (content column, marker column, list kind), outermost first
+    prev = "start"  # the previous processed line: start / blank / block / para
+    for i, line in enumerate(lines):
+        # Expanding before slicing keeps tab stops tied to document columns.
+        line = line.expandtabs(INDENT_CODE_WIDTH)
+        blank = not line.strip()
+        ind = indent_width(line)
+        if comment:
+            if COMMENT_CLOSE in line:
+                comment = False
+                prev = "block"
+                rest = line[line.index(COMMENT_CLOSE) + len(COMMENT_CLOSE):]
+                if rest.strip():
+                    yield i, rest, fenced is not None
+            continue
+        if fenced is not None:
+            # A list's fence ends with its container, or a matching closer.
+            if not blank and ind < fenced[2]:
+                fenced = None
+                prev = "block"
+            else:
+                cm = FENCE_CLOSE_RE.match(line[fenced[2]:])
+                if cm and cm.group(1)[0] == fenced[0] and len(cm.group(1)) >= fenced[1]:
+                    fenced = None
+                    prev = "block"
+                continue
+
+        if code is not None:
+            if blank or ind >= code + INDENT_CODE_WIDTH:
+                continue
+            code = None
+            prev = "block"
+        if blank:
+            prev = "blank"
+            yield i, "", False
+            continue
+
+        # Match existing containers first, then look for a marker relative to
+        # that baseline. A marker beyond document column three can be a live
+        # nested list marker; its indentation is not top-level code.
+        matched = len(stack)
+        while matched and stack[matched - 1][0] > ind:
+            matched -= 1
+        baseline = stack[matched - 1][0] if matched else 0
+        relative = line[baseline:]
+        marker_col = list_content_column(relative)
+        marker = LIST_MARKER_RE.match(relative) if marker_col is not None else None
+        if marker is not None and prev == "para":
+            kind = marker.group(2)[-1]
+            sibling = any(start == baseline + len(marker.group(1)) and list_kind == kind
+                          for _, start, list_kind in stack[matched:])
+            # A newly nested ordered list can interrupt a paragraph only at
+            # 1; an empty item cannot interrupt it. Existing siblings may
+            # continue with any number.
+            if not sibling and (not marker.group(4) or
+                                (marker.group(2)[0].isdigit() and int(marker.group(2)[:-1]) != 1)):
+                marker_col = marker = None
+
+        opener = fence_opener(relative)
+        starts_block = (marker is not None or opener is not None
+                        or HEADING_RE.match(relative) is not None
+                        or THEMATIC_BREAK_RE.match(relative) is not None
+                        or BLOCKQUOTE_RE.match(relative) is not None)
+        lazy = matched < len(stack) and not starts_block and prev == "para"
+        if lazy:
+            baseline = min(ind, stack[-1][0])
+            relative = line[baseline:]
+        else:
+            del stack[matched:]
+
+        content = relative
+        if marker_col is not None:
+            content_baseline = baseline + marker_col
+            stack.append((content_baseline, baseline + len(marker.group(1)), marker.group(2)[-1]))
+            content = line[content_baseline:]
+            # Five or more spaces after a marker mean one padding column
+            # followed by code, even on the item's first line with no blank.
+            if content.strip() and indent_width(content) >= INDENT_CODE_WIDTH:
+                code = content_baseline
+                prev = "block"
+                continue
+            opener = fence_opener(content)
+        elif ind - baseline >= INDENT_CODE_WIDTH and prev != "para":
+            code = baseline
+            prev = "block"
+            continue
+
+        if opener is not None or HEADING_RE.match(content) or THEMATIC_BREAK_RE.match(content):
+            prev = "block"
+        elif marker is not None and not content.strip():
+            prev = "block"
+        else:
+            prev = "para"
+
+        if opener is not None:
+            fenced = opener + (stack[-1][0] if marker is not None else baseline,)
+            continue
+        line = relative
+        if COMMENT_OPEN in line:
+            # A comment that opens and closes on one line is cut out of it; the
+            # text around it is still a live line. One that opens mid-line hides
+            # only what follows it.
+            head = line[:line.index(COMMENT_OPEN)]
+            after = line[line.index(COMMENT_OPEN) + len(COMMENT_OPEN):]
+            if COMMENT_CLOSE in after:
+                rest = head + after[after.index(COMMENT_CLOSE) + len(COMMENT_CLOSE):]
+                if rest.strip():
+                    yield i, rest, False
+                continue
+            if TABLE_ROW_RE.match(line):
+                # An unclosed opener inside a table row is literal cell text (GFM
+                # still renders the rows below it); it never hides the file.
+                yield i, line, False
+                continue
+            comment = True
+            if head.strip():
+                yield i, head, False
+            continue
+        yield i, line, False
+

@@ -1,0 +1,41 @@
+script_sha256 dff2647f5e4594abaaff8d38f21791d421add7e1fb64d2247f73bc3e43c92d88
+paired_comment_close source "<div>\n<!-- </div> -->\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>\n\n- Actual finding.\n"
+paired_comment_close mappings ["- Actual finding."]
+paired_comment_close unmapped ["<div>\n<!-- </div> -->\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>"]
+paired_comment_close command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+paired_comment_close exit 0 stderr ''
+paired_comment_close written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+paired_comment_close source_preservation_and_same_fresh_plan_idempotence PASS
+paired_multiline_comment_close source "<div>\n<!-- example\n</div>\n-->\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>\n\n- Actual finding.\n"
+paired_multiline_comment_close mappings ["- Actual finding."]
+paired_multiline_comment_close unmapped ["<div>\n<!-- example\n</div>\n-->\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>"]
+paired_multiline_comment_close command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+paired_multiline_comment_close exit 0 stderr ''
+paired_multiline_comment_close written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+paired_multiline_comment_close source_preservation_and_same_fresh_plan_idempotence PASS
+paired_quoted_attribute_close source "<div>\n<span title=\"</div>\">text</span>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>\n\n- Actual finding.\n"
+paired_quoted_attribute_close mappings ["- Actual finding."]
+paired_quoted_attribute_close unmapped ["<div>\n<span title=\"</div>\">text</span>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>"]
+paired_quoted_attribute_close command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+paired_quoted_attribute_close exit 0 stderr ''
+paired_quoted_attribute_close written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+paired_quoted_attribute_close source_preservation_and_same_fresh_plan_idempotence PASS
+nested_paired_control source "<div>\n<div>nested</div>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>\n\n- Actual finding.\n"
+nested_paired_control mappings ["- Actual finding."]
+nested_paired_control unmapped ["<div>\n<div>nested</div>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>"]
+nested_paired_control command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+nested_paired_control exit 0 stderr ''
+nested_paired_control written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+nested_paired_control source_preservation_and_same_fresh_plan_idempotence PASS
+pre_control source "<pre>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</pre>\n\n- Actual finding.\n"
+pre_control mappings ["- Actual finding."]
+pre_control unmapped ["<pre>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</pre>"]
+pre_control command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+pre_control exit 0 stderr ''
+pre_control written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+pre_control source_preservation_and_same_fresh_plan_idempotence PASS
+paired_comment_close html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header
+paired_multiline_comment_close html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header
+paired_quoted_attribute_close html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header
+nested_paired_control html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header
+pre_control html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header

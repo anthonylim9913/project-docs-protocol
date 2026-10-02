@@ -1,0 +1,6 @@
+Agent final output (path labels normalized; content condensed to reported observations):
+Created AGENTS.md and docs/README.md, STATUS.md, CHANGELOG.md, DECISIONS.md, exactly five new files. Full skill and four templates read; copied and personalized with python3 -B. No Bootstrap performed. All optional files omitted; no adoption decision.
+Doctor <scratch> --today 2026-09-11: exit 0, 22 checks, 16 PASS, 0 WARN, 0 FAIL, 3 INFO, 3 SKIP.
+python3 -B check.py: exit 0; Maple Check checks local records.
+check.py SHA256: ccb5e2bc3ec4b205e06ef71a0ebefffc03e730b1b0214103441f922160344945.
+No writes outside scratch; no skill tests/reports inspected. Doctor structure is not proof of future compliance; utility only prints a description.

@@ -1,0 +1,27 @@
+{
+  "evidence_kind": "authored-example-with-Doctor-replay",
+  "owner": "You may normalize the local sample now; use LF line endings. No other method was live for me.",
+  "before": {
+    "artifacts/sample.txt": "alpha\r\nbeta\r\n"
+  },
+  "steps": [
+    {
+      "name": "perform-delegated-local-work",
+      "writes": {
+        "artifacts/sample.txt": "alpha\nbeta\n"
+      }
+    },
+    {
+      "name": "log-notice",
+      "writes": {
+        "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — normalize local sample\n\nExecuted the one-option notice under delegated authority. LF line endings are the owner default; no decision entry.\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n"
+      }
+    },
+    {
+      "name": "rewrite-dashboard",
+      "writes": {
+        "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Next\n\nReview the local sample.\n"
+      }
+    }
+  ]
+}

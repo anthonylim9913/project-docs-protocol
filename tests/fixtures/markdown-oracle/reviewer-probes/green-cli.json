@@ -1,0 +1,201 @@
+{
+  "parser": "markdown-it-py 4.0.0; commonmark preset",
+  "doctor_script_sha256": "65d5be94cf6b708f7b2de61a7cb6799adb60569a7ff91c7598e113eeb25bd07f",
+  "cases": [
+    {
+      "name": "nested-six-space-live",
+      "source": "- Outer\n    - Inner\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "nested-plus",
+      "source": "+ Outer\n    + Inner\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "nested-star",
+      "source": "* Outer\n    * Inner\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "nested-numbered",
+      "source": "1. Outer\n\n   2. Inner\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "numbered-six-space-continuation",
+      "source": "1. Outer\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "tab-padding",
+      "source": "-\tOuter\n\t-\tInner\n\n\t\t## Project docs protocol\n\n\t\tThis project uses the project-docs-protocol (docs in `docs/`).\n\n\t\t- **Session start:** before proposing or doing any work, read `STATUS.md`\n\t\t  (in full if it is under ~60 lines; otherwise its top line, its heading\n\t\t  list, and the current-state sections only) and the last 3\u20135 entries of\n\t\t  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n\t\t  about to work on; then read live `LEDGER.md` rows if installed.\n\t\t- **After each meaningful unit of work** (spec drafted, decision made, blocker\n\t\t  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n\t\t  then rewrite STATUS. Brief records reserved DECISIONS entries between\n\t\t  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n\t\t  Do this as you go \u2014 do not wait for the session to end.\n\t\t- **STATUS is rewritten, not appended.** Replace the current-state sections\n\t\t  and bump the last-updated date. Never prepend a session record or leave a\n\t\t  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n\t\t  already be there before STATUS changes.\n\t\t- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n\t\t  corrections or supersessions instead.\n\t\t- **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n\t\t  (skip LEDGER when absent),\n\t\t  STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n\t\t  overridden by project convention. Paths, id formats and entry shapes are\n\t\t  this project's to set, here. If this file and the protocol disagree on one\n\t\t  of those three properties, the disagreement is a CHANGELOG entry, not a\n\t\t  habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "extra-blank",
+      "source": "- Outer\n\n    - Inner\n\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "tight-heading",
+      "source": "- Outer\n    - Inner\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "lazy-top-level",
+      "source": "Active instructions:\n    ## Project docs protocol\n    This project uses the project-docs-protocol (docs in `docs/`).\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3\u20135 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go \u2014 do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "lazy-nested",
+      "source": "- Outer\n    - Active instructions:\n          ## Project docs protocol\n          This project uses the project-docs-protocol (docs in `docs/`).\n          - **Session start:** before proposing or doing any work, read `STATUS.md`\n            (in full if it is under ~60 lines; otherwise its top line, its heading\n            list, and the current-state sections only) and the last 3\u20135 entries of\n            `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n            about to work on; then read live `LEDGER.md` rows if installed.\n          - **After each meaningful unit of work** (spec drafted, decision made, blocker\n            resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n            then rewrite STATUS. Brief records reserved DECISIONS entries between\n            CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n            Do this as you go \u2014 do not wait for the session to end.\n          - **STATUS is rewritten, not appended.** Replace the current-state sections\n            and bump the last-updated date. Never prepend a session record or leave a\n            dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n            already be there before STATUS changes.\n          - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n            corrections or supersessions instead.\n          - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n            (skip LEDGER when absent),\n            STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n            overridden by project convention. Paths, id formats and entry shapes are\n            this project's to set, here. If this file and the protocol disagree on one\n            of those three properties, the disagreement is a CHANGELOG entry, not a\n            habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "top-level-code",
+      "source": "Example:\n\n    ## Project docs protocol\n\n    This project uses the project-docs-protocol (docs in `docs/`).\n\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3\u20135 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go \u2014 do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "oracle_live": false,
+      "doctor_exit": 2,
+      "wiring_checks": {
+        "wiring-block": "FAIL",
+        "wiring-clauses": "SKIP",
+        "wiring-path": "SKIP"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "top-level-tab-code",
+      "source": "Example:\n\n\t## Project docs protocol\n\n\tThis project uses the project-docs-protocol (docs in `docs/`).\n\n\t- **Session start:** before proposing or doing any work, read `STATUS.md`\n\t  (in full if it is under ~60 lines; otherwise its top line, its heading\n\t  list, and the current-state sections only) and the last 3\u20135 entries of\n\t  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n\t  about to work on; then read live `LEDGER.md` rows if installed.\n\t- **After each meaningful unit of work** (spec drafted, decision made, blocker\n\t  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n\t  then rewrite STATUS. Brief records reserved DECISIONS entries between\n\t  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n\t  Do this as you go \u2014 do not wait for the session to end.\n\t- **STATUS is rewritten, not appended.** Replace the current-state sections\n\t  and bump the last-updated date. Never prepend a session record or leave a\n\t  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n\t  already be there before STATUS changes.\n\t- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n\t  corrections or supersessions instead.\n\t- **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n\t  (skip LEDGER when absent),\n\t  STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n\t  overridden by project convention. Paths, id formats and entry shapes are\n\t  this project's to set, here. If this file and the protocol disagree on one\n\t  of those three properties, the disagreement is a CHANGELOG entry, not a\n\t  habit.\n",
+      "oracle_live": false,
+      "doctor_exit": 2,
+      "wiring_checks": {
+        "wiring-block": "FAIL",
+        "wiring-clauses": "SKIP",
+        "wiring-path": "SKIP"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "marker-surplus-tight",
+      "source": "-     ## Project docs protocol\n      This project uses the project-docs-protocol (docs in `docs/`).\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3\u20135 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go \u2014 do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "oracle_live": false,
+      "doctor_exit": 2,
+      "wiring_checks": {
+        "wiring-block": "FAIL",
+        "wiring-clauses": "SKIP",
+        "wiring-path": "SKIP"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "ordered-sibling-four-space-code",
+      "source": "1. Outer\n  2. Inner\n\n    ## Project docs protocol\n\n    This project uses the project-docs-protocol (docs in `docs/`).\n\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3\u20135 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go \u2014 do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "oracle_live": false,
+      "doctor_exit": 2,
+      "wiring_checks": {
+        "wiring-block": "FAIL",
+        "wiring-clauses": "SKIP",
+        "wiring-path": "SKIP"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    },
+    {
+      "name": "ordered-sibling-seven-space-live",
+      "source": "1. Outer\n  2. Inner\n\n       ## Project docs protocol\n\n       This project uses the project-docs-protocol (docs in `docs/`).\n\n       - **Session start:** before proposing or doing any work, read `STATUS.md`\n         (in full if it is under ~60 lines; otherwise its top line, its heading\n         list, and the current-state sections only) and the last 3\u20135 entries of\n         `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n         about to work on; then read live `LEDGER.md` rows if installed.\n       - **After each meaningful unit of work** (spec drafted, decision made, blocker\n         resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n         then rewrite STATUS. Brief records reserved DECISIONS entries between\n         CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n         Do this as you go \u2014 do not wait for the session to end.\n       - **STATUS is rewritten, not appended.** Replace the current-state sections\n         and bump the last-updated date. Never prepend a session record or leave a\n         dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n         already be there before STATUS changes.\n       - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n         corrections or supersessions instead.\n       - **Precedence.** The three properties above \u2014 CHANGELOG before LEDGER before STATUS\n         (skip LEDGER when absent),\n         STATUS rewritten, registers append-only \u2014 are the protocol's and are not\n         overridden by project convention. Paths, id formats and entry shapes are\n         this project's to set, here. If this file and the protocol disagree on one\n         of those three properties, the disagreement is a CHANGELOG entry, not a\n         habit.\n",
+      "oracle_live": true,
+      "doctor_exit": 0,
+      "wiring_checks": {
+        "wiring-block": "PASS",
+        "wiring-clauses": "PASS",
+        "wiring-path": "PASS"
+      },
+      "later_checks_completed": true,
+      "project_bytes_unchanged": true
+    }
+  ]
+}

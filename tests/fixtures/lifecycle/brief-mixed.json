@@ -1,0 +1,40 @@
+{
+  "evidence_kind": "authored-example-with-Doctor-replay",
+  "owner": "Q1: Withdraw the duplicate. Keeping a separate finding was live, but it would split the evidence. Q2: regional storage; no alternative was ever live for me. Do the rest as you see fit.",
+  "before": {
+    "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Open questions (owner)\n\n1. LG-0001 — Keep the duplicate storage finding or withdraw it?\n2. LG-0002 — Which supported storage region should be the default?\n3. LG-0003 — Authorize release after review?\n4. LG-0004 — Choose the retention window?\n5. LG-0005 — Approve the capacity budget?\n",
+    "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | BLOCKED | 2026-09-10 | Duplicate storage finding | +brief | The observation is reproducible. | owner | docs | Source: local review. |\n| LG-0002 | P1 | BLOCKED | 2026-09-10 | Storage region setup | +brief | The observation is reproducible. | owner; LG-0006; external storage review | docs | Source: local review. |\n| LG-0003 | P1 | BLOCKED | 2026-09-10 | Release authorization | +brief | The observation is reproducible. | owner | docs | Source: local review. |\n| LG-0004 | P1 | BLOCKED | 2026-09-10 | Retention window | +brief | The observation is reproducible. | owner | docs | Source: local review. |\n| LG-0005 | P1 | BLOCKED | 2026-09-10 | Capacity budget | +brief | The observation is reproducible. | owner | docs | Source: local review. |\n| LG-0006 | P1 | OPEN | 2026-09-10 | Storage probe | +brief | The observation is reproducible. |  | docs | Source: local review. |\n"
+  },
+  "steps": [
+    {
+      "name": "log-answers-and-reservation",
+      "writes": {
+        "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — brief: 2 of 5 questions answered; D-0001 logged\n\nReserved decisions: D-0001\n\nQ1 — Withdraw the duplicate; D-0001.\nQ2 — Regional storage; default, no decision entry.\nQ3 — not answered.\nQ4 — not answered.\nQ5 — not answered.\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n"
+      }
+    },
+    {
+      "name": "record-owner-decision",
+      "writes": {
+        "docs/DECISIONS.md": "# DECISIONS\n\n## D-0001 — 2026-09-10 — Withdraw duplicate storage finding\n\n**Context:** The owner compared the paths stated in the Brief.\n**Decision:** Withdraw the duplicate.\n**Reasoning:** Owner: \"Keeping a separate finding was live, but it would split the evidence.\"\n**Consequences:** Revisit if the stated assumption changes.\n"
+      }
+    },
+    {
+      "name": "archive-terminal-ruling",
+      "writes": {
+        "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | NOT-AN-ISSUE | 2026-09-10 | Duplicate storage finding | +brief | The observation is reproducible. |  | docs | D-0001; owner ruling in Brief 2026-09-10 Q1: \"Withdraw the duplicate\"; keep LG-0006 as the canonical check. |\n"
+      }
+    },
+    {
+      "name": "update-live-ledger",
+      "writes": {
+        "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0002 | P1 | BLOCKED | 2026-09-10 | Storage region setup | +brief | The observation is reproducible. | LG-0006; external storage review | docs | Brief 2026-09-10 Q2: default, no decision entry; owner selected regional storage. Only owner selection gate cleared. |\n| LG-0003 | P1 | BLOCKED | 2026-09-10 | Release authorization | +brief | The observation is reproducible. | owner | docs | Source: local review. |\n| LG-0004 | P1 | BLOCKED | 2026-09-10 | Retention window | +brief | The observation is reproducible. | owner | docs | Source: local review. |\n| LG-0005 | P1 | BLOCKED | 2026-09-10 | Capacity budget | +brief | The observation is reproducible. | owner | docs | Source: local review. |\n| LG-0006 | P1 | OPEN | 2026-09-10 | Storage probe | +brief | The observation is reproducible. |  | docs | Source: local review. |\n"
+      }
+    },
+    {
+      "name": "rewrite-dashboard",
+      "writes": {
+        "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Open questions (owner)\n\n3. LG-0003 — Authorize release after review?\n4. LG-0004 — Choose the retention window?\n5. LG-0005 — Approve the capacity budget?\n"
+      }
+    }
+  ]
+}

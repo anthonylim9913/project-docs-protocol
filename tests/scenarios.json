@@ -1,0 +1,68 @@
+[
+  {
+    "name": "brief-one-option-authorized",
+    "invariant": "one technical option executes only when delegated authority is explicit",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_brief_one_option_authorized_recorded_artifact",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "brief-one-option-gated-silent",
+    "invariant": "owner gate survives a one-option brief and silence",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_brief_one_option_owner_gate_survives_silence",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "brief-mixed-answers",
+    "invariant": "answered questions are recorded; unanswered questions remain open",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_brief_mixed_answers_default_partial_gate_and_terminal_ruling",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "brief-default-no-did",
+    "invariant": "a documented default records no fabricated D-ID",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_brief_mixed_answers_default_partial_gate_and_terminal_ruling",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "brief-partial-blocker",
+    "invariant": "only the resolved Blocked-on gate is cleared",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_brief_mixed_answers_default_partial_gate_and_terminal_ruling",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "brief-terminal-ruling",
+    "invariant": "terminal evidence identifies real provenance",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_brief_mixed_answers_default_partial_gate_and_terminal_ruling",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "brief-interrupted-reservation",
+    "invariant": "reserved IDs are repaired idempotently and collision-safely",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_interrupted_reservation_intervening_close_and_recovery",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "archive-first-replay",
+    "invariant": "archive write and identity verification precede live-row removal",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_archive_first_replay_preserves_exact_row_and_conflict",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "reopen-with-row-id",
+    "invariant": "reopen marker names the ledger row and archive event",
+    "test": "tests.test_lifecycle.LifecycleReplayTests.test_reopen_marker_identifies_row_and_exact_archive_event",
+    "evidence": "authored artifact invariants and actual Doctor execution"
+  },
+  {
+    "name": "archived-id-allocation",
+    "invariant": "allocation skips live, archived, and reserved IDs",
+    "test": "tests.test_migrate.MigrationTests.test_allocates_after_archive_and_reservation_aliases",
+    "evidence": "actual migration implementation and file side effects"
+  },
+  {
+    "name": "status-to-ledger-migration",
+    "invariant": "before/after counts and source-to-LG mapping preserve every live finding",
+    "test": "tests.test_migrate.MigrationTests.test_twenty_findings_review_write_and_fresh_plan_preserve_all_sources",
+    "evidence": "actual migration implementation and file side effects"
+  }
+]

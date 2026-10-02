@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "prepared": "2026-09-14",
+  "oracle": "markdown-it-py 4.0.0 commonmark development oracle; expected values hand-authored",
+  "cases": [
+    {
+      "id": "doctor-a1",
+      "fixture": "cases/doctor-a1.md",
+      "classification": "one code fence containing complete wiring",
+      "inventory": "wiring absent",
+      "write": "refuse",
+      "exit": 2,
+      "positive": "doctor-a1-positive",
+      "scope": "supported",
+      "assertion": "wiring-block=FAIL",
+      "fixture_sha256": "7ac363fd0f6ecc2176206daed9e4ca441ca37608ec5d8902b0d1af0de76326d2"
+    },
+    {
+      "id": "doctor-a2",
+      "fixture": "cases/doctor-a2.md",
+      "classification": "one top-level indented code block containing complete wiring",
+      "inventory": "wiring absent",
+      "write": "refuse",
+      "exit": 2,
+      "positive": "doctor-a2-positive",
+      "scope": "supported",
+      "assertion": "wiring-block=FAIL",
+      "fixture_sha256": "fcc12ee373034b67e4d16f1a144830272c7408d1a06cba802b2f415c75005a3b"
+    },
+    {
+      "id": "migration-split-cdata",
+      "fixture": "cases/migration-split-cdata.md",
+      "classification": "one unresolved opaque source record; split delimiter does not close",
+      "inventory": "hidden findings excluded",
+      "write": "refuse before journal",
+      "exit": 2,
+      "positive": "contiguous CDATA terminator",
+      "scope": "supported",
+      "assertion": "opaque-refusal-before-write",
+      "fixture_sha256": "e7fbb056250409c06c129b6e104439cf7cbeeb34f0445b89c752e280798e9528"
+    },
+    {
+      "id": "migration-split-pi",
+      "fixture": "cases/migration-split-pi.md",
+      "classification": "one unresolved opaque source record; split delimiter does not close",
+      "inventory": "hidden findings excluded",
+      "write": "refuse before journal",
+      "exit": 2,
+      "positive": "contiguous PI terminator",
+      "scope": "supported",
+      "assertion": "opaque-refusal-before-write",
+      "fixture_sha256": "a1760690ec6c0347059df2346a80b3d22e93023e54da907e4b0a9486850c50fe"
+    }
+  ]
+}

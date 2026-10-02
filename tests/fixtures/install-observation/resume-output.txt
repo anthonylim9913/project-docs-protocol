@@ -1,0 +1,7 @@
+Agent final output (path labels normalized; content condensed to reported observations):
+Read AGENTS, full STATUS, existing CHANGELOG, DECISIONS, README, check.py and the installed project-docs-protocol skill including Bootstrap/Close. The explicit current-focus confirmation in the task satisfied Bootstrap's fact confirmation.
+Updated describe() to return Maple Check describes local record checks.
+python3 check.py: exit 0, exact requested output.
+Reported Close order: new CHANGELOG entry preserving the prior entry, STATUS rewrite, then README description/output update. DECISIONS unchanged; no ledger installed.
+Final inspection used pwd, rg --files, cat, tail, sed and rg -n, all exit 0. Edits used apply_patch and project-local Python for STATUS.
+Writes confined to scratch; no sibling project, skill tests/review reports, or previous-agent transcript read. This proves description output only, not record checking.

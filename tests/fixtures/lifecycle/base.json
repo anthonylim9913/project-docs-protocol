@@ -1,0 +1,8 @@
+{
+  "docs/README.md": "# Project documentation\n\n*Installed via the `project-docs-protocol` skill.*\n",
+  "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n",
+  "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n",
+  "docs/DECISIONS.md": "# DECISIONS\n",
+  "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n",
+  "docs/LEDGER-ARCHIVE.md": "| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n"
+}

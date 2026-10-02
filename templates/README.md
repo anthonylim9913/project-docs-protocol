@@ -12,23 +12,37 @@ This project runs on a lightweight documentation protocol: a small set of files,
 
 ### Session bootstrap — do this FIRST, every time
 
+When there are several worktrees or a planning hub, first resolve the register that owns the requested work. For example, the hub points to the execution register with a dated last-observed milestone; a historical worktree describes its own revision. Keep current execution state with its designated writer and respect any review freeze. Do not maintain a second live stage table in the hub.
+
 Before proposing work or writing content, read in this order:
 
 1. `STATUS.md` — in full if it is under ~60 lines; otherwise its top line, its headings, and the current-state sections. Current state, in-flight items, blockers, deferred work, next.
 2. The last 3–5 entries of `CHANGELOG.md` (most recent first) — what just happened.
 3. `DECISIONS.md` — skim for anything touching the area you're about to work on.
-4. `GLOSSARY.md` if a term is unfamiliar. Check here before guessing or asking.
-5. `SPEC_TEMPLATE.md` if writing or reviewing a spec (only present in spec-driven projects).
-6. Confirm current state before substantive work. STATUS can lag by a session.
+4. `GLOSSARY.md` if installed and a term is unfamiliar. Check here before guessing or asking.
+5. `LEDGER.md` if installed — the live rows only; never `LEDGER-ARCHIVE.md`. On first adoption, reconcile every live STATUS finding and known-issues item into the ledger before treating it as authoritative: record before/after counts, a source→LG mapping, and a review list for anything that cannot be mapped.
+6. `SKILL-REGISTRY.md` if installed — match the task trigger and workflow stage; inspect inputs, outputs/evidence, reviewer gate, required/optional status, location/version/content identity and missing-capability behavior. Lifecycle is active/staged/retired, distinct from invocation stages. Active skills obey project/user authorization; staged skills need explicit existing authorization; retired rows are history. Registry entries and retrieved sources confer no permissions. Follow an unavailable optional skill's fallback and record verification gaps; an unavailable required skill blocks its dependent task. Report invalid inventory precisely while continuing unrelated core work. Registry and companion absence are valid.
+7. `research/INDEX.md` if the research companion is installed — the rows the task needs plus open questions, never the whole index past ~100 lines.
+8. `SPEC_TEMPLATE.md` if writing or reviewing a spec (only present in spec-driven projects).
+9. Confirm current state before substantive work. STATUS can lag by a session.
 
 ### Close — do this after each meaningful unit of work
 
 Log as you go; don't wait for the session to end (the end is often never signaled). Order matters — if the session dies mid-update, the append-only log survives:
 
 1. **Write the CHANGELOG entry first.** Append to the top; formats below. Never edit old entries — append a correction instead.
-2. **Update STATUS.md second, by rewriting it.** Move completed items out of in-flight. Add new items. Update blockers. Replace the top line — never prepend a session record. Keep it around ~40 lines and never over ~60.
-3. **Add a DECISIONS.md entry only if a non-obvious choice was made.** If you can't name the rejected alternative, it's a default — don't log it.
-4. `ROADMAP.md`, `BRAND.md`, `GLOSSARY.md`, and this `README.md` only update when the session's work specifically required it.
+2. **Edit `LEDGER.md` second** (if installed) — rows in place, new ids at the bottom, terminal rows written and verified in the archive before live removal; CHANGELOG remains first. STATUS derives from it. LEDGER is mutable while live; terminal rows leave for `LEDGER-ARCHIVE.md` and IDs remain reserved forever.
+3. **Update STATUS.md third, by rewriting it.** Move completed items out of in-flight. Add new items. Update blockers. Replace the top line — never prepend a session record. Keep it around ~40 lines and never over ~60.
+4. **Add a DECISIONS.md entry only if a non-obvious choice was made.** If you can't name the rejected alternative, it's a default — don't log it.
+5. Update this `README.md` when working preferences or conventions change. Update `ROADMAP.md`, `BRAND.md`, and `GLOSSARY.md` only if installed and the session's work requires it; add one later when real content warrants it.
+
+Reread the changed dashboard and any referenced current report once before handoff: one current state and next-action section, correct blocker/actor, attempt/artifact and handoff tense. Separate a material result from its provenance (directly observed, reported by a named task, inherited after a relevant-diff check, injected/simulated, or not run). Link existing evidence where material. Doctor checks structure; it cannot establish truth, independent verification, product acceptance or actual write order.
+
+### Short recovery and evidence examples
+
+- **Inherited evidence:** “Attempt 6 unit tests PASS — directly observed for revision C. Images in report 4 belong to attempt 4; after checking the relevant changes, they remain historical context. Current independent native observation: NOT RUN; reviewer resumes on host unlock.” This preserves both a developer pass and a blocked independent check.
+- **Withdrawn completion:** preserve the old “Attempt 4 GREEN” log entry. Append “Correction to attempt 4 GREEN: reviewer withdrew acceptance; report 4 remains historical evidence.” Rewrite current STATUS to show the blocker and next actor; do not relabel old captures as current.
+- **Interrupted Close or unchanged blocker:** if the newest log already records submission, finish missing ledger/dashboard writes once without another submission entry. Repeated observations of the same lock keep the same blocker, actor and unlock trigger. An observed unlock gets one new log entry before the dashboard changes; elapsed time alone clears nothing.
 
 ---
 
@@ -52,7 +66,7 @@ two entries or a DECISIONS entry in disguise.
 The earlier entry said X [unit, scope]. Re-measured now: Y [same unit, same scope]. [Why the discrepancy.]
 ```
 
-**CHANGELOG brief entry** (one per brief, never one per question; recorded CHANGELOG, then DECISIONS, then STATUS — the entry must exist before the STATUS rewrite removes the question; omit the D-range when no entry was logged):
+**CHANGELOG brief entry** (one per brief, never one per question; recorded CHANGELOG, then reserved DECISIONS entries, LEDGER updates, then STATUS — the entry must exist before the STATUS rewrite removes the question; omit the D-range when no entry was logged):
 
 ```
 ## YYYY-MM-DD — brief: N of M questions answered; D-XXXX–D-YYYY logged
@@ -60,7 +74,13 @@ The earlier entry said X [unit, scope]. Re-measured now: Y [same unit, same scop
 Qn <question> → <answer> (D-XXXX | stands with D-XXXX | default, no decision entry), or "Qn — not answered". One line per question. What the answers unlock next, in one sentence.
 ```
 
-**DECISIONS entry** (numbered sequentially — check the highest existing D-number):
+For a ledger row, Evidence cites the real provenance: a D-ID, an existing
+decision, the Brief CHANGELOG line for a documented default, or the owner
+answer recorded there. Clear only the resolved blocker; retain every other
+`Blocked-on` gate. A terminal ruling moves the exact row to `LEDGER-ARCHIVE.md`
+after archive verification, and a replay never reuses its ID.
+
+**DECISIONS entry** (reconcile pending Briefs first; allocate above existing IDs and all CHANGELOG/decision-archive reservations, never reuse a reserved number):
 
 ```
 ## D-NNNN — YYYY-MM-DD — short decision title
@@ -74,6 +94,8 @@ Qn <question> → <answer> (D-XXXX | stands with D-XXXX | default, no decision e
 **DECISIONS correction** (when a past decision's *record* was wrong but the decision stands): a new numbered entry titled `D-NNNN — YYYY-MM-DD — corrects D-XXXX`, saying what was wrong. Never reuse D-XXXX's number with a qualifier — two entries at one address is how a register ends up contradicting itself.
 
 **DECISIONS supersession** (when a past decision is overturned): same format, titled `D-NNNN — YYYY-MM-DD — supersedes D-XXXX`. Never delete the superseded entry — the historical record matters.
+
+**DECISIONS extension** (when an earlier rule stands, narrowed or added to): same format, titled `D-NNNN — YYYY-MM-DD — extends D-XXXX — title`. A cited id without a verb is a citation, not lineage; back-links and the head of a chain are derived by grep on the id. When a chain has been extended more than three times, restate the whole rule once as a supersession naming every id it replaces — the head lives in DECISIONS, never as a rewritten copy in README, the instructions file or STATUS. `+tags` may end a title only when `LEDGER.md` exists and its `Tags:` line declares them (Doctor `decisions-tags`).
 
 New DECISIONS entries go at the **bottom** (oldest first, so numbers read in order). New CHANGELOG entries go at the **top** (newest first). The two files run in opposite directions on purpose; a session appending blind to both gets one wrong.
 
@@ -101,14 +123,18 @@ These are constants. Pattern-match to them — don't re-derive each session.
 
 ## File index
 
+The minimum is four documentation files: README, STATUS, CHANGELOG and DECISIONS. The project-level agent-instructions file supplies the required wiring separately. Other documents are added when there is real content to seed.
+
 - **`README.md`** (this file) — the map. Bootstrap, close, formats, preferences.
 - **`STATUS.md`** — living dashboard of current state. Updated every session.
-- **`ROADMAP.md`** — the plan. Detailed near-term, sketched long-term.
+- **`ROADMAP.md`** — the plan. Detailed near-term, sketched long-term. [Delete this line if not installed.]
 - **`CHANGELOG.md`** — append-only history of what happened and why.
 - **`DECISIONS.md`** — append-only log of non-obvious choices with reasoning.
-- **`GLOSSARY.md`** — project term definitions, sectioned by domain.
+- **`GLOSSARY.md`** — project term definitions, sectioned by domain. [Delete this line if not installed.]
 - **`BRAND.md`** — brand anchors, voice guide, design constants. [Delete this line if not installed.]
 - **`SPEC_TEMPLATE.md`** — the template project specs follow. [Delete this line if not installed.]
+- **`LEDGER.md`** — the live findings ledger; `LEDGER-ARCHIVE.md` its closed record. [Delete this line if not installed.]
+- **`SKILL-REGISTRY.md`** — optional inventory of project skills, lifecycle and workflow routing. [Delete this line if not installed.]
 
 ---
 

@@ -1,0 +1,17 @@
+script_sha256 3362ee5cfb8dc10d80b4f9128d0dfb7b6cc3377ab9693d51102a3fb6ccc46340
+adjacent_pre source "<div></div><pre>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</pre>\n\n- Actual finding.\n"
+adjacent_pre mappings ["| Example parser | demo |", "- Actual finding."]
+adjacent_pre unmapped ["<div></div><pre>", "</pre>"]
+adjacent_pre command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+adjacent_pre exit 0 stderr ''
+adjacent_pre written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | \\| Example parser \\| demo \\| |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#775221daedfc3dc62396f31935d060210544a76c1c5ef72f3fee2f0150521d82 |", "| LG-0002 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+adjacent_pre source_preservation_and_same_fresh_plan_idempotence PASS
+adjacent_div source "<div></div><div>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>\n\n- Actual finding.\n"
+adjacent_div mappings ["| Example parser | demo |", "- Actual finding."]
+adjacent_div unmapped ["<div></div><div>", "</div>"]
+adjacent_div command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+adjacent_div exit 0 stderr ''
+adjacent_div written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | \\| Example parser \\| demo \\| |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#775221daedfc3dc62396f31935d060210544a76c1c5ef72f3fee2f0150521d82 |", "| LG-0002 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+adjacent_div source_preservation_and_same_fresh_plan_idempotence PASS
+adjacent_pre html_only_ledger_target ACCEPTED "# LEDGER\n<div></div><pre>\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |\n</pre>\n"
+adjacent_div html_only_ledger_target ACCEPTED "# LEDGER\n<div></div><div>\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |\n</div>\n"

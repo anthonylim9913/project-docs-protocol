@@ -1,0 +1,4462 @@
+{
+  "parser": "markdown-it-py 4.0.0; commonmark preset",
+  "executable": "<python>",
+  "cwd": "<repo>",
+  "cases": [
+    {
+      "name": "nested-bullet-dash",
+      "source": "- Outer section\n    - Protocol section\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "c41cdafb51e151f5936606f31991ca924592b46e6597a91345d616d44076c8a4",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            5,
+            6
+          ]
+        ],
+        "source_bytes": 1823
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            7,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            7,
+            12
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            12,
+            17
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            17,
+            21
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            21,
+            23
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            23,
+            30
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "nested-bullet-plus",
+      "source": "+ Outer section\n    + Protocol section\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "239c9c744005104cb302365bba2fd5fcdcaf60111c689ad527bffc7ee66a551e",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            5,
+            6
+          ]
+        ],
+        "source_bytes": 1823
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            7,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            7,
+            12
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            12,
+            17
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            17,
+            21
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            21,
+            23
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            23,
+            30
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "nested-bullet-star",
+      "source": "* Outer section\n    * Protocol section\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "19e9b0fe737ffbe99a35ddaea145a677ab8011bd580ba7a9921ae37aaabb4f61",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            5,
+            6
+          ]
+        ],
+        "source_bytes": 1823
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            7,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            7,
+            12
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            12,
+            17
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            17,
+            21
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            21,
+            23
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            23,
+            30
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "nested-numbered",
+      "source": "1. Outer section\n\n   2. Protocol section\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "6538db09cfa278deb7d85dcb2f90390395049452157236254919c82a64e93760",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            6,
+            7
+          ]
+        ],
+        "source_bytes": 1825
+      },
+      "blocks": [
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            0,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            2,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            2,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            6,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            6,
+            7
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            8,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            8,
+            13
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            8,
+            13
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            8,
+            13
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            13,
+            18
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            13,
+            18
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            13,
+            18
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            18,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            18,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            18,
+            22
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            22,
+            24
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            22,
+            24
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            22,
+            24
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            24,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            24,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            24,
+            31
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "nested-wide-numbered",
+      "source": "10. Outer section\n\n    20. Protocol section\n\n        ## Project docs protocol\n\n        This project uses the project-docs-protocol (docs in `docs/`).\n\n        - **Session start:** before proposing or doing any work, read `STATUS.md`\n          (in full if it is under ~60 lines; otherwise its top line, its heading\n          list, and the current-state sections only) and the last 3–5 entries of\n          `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n          about to work on; then read live `LEDGER.md` rows if installed.\n        - **After each meaningful unit of work** (spec drafted, decision made, blocker\n          resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n          then rewrite STATUS. Brief records reserved DECISIONS entries between\n          CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n          Do this as you go — do not wait for the session to end.\n        - **STATUS is rewritten, not appended.** Replace the current-state sections\n          and bump the last-updated date. Never prepend a session record or leave a\n          dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n          already be there before STATUS changes.\n        - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n          corrections or supersessions instead.\n        - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n          (skip LEDGER when absent),\n          STATUS rewritten, registers append-only — are the protocol's and are not\n          overridden by project convention. Paths, id formats and entry shapes are\n          this project's to set, here. If this file and the protocol disagree on one\n          of those three properties, the disagreement is a CHANGELOG entry, not a\n          habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "d7bf8d942405322205e4b4f02b3731964339f398621c607bd6756d549f5db59b",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            6,
+            7
+          ]
+        ],
+        "source_bytes": 1878
+      },
+      "blocks": [
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            0,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            2,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            2,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            6,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            6,
+            7
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            8,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            8,
+            13
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            8,
+            13
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            8,
+            13
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            13,
+            18
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            13,
+            18
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            13,
+            18
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            18,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            18,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            18,
+            22
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            22,
+            24
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            22,
+            24
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            22,
+            24
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            24,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            24,
+            31
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            24,
+            31
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "ordered-sibling-indentation-code",
+      "source": "1. Outer\n  2. Inner\n\n    ## Project docs protocol\n\n    This project uses the project-docs-protocol (docs in `docs/`).\n\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3–5 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go — do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only — are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "6b91dba93ee53b5fefb578b942535c101201f059f464ce9cd40b2bd5e4cfa0ac",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1754
+      },
+      "blocks": [
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            0,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer"
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Inner"
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            3,
+            30
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "ordered-sibling-indentation-live",
+      "source": "1. Outer\n  2. Inner\n\n       ## Project docs protocol\n\n       This project uses the project-docs-protocol (docs in `docs/`).\n\n       - **Session start:** before proposing or doing any work, read `STATUS.md`\n         (in full if it is under ~60 lines; otherwise its top line, its heading\n         list, and the current-state sections only) and the last 3–5 entries of\n         `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n         about to work on; then read live `LEDGER.md` rows if installed.\n       - **After each meaningful unit of work** (spec drafted, decision made, blocker\n         resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n         then rewrite STATUS. Brief records reserved DECISIONS entries between\n         CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n         Do this as you go — do not wait for the session to end.\n       - **STATUS is rewritten, not appended.** Replace the current-state sections\n         and bump the last-updated date. Never prepend a session record or leave a\n         dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n         already be there before STATUS changes.\n       - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n         corrections or supersessions instead.\n       - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n         (skip LEDGER when absent),\n         STATUS rewritten, registers append-only — are the protocol's and are not\n         overridden by project convention. Paths, id formats and entry shapes are\n         this project's to set, here. If this file and the protocol disagree on one\n         of those three properties, the disagreement is a CHANGELOG entry, not a\n         habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "871fb12c58e981a539ec07c6c104969725c36e829b7dd79a0fd78dd9eb759cf5",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            5,
+            6
+          ]
+        ],
+        "source_bytes": 1829
+      },
+      "blocks": [
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer"
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Inner"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            7,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            7,
+            12
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            12,
+            17
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            17,
+            21
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            21,
+            23
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            23,
+            30
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "wide-numbered-cannot-interrupt-paragraph",
+      "source": "10. Outer section\n    20. Protocol section\n\n        ## Project docs protocol\n\n        This project uses the project-docs-protocol (docs in `docs/`).\n\n        - **Session start:** before proposing or doing any work, read `STATUS.md`\n          (in full if it is under ~60 lines; otherwise its top line, its heading\n          list, and the current-state sections only) and the last 3–5 entries of\n          `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n          about to work on; then read live `LEDGER.md` rows if installed.\n        - **After each meaningful unit of work** (spec drafted, decision made, blocker\n          resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n          then rewrite STATUS. Brief records reserved DECISIONS entries between\n          CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n          Do this as you go — do not wait for the session to end.\n        - **STATUS is rewritten, not appended.** Replace the current-state sections\n          and bump the last-updated date. Never prepend a session record or leave a\n          dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n          already be there before STATUS changes.\n        - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n          corrections or supersessions instead.\n        - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n          (skip LEDGER when absent),\n          STATUS rewritten, registers append-only — are the protocol's and are not\n          overridden by project convention. Paths, id formats and entry shapes are\n          this project's to set, here. If this file and the protocol disagree on one\n          of those three properties, the disagreement is a CHANGELOG entry, not a\n          habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "d287a7323c29e15fbe2276f4e778e27aa0a7a1cb188c9ba8f65ef354deb34725",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1877
+      },
+      "blocks": [
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            2
+          ],
+          "content": "Outer section\n20. Protocol section"
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            3,
+            30
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "nested-tab-padding",
+      "source": "-\tOuter section\n\t-\tProtocol section\n\n\t\t## Project docs protocol\n\n\t\tThis project uses the project-docs-protocol (docs in `docs/`).\n\n\t\t- **Session start:** before proposing or doing any work, read `STATUS.md`\n\t\t  (in full if it is under ~60 lines; otherwise its top line, its heading\n\t\t  list, and the current-state sections only) and the last 3–5 entries of\n\t\t  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n\t\t  about to work on; then read live `LEDGER.md` rows if installed.\n\t\t- **After each meaningful unit of work** (spec drafted, decision made, blocker\n\t\t  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n\t\t  then rewrite STATUS. Brief records reserved DECISIONS entries between\n\t\t  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n\t\t  Do this as you go — do not wait for the session to end.\n\t\t- **STATUS is rewritten, not appended.** Replace the current-state sections\n\t\t  and bump the last-updated date. Never prepend a session record or leave a\n\t\t  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n\t\t  already be there before STATUS changes.\n\t\t- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n\t\t  corrections or supersessions instead.\n\t\t- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n\t\t  (skip LEDGER when absent),\n\t\t  STATUS rewritten, registers append-only — are the protocol's and are not\n\t\t  overridden by project convention. Paths, id formats and entry shapes are\n\t\t  this project's to set, here. If this file and the protocol disagree on one\n\t\t  of those three properties, the disagreement is a CHANGELOG entry, not a\n\t\t  habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "36f1c1c50ad29329f2f6e5a8d215e54475999d38f989e3f558ea8e040bf8b7e9",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            5,
+            6
+          ]
+        ],
+        "source_bytes": 1720
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            7,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            7,
+            12
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            7,
+            12
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            12,
+            17
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            12,
+            17
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            17,
+            21
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            17,
+            21
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            21,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            21,
+            23
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            23,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            23,
+            30
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "bullet-continuation",
+      "source": "- Protocol section\n\n    ## Project docs protocol\n\n    This project uses the project-docs-protocol (docs in `docs/`).\n\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3–5 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go — do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only — are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "85cdeecfd280efe3c9a72c6cfaf21a9f05493fe257c9fcd251e8585653375df0",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            4,
+            5
+          ]
+        ],
+        "source_bytes": 1753
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            6,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            6,
+            11
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            6,
+            11
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            6,
+            11
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            11,
+            16
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            11,
+            16
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            11,
+            16
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            16,
+            20
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            16,
+            20
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            16,
+            20
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            20,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            20,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            20,
+            22
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            22,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            22,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            22,
+            29
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "numbered-continuation",
+      "source": "1. Protocol section\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "ab70ef793ff1c485a8aac64ceae6d19805ab5c177de0ee7da6ba627e770b0730",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            4,
+            5
+          ]
+        ],
+        "source_bytes": 1804
+      },
+      "blocks": [
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            6,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            6,
+            11
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            6,
+            11
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            6,
+            11
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            11,
+            16
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            11,
+            16
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            11,
+            16
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            16,
+            20
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            16,
+            20
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            16,
+            20
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            20,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            20,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            20,
+            22
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            22,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            22,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            22,
+            29
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "nested-with-extra-blank",
+      "source": "- Outer section\n\n    - Protocol section\n\n\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "1e2eefe4be115efcbc760c1d30fe14d520c2f9859583f55b4f50cd27884642e5",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            7,
+            8
+          ]
+        ],
+        "source_bytes": 1825
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            2,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            2,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            7,
+            8
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            7,
+            8
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            9,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            9,
+            14
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            9,
+            14
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            9,
+            14
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            14,
+            19
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            14,
+            19
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            14,
+            19
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            19,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            19,
+            23
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            19,
+            23
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            23,
+            25
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            23,
+            25
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            23,
+            25
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            25,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            25,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            25,
+            32
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "nested-tight-heading",
+      "source": "- Outer section\n    - Protocol section\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "ef597ab516cebe7f49c0b82330e994b69fbda51d74e28ad6c769aa1065f67fac",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            4,
+            5
+          ]
+        ],
+        "source_bytes": 1822
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            6,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            6,
+            11
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            6,
+            11
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            6,
+            11
+          ],
+          "content": "**Session start:** before proposing or doing any work, read `STATUS.md`\n(in full if it is under ~60 lines; otherwise its top line, its heading\nlist, and the current-state sections only) and the last 3–5 entries of\n`CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\nabout to work on; then read live `LEDGER.md` rows if installed."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            11,
+            16
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            11,
+            16
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            11,
+            16
+          ],
+          "content": "**After each meaningful unit of work** (spec drafted, decision made, blocker\nresolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\nthen rewrite STATUS. Brief records reserved DECISIONS entries between\nCHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\nDo this as you go — do not wait for the session to end."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            16,
+            20
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            16,
+            20
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            16,
+            20
+          ],
+          "content": "**STATUS is rewritten, not appended.** Replace the current-state sections\nand bump the last-updated date. Never prepend a session record or leave a\ndated \"done\" section behind: that record belongs in CHANGELOG, and it must\nalready be there before STATUS changes."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            20,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            20,
+            22
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            20,
+            22
+          ],
+          "content": "CHANGELOG and DECISIONS are append-only: never edit past entries; append\ncorrections or supersessions instead."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            22,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            22,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            22,
+            29
+          ],
+          "content": "**Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n(skip LEDGER when absent),\nSTATUS rewritten, registers append-only — are the protocol's and are not\noverridden by project convention. Paths, id formats and entry shapes are\nthis project's to set, here. If this file and the protocol disagree on one\nof those three properties, the disagreement is a CHANGELOG entry, not a\nhabit."
+        }
+      ]
+    },
+    {
+      "name": "top-level-four-space-code",
+      "source": "Example only:\n\n    ## Project docs protocol\n\n    This project uses the project-docs-protocol (docs in `docs/`).\n\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3–5 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go — do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only — are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "b1a3558287d8a2e36d4c38ec62b0a57dddf49cc1c37cf6ce1b8b74bc2169ae44",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1748
+      },
+      "blocks": [
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Example only:"
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            2,
+            29
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "top-level-tab-code",
+      "source": "Example only:\n\n\t## Project docs protocol\n\n\tThis project uses the project-docs-protocol (docs in `docs/`).\n\n\t- **Session start:** before proposing or doing any work, read `STATUS.md`\n\t  (in full if it is under ~60 lines; otherwise its top line, its heading\n\t  list, and the current-state sections only) and the last 3–5 entries of\n\t  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n\t  about to work on; then read live `LEDGER.md` rows if installed.\n\t- **After each meaningful unit of work** (spec drafted, decision made, blocker\n\t  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n\t  then rewrite STATUS. Brief records reserved DECISIONS entries between\n\t  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n\t  Do this as you go — do not wait for the session to end.\n\t- **STATUS is rewritten, not appended.** Replace the current-state sections\n\t  and bump the last-updated date. Never prepend a session record or leave a\n\t  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n\t  already be there before STATUS changes.\n\t- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n\t  corrections or supersessions instead.\n\t- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n\t  (skip LEDGER when absent),\n\t  STATUS rewritten, registers append-only — are the protocol's and are not\n\t  overridden by project convention. Paths, id formats and entry shapes are\n\t  this project's to set, here. If this file and the protocol disagree on one\n\t  of those three properties, the disagreement is a CHANGELOG entry, not a\n\t  habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "a8227211f93801e31d46da3ea32ef19cd1394c628bbbddb19b0700a1edabb153",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1673
+      },
+      "blocks": [
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Example only:"
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            2,
+            29
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "bullet-marker-surplus-tight",
+      "source": "-     ## Project docs protocol\n      This project uses the project-docs-protocol (docs in `docs/`).\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "51f9449651d011caa6baeba700b43eb21ad0045142715a590a0915fca633b814",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1781
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            25
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            25
+          ],
+          "content": ""
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            0,
+            25
+          ],
+          "content": "## Project docs protocol\nThis project uses the project-docs-protocol (docs in `docs/`).\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "bullet-marker-surplus-blank",
+      "source": "-     ## Project docs protocol\n\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "5ddaea40da2e1061363c377d00065008e6278e72a1bdd71b335ad922ff886da8",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1784
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            28
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            28
+          ],
+          "content": ""
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            0,
+            28
+          ],
+          "content": "## Project docs protocol\n\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "numbered-marker-surplus-tight",
+      "source": "1.     ## Project docs protocol\n       This project uses the project-docs-protocol (docs in `docs/`).\n       - **Session start:** before proposing or doing any work, read `STATUS.md`\n         (in full if it is under ~60 lines; otherwise its top line, its heading\n         list, and the current-state sections only) and the last 3–5 entries of\n         `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n         about to work on; then read live `LEDGER.md` rows if installed.\n       - **After each meaningful unit of work** (spec drafted, decision made, blocker\n         resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n         then rewrite STATUS. Brief records reserved DECISIONS entries between\n         CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n         Do this as you go — do not wait for the session to end.\n       - **STATUS is rewritten, not appended.** Replace the current-state sections\n         and bump the last-updated date. Never prepend a session record or leave a\n         dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n         already be there before STATUS changes.\n       - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n         corrections or supersessions instead.\n       - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n         (skip LEDGER when absent),\n         STATUS rewritten, registers append-only — are the protocol's and are not\n         overridden by project convention. Paths, id formats and entry shapes are\n         this project's to set, here. If this file and the protocol disagree on one\n         of those three properties, the disagreement is a CHANGELOG entry, not a\n         habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "bb6e7482e86cadf45772b893c63bcf26ed2a70f53abb4eeb081ddcd773749f0b",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1806
+      },
+      "blocks": [
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            0,
+            25
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            25
+          ],
+          "content": ""
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            0,
+            25
+          ],
+          "content": "## Project docs protocol\nThis project uses the project-docs-protocol (docs in `docs/`).\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "nested-marker-surplus-tight",
+      "source": "- Outer section\n    -     ## Project docs protocol\n          This project uses the project-docs-protocol (docs in `docs/`).\n          - **Session start:** before proposing or doing any work, read `STATUS.md`\n            (in full if it is under ~60 lines; otherwise its top line, its heading\n            list, and the current-state sections only) and the last 3–5 entries of\n            `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n            about to work on; then read live `LEDGER.md` rows if installed.\n          - **After each meaningful unit of work** (spec drafted, decision made, blocker\n            resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n            then rewrite STATUS. Brief records reserved DECISIONS entries between\n            CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n            Do this as you go — do not wait for the session to end.\n          - **STATUS is rewritten, not appended.** Replace the current-state sections\n            and bump the last-updated date. Never prepend a session record or leave a\n            dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n            already be there before STATUS changes.\n          - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n            corrections or supersessions instead.\n          - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n            (skip LEDGER when absent),\n            STATUS rewritten, registers append-only — are the protocol's and are not\n            overridden by project convention. Paths, id formats and entry shapes are\n            this project's to set, here. If this file and the protocol disagree on one\n            of those three properties, the disagreement is a CHANGELOG entry, not a\n            habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "fec2134076bcab7c8fc6c9b9844e3c91a4bb1da7ff3e6a8162ecdbf99ee16062",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1897
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            26
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            26
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            26
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            26
+          ],
+          "content": ""
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            1,
+            26
+          ],
+          "content": "## Project docs protocol\nThis project uses the project-docs-protocol (docs in `docs/`).\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "code-after-nested-paragraph",
+      "source": "- Outer section\n    - Protocol section\n\n          ## Project docs protocol\n\n          This project uses the project-docs-protocol (docs in `docs/`).\n\n          - **Session start:** before proposing or doing any work, read `STATUS.md`\n            (in full if it is under ~60 lines; otherwise its top line, its heading\n            list, and the current-state sections only) and the last 3–5 entries of\n            `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n            about to work on; then read live `LEDGER.md` rows if installed.\n          - **After each meaningful unit of work** (spec drafted, decision made, blocker\n            resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n            then rewrite STATUS. Brief records reserved DECISIONS entries between\n            CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n            Do this as you go — do not wait for the session to end.\n          - **STATUS is rewritten, not appended.** Replace the current-state sections\n            and bump the last-updated date. Never prepend a session record or leave a\n            dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n            already be there before STATUS changes.\n          - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n            corrections or supersessions instead.\n          - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n            (skip LEDGER when absent),\n            STATUS rewritten, registers append-only — are the protocol's and are not\n            overridden by project convention. Paths, id formats and entry shapes are\n            this project's to set, here. If this file and the protocol disagree on one\n            of those three properties, the disagreement is a CHANGELOG entry, not a\n            habit.\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "0754420cb47b075f49c1e68d9604d1ca673b798422f50cafdf220e96afabe86c",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1923
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            3,
+            30
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "nested-fenced-example",
+      "source": "- Outer section\n    - Protocol section\n\n      ```markdown\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n      ```\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "e601349949910caf36c383cd6b65227797a659cac006199298a642bfdf0a175b",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1851
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            32
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Protocol section"
+        },
+        {
+          "type": "fence",
+          "tag": "code",
+          "lines": [
+            3,
+            32
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "same-line-nested-fenced-authentic",
+      "source": "- - ```markdown\n    ## Project docs protocol\n\n    This project uses the project-docs-protocol (docs in `docs/`).\n\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3–5 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go — do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only — are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n    ```\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "fb2087d66ee9eb6c7548f1c722000de110a0c849bdcbfd38e7d3e2e815614b77",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1757
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            29
+          ],
+          "content": ""
+        },
+        {
+          "type": "fence",
+          "tag": "code",
+          "lines": [
+            0,
+            29
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "same-line-nested-visible-authentic",
+      "source": "- - ## Project docs protocol\n    This project uses the project-docs-protocol (docs in `docs/`).\n    - **Session start:** read STATUS in full if it is under ~60 lines.\n    - STATUS is rewritten, not appended.\n    - **Precedence.** Append CHANGELOG first, edit LEDGER, then rewrite STATUS.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "d982f6ecdac89cb206e55fb1917cfab3b10f0bb6e74c72d221bef84aafcd3b0c",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            1,
+            2
+          ]
+        ],
+        "source_bytes": 288
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            2,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "**Session start:** read STATUS in full if it is under ~60 lines."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "STATUS is rewritten, not appended."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "**Precedence.** Append CHANGELOG first, edit LEDGER, then rewrite STATUS."
+        }
+      ]
+    },
+    {
+      "name": "mixed-list-transition-fenced-authentic",
+      "source": "- Parent\n2. - ```markdown\n     ## Project docs protocol\n\n     This project uses the project-docs-protocol (docs in `docs/`).\n\n     - **Session start:** before proposing or doing any work, read `STATUS.md`\n       (in full if it is under ~60 lines; otherwise its top line, its heading\n       list, and the current-state sections only) and the last 3–5 entries of\n       `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n       about to work on; then read live `LEDGER.md` rows if installed.\n     - **After each meaningful unit of work** (spec drafted, decision made, blocker\n       resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n       then rewrite STATUS. Brief records reserved DECISIONS entries between\n       CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n       Do this as you go — do not wait for the session to end.\n     - **STATUS is rewritten, not appended.** Replace the current-state sections\n       and bump the last-updated date. Never prepend a session record or leave a\n       dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n       already be there before STATUS changes.\n     - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n       corrections or supersessions instead.\n     - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n       (skip LEDGER when absent),\n       STATUS rewritten, registers append-only — are the protocol's and are not\n       overridden by project convention. Paths, id formats and entry shapes are\n       this project's to set, here. If this file and the protocol disagree on one\n       of those three properties, the disagreement is a CHANGELOG entry, not a\n       habit.\n     ```\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "7ac363fd0f6ecc2176206daed9e4ca441ca37608ec5d8902b0d1af0de76326d2",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1793
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Parent"
+        },
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            30
+          ],
+          "content": ""
+        },
+        {
+          "type": "fence",
+          "tag": "code",
+          "lines": [
+            1,
+            30
+          ],
+          "content": "## Project docs protocol\n\nThis project uses the project-docs-protocol (docs in `docs/`).\n\n- **Session start:** before proposing or doing any work, read `STATUS.md`\n  (in full if it is under ~60 lines; otherwise its top line, its heading\n  list, and the current-state sections only) and the last 3–5 entries of\n  `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n  about to work on; then read live `LEDGER.md` rows if installed.\n- **After each meaningful unit of work** (spec drafted, decision made, blocker\n  resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n  then rewrite STATUS. Brief records reserved DECISIONS entries between\n  CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n  Do this as you go — do not wait for the session to end.\n- **STATUS is rewritten, not appended.** Replace the current-state sections\n  and bump the last-updated date. Never prepend a session record or leave a\n  dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n  already be there before STATUS changes.\n- CHANGELOG and DECISIONS are append-only: never edit past entries; append\n  corrections or supersessions instead.\n- **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n  (skip LEDGER when absent),\n  STATUS rewritten, registers append-only — are the protocol's and are not\n  overridden by project convention. Paths, id formats and entry shapes are\n  this project's to set, here. If this file and the protocol disagree on one\n  of those three properties, the disagreement is a CHANGELOG entry, not a\n  habit.\n"
+        }
+      ]
+    },
+    {
+      "name": "mixed-list-transition-active-positive",
+      "source": "- Parent\n2. - ## Project docs protocol\n     This project uses the project-docs-protocol (docs in `docs/`).\n     - Read STATUS in full if it is under ~60 lines.\n     - STATUS is rewritten, not appended.\n     - **Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "25e5e2dac7b8a02dea558251cd3a382b560061569a752b23cebd4871d07cdc07",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            2,
+            3
+          ]
+        ],
+        "source_bytes": 276
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Parent"
+        },
+        {
+          "type": "ordered_list_open",
+          "tag": "ol",
+          "lines": [
+            1,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            1,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            2
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            3,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "Read STATUS in full if it is under ~60 lines."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "STATUS is rewritten, not appended."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "**Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS."
+        }
+      ]
+    },
+    {
+      "name": "empty-item-blank-fenced-authentic",
+      "source": "-\n\n    - - ```markdown\n      ## Project docs protocol\n\n      This project uses the project-docs-protocol (docs in `docs/`).\n\n      - **Session start:** before proposing or doing any work, read `STATUS.md`\n        (in full if it is under ~60 lines; otherwise its top line, its heading\n        list, and the current-state sections only) and the last 3–5 entries of\n        `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n        about to work on; then read live `LEDGER.md` rows if installed.\n      - **After each meaningful unit of work** (spec drafted, decision made, blocker\n        resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n        then rewrite STATUS. Brief records reserved DECISIONS entries between\n        CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n        Do this as you go — do not wait for the session to end.\n      - **STATUS is rewritten, not appended.** Replace the current-state sections\n        and bump the last-updated date. Never prepend a session record or leave a\n        dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n        already be there before STATUS changes.\n      - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n        corrections or supersessions instead.\n      - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n        (skip LEDGER when absent),\n        STATUS rewritten, registers append-only — are the protocol's and are not\n        overridden by project convention. Paths, id formats and entry shapes are\n        this project's to set, here. If this file and the protocol disagree on one\n        of those three properties, the disagreement is a CHANGELOG entry, not a\n        habit.\n      ```\n",
+      "live": false,
+      "oracle_live": false,
+      "source_sha256": "fcc12ee373034b67e4d16f1a144830272c7408d1a06cba802b2f415c75005a3b",
+      "oracle_assertion": {
+        "token_type": "code_block_or_absent",
+        "spans": [],
+        "source_bytes": 1816
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            2
+          ],
+          "content": ""
+        },
+        {
+          "type": "code_block",
+          "tag": "code",
+          "lines": [
+            2,
+            31
+          ],
+          "content": "- - ```markdown\n  ## Project docs protocol\n\n  This project uses the project-docs-protocol (docs in `docs/`).\n\n  - **Session start:** before proposing or doing any work, read `STATUS.md`\n    (in full if it is under ~60 lines; otherwise its top line, its heading\n    list, and the current-state sections only) and the last 3–5 entries of\n    `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n    about to work on; then read live `LEDGER.md` rows if installed.\n  - **After each meaningful unit of work** (spec drafted, decision made, blocker\n    resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n    then rewrite STATUS. Brief records reserved DECISIONS entries between\n    CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n    Do this as you go — do not wait for the session to end.\n  - **STATUS is rewritten, not appended.** Replace the current-state sections\n    and bump the last-updated date. Never prepend a session record or leave a\n    dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n    already be there before STATUS changes.\n  - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n    corrections or supersessions instead.\n  - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n    (skip LEDGER when absent),\n    STATUS rewritten, registers append-only — are the protocol's and are not\n    overridden by project convention. Paths, id formats and entry shapes are\n    this project's to set, here. If this file and the protocol disagree on one\n    of those three properties, the disagreement is a CHANGELOG entry, not a\n    habit.\n  ```\n"
+        }
+      ]
+    },
+    {
+      "name": "empty-item-blank-active-positive",
+      "source": "- Parent\n\n    - - ## Project docs protocol\n      This project uses the project-docs-protocol (docs in `docs/`).\n      - Read STATUS in full if it is under ~60 lines.\n      - STATUS is rewritten, not appended.\n      - **Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "fdccbbfb947501fa90272368c7d49e24b99e0079a86484a1c0646f83ee2e8607",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            3,
+            4
+          ]
+        ],
+        "source_bytes": 284
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Parent"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            2,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            2,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "heading_open",
+          "tag": "h2",
+          "lines": [
+            2,
+            3
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            2,
+            3
+          ],
+          "content": "Project docs protocol"
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            3,
+            4
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            3,
+            4
+          ],
+          "content": "This project uses the project-docs-protocol (docs in `docs/`)."
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            4,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            4,
+            5
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            4,
+            5
+          ],
+          "content": "Read STATUS in full if it is under ~60 lines."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            5,
+            6
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            5,
+            6
+          ],
+          "content": "STATUS is rewritten, not appended."
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            6,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            6,
+            7
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            6,
+            7
+          ],
+          "content": "**Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS."
+        }
+      ]
+    },
+    {
+      "name": "lazy-top-level-paragraph",
+      "source": "These are active instructions:\n    ## Project docs protocol\n    This project uses the project-docs-protocol (docs in `docs/`).\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3–5 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go — do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only — are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "e6c59a171189e6326c401b64327f46fcfc95312ab2fff3191715878fa792bcc5",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            0,
+            26
+          ]
+        ],
+        "source_bytes": 1762
+      },
+      "blocks": [
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            26
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            26
+          ],
+          "content": "These are active instructions:\n    ## Project docs protocol\n    This project uses the project-docs-protocol (docs in `docs/`).\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3–5 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go — do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only — are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit."
+        }
+      ]
+    },
+    {
+      "name": "lazy-nested-paragraph",
+      "source": "- Outer section\n    - These are active instructions:\n          ## Project docs protocol\n          This project uses the project-docs-protocol (docs in `docs/`).\n          - **Session start:** before proposing or doing any work, read `STATUS.md`\n            (in full if it is under ~60 lines; otherwise its top line, its heading\n            list, and the current-state sections only) and the last 3–5 entries of\n            `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n            about to work on; then read live `LEDGER.md` rows if installed.\n          - **After each meaningful unit of work** (spec drafted, decision made, blocker\n            resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n            then rewrite STATUS. Brief records reserved DECISIONS entries between\n            CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n            Do this as you go — do not wait for the session to end.\n          - **STATUS is rewritten, not appended.** Replace the current-state sections\n            and bump the last-updated date. Never prepend a session record or leave a\n            dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n            already be there before STATUS changes.\n          - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n            corrections or supersessions instead.\n          - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n            (skip LEDGER when absent),\n            STATUS rewritten, registers append-only — are the protocol's and are not\n            overridden by project convention. Paths, id formats and entry shapes are\n            this project's to set, here. If this file and the protocol disagree on one\n            of those three properties, the disagreement is a CHANGELOG entry, not a\n            habit.\n",
+      "live": true,
+      "oracle_live": true,
+      "source_sha256": "ac713694b84544ae105d051eef6dc3f311df5bae5a39fb97859506d2f9fa3770",
+      "oracle_assertion": {
+        "token_type": "inline",
+        "spans": [
+          [
+            1,
+            27
+          ]
+        ],
+        "source_bytes": 1934
+      },
+      "blocks": [
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            0,
+            27
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            0,
+            27
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            0,
+            1
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            0,
+            1
+          ],
+          "content": "Outer section"
+        },
+        {
+          "type": "bullet_list_open",
+          "tag": "ul",
+          "lines": [
+            1,
+            27
+          ],
+          "content": ""
+        },
+        {
+          "type": "list_item_open",
+          "tag": "li",
+          "lines": [
+            1,
+            27
+          ],
+          "content": ""
+        },
+        {
+          "type": "paragraph_open",
+          "tag": "p",
+          "lines": [
+            1,
+            27
+          ],
+          "content": ""
+        },
+        {
+          "type": "inline",
+          "tag": "",
+          "lines": [
+            1,
+            27
+          ],
+          "content": "These are active instructions:\n    ## Project docs protocol\n    This project uses the project-docs-protocol (docs in `docs/`).\n    - **Session start:** before proposing or doing any work, read `STATUS.md`\n      (in full if it is under ~60 lines; otherwise its top line, its heading\n      list, and the current-state sections only) and the last 3–5 entries of\n      `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're\n      about to work on; then read live `LEDGER.md` rows if installed.\n    - **After each meaningful unit of work** (spec drafted, decision made, blocker\n      resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,\n      then rewrite STATUS. Brief records reserved DECISIONS entries between\n      CHANGELOG and LEDGER; ordinary Close adds optional DECISIONS after STATUS.\n      Do this as you go — do not wait for the session to end.\n    - **STATUS is rewritten, not appended.** Replace the current-state sections\n      and bump the last-updated date. Never prepend a session record or leave a\n      dated \"done\" section behind: that record belongs in CHANGELOG, and it must\n      already be there before STATUS changes.\n    - CHANGELOG and DECISIONS are append-only: never edit past entries; append\n      corrections or supersessions instead.\n    - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS\n      (skip LEDGER when absent),\n      STATUS rewritten, registers append-only — are the protocol's and are not\n      overridden by project convention. Paths, id formats and entry shapes are\n      this project's to set, here. If this file and the protocol disagree on one\n      of those three properties, the disagreement is a CHANGELOG entry, not a\n      habit."
+        }
+      ]
+    }
+  ]
+}

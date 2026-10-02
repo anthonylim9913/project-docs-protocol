@@ -1,0 +1,85 @@
+{
+  "reviewed_hashes": {
+    "docs-doctor.py": "65d5be94cf6b708f7b2de61a7cb6799adb60569a7ff91c7598e113eeb25bd07f",
+    "docs-migrate.py": "dff2647f5e4594abaaff8d38f21791d421add7e1fb64d2247f73bc3e43c92d88",
+    "register_paths.py": "f8ee7ba8bacd1404d9475e08108c94a5638befb6ea7d80d44f26d8deef1948b3"
+  },
+  "observations": [
+    {
+      "case": "root-only",
+      "doctor_exit": 0,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "docs-only",
+      "doctor_exit": 0,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "root-empty-docs",
+      "doctor_exit": 0,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "complete-root-two-file-docs",
+      "doctor_exit": 0,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "partial-root-complete-docs",
+      "doctor_exit": 0,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "two-complete-root-explicit",
+      "doctor_exit": 1,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "two-complete-docs-explicit",
+      "doctor_exit": 1,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "custom-explicit",
+      "doctor_exit": 0,
+      "migration_preview_exit": 0,
+      "migration_write_exit": 0,
+      "only_selected_outputs_changed": true
+    },
+    {
+      "case": "two-complete-unselected",
+      "doctor_exit": 3,
+      "migration_exit": 2,
+      "unchanged": true
+    },
+    {
+      "case": "explicit-preinstall",
+      "rejected_missing_flag_or_path": true,
+      "migration_write_exit": 0,
+      "status_preserved": true,
+      "decisions_not_invented": true
+    },
+    {
+      "case": "target-binding-before-prepared-journal-replay",
+      "redirect_exit": 2,
+      "redirect_unchanged": true,
+      "intended_resume_exit": 0,
+      "same_plan_repeat_unchanged": true
+    }
+  ]
+}

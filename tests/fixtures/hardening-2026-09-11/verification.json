@@ -1,0 +1,110 @@
+{
+  "recorded_at": "2026-09-11T22:45:08.678879+09:30",
+  "starting_commit": "328105fcbeada838284096bb883efb44907570a9",
+  "implementation_commit": "80fb78687ed8408b7d4d230bb2632c191ba2994b",
+  "scope": "Recorded after Close and before the final local documentation commit; runtime is identical to the implementation commit. No publication.",
+  "environment": {
+    "python": "3.14.4",
+    "system": "Darwin",
+    "machine": "arm64",
+    "macos": "26.4.1",
+    "git": "git version 2.54.0"
+  },
+  "source_sha256": {
+    "scripts/docs-doctor.py": "65d5be94cf6b708f7b2de61a7cb6799adb60569a7ff91c7598e113eeb25bd07f",
+    "scripts/docs-migrate.py": "dff2647f5e4594abaaff8d38f21791d421add7e1fb64d2247f73bc3e43c92d88",
+    "scripts/register_paths.py": "f8ee7ba8bacd1404d9475e08108c94a5638befb6ea7d80d44f26d8deef1948b3"
+  },
+  "commands": [
+    {
+      "command": "python3 -B -m unittest discover -v",
+      "exit": 0,
+      "tests": 169,
+      "skips": 0,
+      "seconds": 13.018,
+      "output": "unittest.txt"
+    },
+    {
+      "command": "python3 -B tests/run_regression.py",
+      "exit": 0,
+      "tests": 169,
+      "skips": 0,
+      "seconds": 11.453,
+      "output": "regression-runner.txt"
+    },
+    {
+      "command": "python3 -B tests/compare_hardening_baseline.py",
+      "exit": 0,
+      "baseline": {
+        "tests": 41,
+        "assertion_or_subtest_failures": 72,
+        "errors": 0,
+        "skips": 0,
+        "exit": 1
+      },
+      "current": {
+        "tests": 41,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "exit": 0
+      },
+      "output": "baseline-comparison.json"
+    },
+    {
+      "command": "python3 -B scripts/docs-doctor.py . --today 2026-09-11",
+      "exit": 0,
+      "checks": 38,
+      "pass": 33,
+      "info": 5,
+      "warn": 0,
+      "fail": 0,
+      "skip": 0,
+      "phase": "after register Close, before final documentation commit",
+      "output": "doctor-after-close.txt"
+    },
+    {
+      "command": "tests/.tmp/markdown-oracle-venv/bin/python <skill-creator>/scripts/quick_validate.py .",
+      "exit": 0,
+      "output": "Skill is valid!",
+      "dependency": "PyYAML 6.0.3, ignored development venv only"
+    },
+    {
+      "command": "compile all tracked/unignored Python files in memory",
+      "files": 27,
+      "exit": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    }
+  ],
+  "register_checks": {
+    "starting_changelog_unchanged_suffix": true,
+    "decisions_identical_to_start": true,
+    "agent_instructions_identical": true,
+    "live_repair_rows": 0,
+    "continuation_archived_rows": 10,
+    "archive_cells_verified_before_live_removal": true
+  },
+  "protected_refs": {
+    "main": "bf14c4a01240b1cf04a5358d330e629a9017c7de",
+    "v0.4.0": "8671e8d03224614290ff5aa3859e349eff587d13"
+  },
+  "installation": {
+    "codex_path": "~/.codex/skills/project-docs-protocol",
+    "resolved_source": "~/.claude/skills/project-docs-protocol",
+    "symlink_verified": true
+  },
+  "independent_reviews": {
+    "doctor_discovery": "complete on final hashes; 1098 sentence-visibility cases, 15 CLI cases, 11 selection/replay cases",
+    "migration_installation": "complete on final hashes; 82 methods plus13 actual HTML writes/hidden-target checks and actual install artifact probe",
+    "handoff_document_audit": "complete: counts, hashes, report links, preserved register history, ten exact terminal rows and installation artifacts checked; no material mismatch"
+  },
+  "limits": [
+    "No general CommonMark/GFM conformance claim",
+    "No retained detailed evidence for historical 28-register sample",
+    "Two-context installation exercise is one bounded observation; ordering is agent-reported",
+    "D-0005 compaction remains deferred; other projects and publication outside scope"
+  ]
+}

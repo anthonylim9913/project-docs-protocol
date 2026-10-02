@@ -1,0 +1,16 @@
+{
+  "evidence_kind": "authored-example-with-Doctor-replay",
+  "owner": "Use the local conversion method; do not execute it yet. No alternative method was live for me.",
+  "before": {
+    "docs/STATUS.md": "# STATUS\n\nLast updated: 2026-09-10\n\n## Current phase\n\nLifecycle verification.\n\n## Open questions (owner)\n\n1. LG-0001 — Authorize execution of the local conversion? Method is fixed; execution still awaits owner approval.\n",
+    "docs/LEDGER.md": "# LEDGER\n\nTags: +brief +storage\n\n## Items\n\n| ID | P | Status | Date | Title | Tags | Closes-when | Blocked-on | Touches | Evidence |\n|---|---|---|---|---|---|---|---|---|---|\n| LG-0001 | P1 | BLOCKED | 2026-09-10 | Local conversion authorization | +brief | The observation is reproducible. | owner execution approval | docs | Source: local review. |\n"
+  },
+  "steps": [
+    {
+      "name": "log-unanswered-execution",
+      "writes": {
+        "docs/CHANGELOG.md": "# CHANGELOG\n\n## 2026-09-10 — brief: 0 of 1 execution questions answered; no decision entries\n\nQ1 — method confirmed as a default, no decision entry; execution not answered. Owner execution gate and question remain unchanged.\n\n## 2026-09-10 — initialized project documentation system\n\nInstalled the project-docs-protocol in docs.\n"
+      }
+    }
+  ]
+}

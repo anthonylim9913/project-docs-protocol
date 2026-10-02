@@ -1,0 +1,17 @@
+script_sha256 dff2647f5e4594abaaff8d38f21791d421add7e1fb64d2247f73bc3e43c92d88
+adjacent_pre source "<div></div><pre>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</pre>\n\n- Actual finding.\n"
+adjacent_pre mappings ["- Actual finding."]
+adjacent_pre unmapped ["<div></div><pre>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</pre>"]
+adjacent_pre command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+adjacent_pre exit 0 stderr ''
+adjacent_pre written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+adjacent_pre source_preservation_and_same_fresh_plan_idempotence PASS
+adjacent_div source "<div></div><div>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>\n\n- Actual finding.\n"
+adjacent_div mappings ["- Actual finding."]
+adjacent_div unmapped ["<div></div><div>\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n</div>"]
+adjacent_div command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+adjacent_div exit 0 stderr ''
+adjacent_div written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+adjacent_div source_preservation_and_same_fresh_plan_idempotence PASS
+adjacent_pre html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header
+adjacent_div html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header

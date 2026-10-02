@@ -1,0 +1,25 @@
+script_sha256 dff2647f5e4594abaaff8d38f21791d421add7e1fb64d2247f73bc3e43c92d88
+multiline_img_attribute source "<img\n title=\"\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\">\n\n- Actual finding.\n"
+multiline_img_attribute mappings ["- Actual finding."]
+multiline_img_attribute unmapped ["<img\n title=\"\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\">"]
+multiline_img_attribute command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+multiline_img_attribute exit 0 stderr ''
+multiline_img_attribute written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+multiline_img_attribute source_preservation_and_same_fresh_plan_idempotence PASS
+multiline_br_attribute source "<br\n title=\"\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\">\n\n- Actual finding.\n"
+multiline_br_attribute mappings ["- Actual finding."]
+multiline_br_attribute unmapped ["<br\n title=\"\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\">"]
+multiline_br_attribute command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+multiline_br_attribute exit 0 stderr ''
+multiline_br_attribute written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+multiline_br_attribute source_preservation_and_same_fresh_plan_idempotence PASS
+multiline_input_attribute source "<input\n title=\"\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\">\n\n- Actual finding.\n"
+multiline_input_attribute mappings ["- Actual finding."]
+multiline_input_attribute unmapped ["<input\n title=\"\n| Item | Notes |\n|---|---|\n| Example parser | demo |\n\">"]
+multiline_input_attribute command ["<python>", "-B", "<repo>/scripts/docs-migrate.py", "<scratch>", "--today", "2026-09-11", "--plan", "<scratch>/reviewed.json", "--write"]
+multiline_input_attribute exit 0 stderr ''
+multiline_input_attribute written_rows ["| LG-0001 | P2 | OPEN | 2026-09-11 | Actual finding. |  | The parser acceptance fixture passes. |  | STATUS.md | migration:STATUS.md#c650d42749a85c946848508a2d836faeef5877d7077c7e39a8efc7cd0fe4edcd |"]
+multiline_input_attribute source_preservation_and_same_fresh_plan_idempotence PASS
+multiline_img_attribute html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header
+multiline_br_attribute html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header
+multiline_input_attribute html_only_ledger_target REFUSED LEDGER.md: expected exactly one ledger header

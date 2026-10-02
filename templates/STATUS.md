@@ -18,7 +18,7 @@
 
 ## Blocked
 
-*No items.* [Or a table: Item · Blocked by · Unblocks when — for work genuinely gated on external input. When the input is the owner's, also list the choice under Open questions.]
+*No items.* [Or a table: Item · Blocked by · Unblocks when — for work genuinely gated on external input. When the input is the owner's, also list the choice under Open questions. With LEDGER.md installed: this table and Deferred hold one count line with its as-of date ("4 BLOCKED, 9 P3 as of YYYY-MM-DD — LEDGER.md"), and owner-gated rows appear under Open questions citing the LG id.]
 
 ## Deferred
 

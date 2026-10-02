@@ -96,3 +96,66 @@
 **Decision:** 0 every check passed · 1 WARN only · 2 at least one FAIL · 3 the checker could not run.
 **Reasoning:** Rejected keeping one non-zero bit: a caller could not tell drift from a broken property. Rejected demoting thresholds to INFO so that more roots exit 0: the thresholds are the audit's measurements; the exit code was the wrong instrument, not the numbers.
 **Consequences:** Nothing keyed on the old contract — no release shipped it. The fresh-install promise becomes "exit 0, or 1 only for brand markers you chose to leave".
+
+## D-0014 — 2026-09-06 — category is a tenth `Tags` column with a declared vocabulary, not sigils in free text
+
+**Context:** The measured tracker's best sheet carried two category columns that drifted to 24 and 36 distinct values on 120 rows, while its four-token severity column stayed 100% valid; the ledger design had dropped category altogether, and the owner asked for it back.
+**Decision:** A `Tags` column, blank or holding tokens declared on one banner line (at most twelve; a token is `+` then lowercase letters, digits or hyphens), with a Doctor FAIL on anything undeclared and a WARN on a token found in any other cell.
+**Reasoning:** Rejected `+tags` written into the Touches cell (the todo.txt convention): a dropped `+` in a 92-value free-text cell is invisible to any scan, and that is the drift path the measured columns took. Rejected declaring the vocabulary in GLOSSARY: the Doctor never opens it and it is absent in 9 of 25 roots. The column costs nothing today — the ledger has zero installs — and it is the extension point the schema was criticised for lacking.
+**Consequences:** Ten columns, not nine; the vocabulary is the project's to declare and prune; a project that wants a second category axis has to argue for it.
+
+## D-0015 — 2026-09-06 — lineage is a citation, not a link column: `from LG-NNNN` in Evidence and `extends D-XXXX` in DECISIONS titles
+
+**Context:** Related items and rules recur across long stretches of a register; in the measured DECISIONS, 110 of 222 entries cite an earlier one and one entry has twelve later citers — three of which extend it, none supersede it, nine merely mention it.
+**Decision:** A sub-item is a new row whose Evidence opens `from LG-NNNN`; a clarification is an edit to the row; DECISIONS gains one title form, `extends D-XXXX`, beside `corrects` and `supersedes`; a cited id without a verb is a citation; a rule extended more than three times is restated once as a supersession naming every id it replaces; back-links are derived by grep.
+**Reasoning:** Rejected renaming Blocked-on to a typed `Links` column with `blocked-by` / `child-of` / `see` verbs: it breaks the one-line invariant BLOCKED ⇔ Blocked-on non-empty, plants a second vocabulary inside a free-text cell, and has no form for the dominant blocker kind — 25 of 42 measured dependencies name an owner ruling, not a row. Rejected a rewritten "current rule" home in README: README is not on the bootstrap path, and the measured project's consolidation surfaces multiplied to three files and bloated. Rejected the verb `refines`: the register's own word, used nine times, is `extends`.
+**Consequences:** Grouping and lineage are both greps; no file is ever physically re-sorted (the mint-order check was cut as unimplementable without reading the archive).
+
+## D-0016 — 2026-09-06 — the ledger is opt-in at about fifteen live items, never installed by default
+
+**Context:** Only one of 25 roots has a findings list that outgrows STATUS; the audit measured that a BRAND file installed with only placeholders is never filled in (8 of 14).
+**Decision:** Install question 8 offers the ledger only when a project carries, or will imminently carry, about fifteen live items with closing conditions; one ledger per repository, owned by the register that owns the work; dated history in a Known-issues list is compaction material, not ledger material.
+**Reasoning:** Rejected shipping `LEDGER.md` in every install: an empty tracker is the BRAND mistake at larger scale, and the Doctor would print ten more lines on 24 roots that have nothing to track. Rejected a size-in-lines trigger: the count-based bar was tested against the population (23 of 25 roots at 0–10 items, the two above at 28 and 52) and a lines bar was not.
+**Consequences:** A project below the bar keeps its short lists in STATUS's Blocked and Deferred tables; the Bootstrap red flag names the day the list outgrows them.
+
+## D-0017 — 2026-09-11 — the minimal installation is four files, and the protocol says so
+
+**Context:** Three places in the repository disagreed about what an installation is. README.md called ROADMAP, GLOSSARY, BRAND and SPEC_TEMPLATE "optional scaffolding", its own Files section listed ROADMAP and GLOSSARY among the files copied into every project, and Install's tree implied the same. An independent reviewer raised it as a contract-clarity defect.
+**Decision:** The minimal installation is `README.md` plus the three registers `STATUS.md`, `CHANGELOG.md`, `DECISIONS.md`. ROADMAP, GLOSSARY, BRAND, SPEC_TEMPLATE and LEDGER are seeded when the project needs them. Install states it; the README matches.
+**Reasoning:** The code was the arbiter, not taste: `has_register` requires exactly the three registers, the README is read for the install footer, and the doctor references ROADMAP, GLOSSARY and SPEC_TEMPLATE zero times. Rejected "keep ROADMAP and GLOSSARY as defaults and fix only the README wording": it would ship two files no check reads and no mode requires, which is the BRAND mistake the audit already measured (8 of 14 placeholder BRAND files were never filled). Rejected "add Doctor checks for ROADMAP and GLOSSARY so the default earns itself": restraint is the protocol's first principle, and nothing measured says a project without a glossary is unhealthy.
+**Consequences:** A four-file install is now a supported, documented state rather than an undocumented one this skill happened to be in. Projects wanting the fuller set add files later without ceremony.
+
+## D-0018 — 2026-09-11 — a STATUS table whose columns cannot be named is left unresolved, never mapped
+
+**Context:** Repairing the reported header-detection defect closed the case where recognised labels sat beside an unrecognised one. Attacking the repair surfaced the remaining case: a table whose labels are *all* unrecognised still mapped its rows, so a cell reading `BLOCKED` in a bespoke layout landed in the ledger as an OPEN row with no gate — the same harm as the reported defect, one step narrower.
+**Decision:** When no column can be named and a cell holds a bare live-state token, the row becomes an unresolved record requiring an explicit human disposition.
+**Reasoning:** Rejected "map it and let plan review catch it", which is how the reported defect did its damage — review catches what it is shown, and a row whose Status cell reads OPEN does not announce that its source said BLOCKED. Rejected the broader "treat any unnamed layout as unresolved": most bespoke tables carry no state token and mapping them is right, so the narrower trigger keeps the guard from taxing ordinary projects. Matching a whole cell rather than a substring keeps a title like "requests blocked by CORS" out of it.
+**Consequences:** A project with a bespoke state column does more review work at migration and loses nothing silently. Migration's bias is now uniformly toward refusing to guess.
+
+## D-0019 — 2026-10-02 — the research and Architect protocols ship here as companions a project vendors, not as modes of this skill
+
+**Context:** The owner chose to ship both protocols with this skill. D-0010 made Doctor and Brief modes rather than a separate skill, because they check and write the core registers and must run when a Bootstrap red flag fires.
+**Decision:** Each ships under `staging/` as its own skill. A project copies one in, registers it in `SKILL-REGISTRY.md` as `staged`, and promotes it to `active` only on an explicit owner pick. `SKILL.md` specifies once how each joins Bootstrap, Brief and Close.
+**Reasoning:** Agent's assessment, recorded as such. Rejected making them modes: unlike Doctor and Brief, each owns a separate folder and must work in a project that does not use this skill, so folding them in would make every core install carry both. Rejected separate repositories: their hooks into Bootstrap, Brief and Close would then be specified in three places and drift, which is the failure D-0010 predicted.
+**Consequences:** One repository, one hook specification, and companions that stay inert until a project adopts them.
+
+## D-0020 — 2026-10-02 — the registry line in the wiring block is conditional, not part of the generic block (extends D-0009)
+
+**Context:** The release branch added a nine-line routing bullet to the always-loaded wiring block. No real installation has a registry, the Doctor does not check for the bullet, and none of the 16 projects carrying the current block would ever be prompted to add it.
+**Decision:** The generic block carries no registry text. A project that installs `SKILL-REGISTRY.md` adds one *Project skills* line after **Session start**.
+**Reasoning:** Agent's assessment. Rejected the generic bullet: it loads about 90 words into every session of every project for a file almost none have, and leaves two block generations that both pass forever — the staleness D-0009 kept a Brief bullet out of the block to avoid. The registry's rules belong in the file the line points to.
+**Consequences:** Existing installations do not go stale. A project adopting a registry takes one extra line at the moment it adopts it.
+
+## D-0021 — 2026-10-02 — the registry records authority; it never grants it
+
+**Context:** The registry called itself "an inventory, not an activation mechanism", but routing by trigger plus "active skills obey authorization" read two ways, nothing governed edits to a row's lifecycle, and the validator printed the digest an edited skill needed to pass.
+**Decision:** `active` means the owner authorized the skill for its trigger and stages, and the row cites that authorization. Promoting `staged` to `active` takes an explicit owner pick. A registry edit is a register change, CHANGELOG first. A stale digest makes the skill unavailable until its reviewer gate re-passes and the owner records the new digest; the validator never prints a digest to paste. Registry state never blocks or reorders writes to the core registers.
+**Reasoning:** Agent's assessment. Rejected keeping the inventory-only wording: an agent that can change a row's lifecycle and re-record a digest can approve itself. Rejected enforcing authorization citations in the validator: it would verify a string's presence, not its truth, and make a structural check look like an approval.
+**Consequences:** Adopting or upgrading a vendored skill is visible in CHANGELOG and DECISIONS; the validator stays structural.
+
+## D-0022 — 2026-10-02 — this repository's own process evidence stays private; the public acceptance harness binds public documents
+
+**Context:** The release-readiness packet, research working notes and hardening evidence records were process evidence from building these features. They named a private project, carried hundreds of absolute paths from the owner's machine, and bound commit IDs that a privacy-driven history rewrite removes, so the packet would fail its own Architect doctor once published. The owner's instruction was that nothing published may expose their machine or private work.
+**Decision:** That evidence is retained privately, outside this repository. The acceptance harness that hashed it as inputs binds the public normative documents instead.
+**Reasoning:** Agent's assessment. Rejected publishing it with placeholders: the packet would still fail its own doctor, and the residue (session identifiers, machine descriptions) is still the owner's. Rejected deleting it: it is the evidence behind several closed ledger rows. This follows v0.2.0, where the full audit stayed private and only an anonymised evidence sheet shipped.
+**Consequences:** Some earlier CHANGELOG entries and archived ledger rows cite files that are not public; they are left as written. LG-0044 and LG-0045 are restated against public, testable conditions.

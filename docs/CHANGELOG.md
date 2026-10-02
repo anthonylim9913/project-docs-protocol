@@ -1,3 +1,11 @@
+## 2026-10-02 — published; LG-0046 made testable; an index-reader fix awaits review
+
+The cleaned history is public: `main` and tags v0.1.0–v0.4.0 were force-pushed, and a fresh clone scans clean. Commits that are no longer referenced still open on GitHub by their exact ID; the owner has sent GitHub Support a purge request naming them.
+
+`research-index.py` still treated any folder named `research/` as the research companion, the defect already fixed in `research-doctor.py`. The fix — one shared signature test in `research_paths.py`, called by both tools — is on the unpushed branch `fix/research-index-scope` with four tests, three of which fail on the published reader. Under D-0021 the research-protocol registry row stays at its reviewed digest until an independent review passes and the owner records the new one, so the branch's registry check reports it stale by design (LG-0047).
+
+LG-0046 was blocked on a safe way to watch a fresh session. The boundary now exists outside this repository: a throwaway project wired like a real installation, with one active and one staged vendored skill, run in its own git worktree with no remote, with permission prompts left on and a read-only scorer. Three scenarios are ready — routing to the active skill, restraint with the staged one, and a skill edited after review. An independent review of v0.4.0 (LG-0044, LG-0045) and of the branch is queued for its own session.
+
 ## 2026-10-02 — the research and Architect companions and the skill registry, made coherent and made private-safe for release
 
 The owner asked for the Architect protocol, the research companion, the skill registry, the ninth install question, the wiring-block change and the Doctor changes to ship together, checked as one system, and for nothing in the repository to expose the owner's machine or private work. Three independent reviews ran first: how the pieces combine (verdict: coherent after fixes), what the changes do to 31 real installations, and a tested privacy scrub.

@@ -67,6 +67,12 @@ mutation controls where relevant, and returns only `PASS`, `FAIL`, or
 stage adjudication. Repair the finding and repeat the same stage when review
 fails; never lower the acceptance bar to make an infrastructure failure pass.
 
+Independent means the Reviewer starts from the frozen subject and input manifest
+alone: a fresh session, or a subagent given only the packet, never one that
+shares the Developer's context. Scale the protocol to the stakes: a small change
+needs one stage and one review, and no stage needs more reviewers than its risk
+warrants.
+
 At handoff, report the clean subject identity, complete evidence manifest,
 reviewer verdicts, residual risks, and deferred owner decisions. Run the
 read-only doctor before claiming the packet is structurally complete:

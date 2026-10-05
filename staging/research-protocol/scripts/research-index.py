@@ -4,12 +4,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-from research_paths import SafeTree
+from research_paths import SafeTree, not_companion
 from research_records import ID_RE, record_id
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser()
+    p = argparse.ArgumentParser(description=(
+        'Read <root>/research/INDEX.md or one record by ID. Absence is valid (SKIP, exit 0): no research/ '
+        'folder, or a research/ folder without the research-protocol signature.'))
     p.add_argument('root', type=Path)
     p.add_argument('--topic')
     p.add_argument('--id')
@@ -22,6 +24,12 @@ def main(argv=None):
         print('SKIP research: directory absent')
         return 0
     try:
+        # Same signature test as Doctor: an ordinary research/ folder is not ours.
+        if base.is_dir() and not base.is_symlink():
+            reason = not_companion(base)
+            if reason is not None:
+                print('SKIP research: research/ present but not a research-protocol folder (' + reason + ')')
+                return 0
         with SafeTree(base) as tree:
             records = tree.records()
         if 'INDEX.md' not in records:

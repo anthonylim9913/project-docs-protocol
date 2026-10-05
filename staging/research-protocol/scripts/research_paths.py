@@ -177,3 +177,41 @@ class SafeTree:
                 revalidate()
         walk(())
         return {name: self.read(name).decode('utf-8') for name in names}
+
+
+# The companion's signature, shared by Doctor and the index reader so that an
+# ordinary folder that happens to be named research/ is never judged as one.
+INDEX_ID_RE = re.compile(r'\b(?:SRC|NOTE|RQ|SYN)-[0-9]+')
+RECORD_FOLDERS = {'sources': 'SRC', 'notes': 'NOTE', 'questions': 'RQ', 'synthesis': 'SYN'}
+def not_companion(base):
+    """Return why research/ is not a research-protocol folder, or None if it is.
+
+    Only research/INDEX.md and the four canonical record folders are probed,
+    one level deep and without following links, so an unrelated folder (for
+    example one holding a virtualenv) is never walked.
+    """
+    with SafeTree(base) as tree:
+        names = set(os.listdir(tree.fd))
+        reason = 'no INDEX.md'
+        if 'INDEX.md' in names:
+            try:
+                text = tree.read('INDEX.md').decode('utf-8', 'replace')
+            except (OSError, ValueError):
+                return None  # an unsafe INDEX.md is reported by the full checks
+            if INDEX_ID_RE.search(text):
+                return None
+            reason = 'INDEX.md has no stable IDs'
+        for folder, prefix in RECORD_FOLDERS.items():
+            if folder not in names:
+                continue
+            try:
+                fd = open_checked(tree.fd, folder, directory=True)
+            except UnsafePath:
+                continue  # a link or a file is not a record folder, and is never followed;
+                          # any other error (an unreadable folder) propagates and fails closed
+            try:
+                if any(re.fullmatch(prefix + r'-[0-9]{4}\.md', name) for name in os.listdir(fd)):
+                    return None
+            finally:
+                os.close(fd)
+        return reason

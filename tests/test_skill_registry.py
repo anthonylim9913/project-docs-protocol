@@ -6,7 +6,8 @@ def digest(path):
     h=hashlib.sha256()
     for child in sorted(path.rglob("*")):
         rel=child.relative_to(path)
-        if child.is_file() and "__pycache__" not in rel.parts:
+        if {"__pycache__", ".git"} & set(rel.parts) or rel.name in {".DS_Store", "Thumbs.db"}: continue
+        if child.is_file():
             h.update(str(rel).encode()); h.update(b"\0"); h.update(child.read_bytes()); h.update(b"\0")
     return h.hexdigest()
 class SkillRegistryTests(unittest.TestCase):
@@ -75,4 +76,10 @@ class SkillRegistryTests(unittest.TestCase):
     def test_digest_mode_refuses_a_missing_location(self):
         with tempfile.TemporaryDirectory() as d: r=self.run_check(Path(d),"--digest","nowhere")
         self.assertEqual(r.returncode,1); self.assertIn("not a real directory",r.stdout)
+    def test_desktop_metadata_and_git_internals_do_not_make_a_skill_stale(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d); self.make_registry(root); skill=root/"staging/research-protocol"
+            (skill/".DS_Store").write_bytes(b"finder"); (skill/".git").mkdir(); (skill/".git/HEAD").write_text("ref: x\n")
+            r=self.run_check(root)
+        self.assertEqual(r.returncode,0,r.stdout+r.stderr)
 if __name__ == "__main__": unittest.main()

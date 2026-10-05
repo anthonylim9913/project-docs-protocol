@@ -17,7 +17,8 @@ inside research cannot be links, hard-link aliases or special files. The project
 root is caller-selected and trusted. The writer takes it with `--root` (default:
 the current directory) and accepts only targets inside `<root>/research/`;
 relative targets are anchored to the current directory. Readers take the same
-explicit root. Helper sidecars are reserved write targets.
+explicit root. Helper sidecars are reserved write targets. The writer keeps its `.NAME.lock`
+files by design; add `research/**/.*.lock` to the project's `.gitignore`.
 Ordinary hidden Markdown is discoverable; actual helper metadata is excluded.
 Each indexed record occupies its own file with one complete stable declaration.
 Multiple declarations fail Doctor and ID retrieval; safe diagnostic retrieval

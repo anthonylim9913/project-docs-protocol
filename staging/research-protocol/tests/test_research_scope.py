@@ -164,3 +164,61 @@ class ResearchDoctorCompanionTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ResearchIndexSignatureTests(unittest.TestCase):
+    """The index reader shares Doctor's signature test, so it never reads an
+    unrelated research/ folder as the companion's."""
+    INDEX = fixtures.ROOT / 'scripts/research-index.py'
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name) / 'project'; (self.root / 'research').mkdir(parents=True)
+
+    def skipped(self, *extra):
+        result = run(self.INDEX, self.root, *extra)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue(result.stdout.startswith('SKIP research: research/ present but not a research-protocol folder'),
+                        result.stdout)
+        self.assertEqual(result.stderr, '')
+
+    def test_empty_research_folder_is_skipped(self):
+        self.skipped()
+
+    def test_ordinary_notes_are_skipped_for_topic_and_id_queries(self):
+        (self.root / 'research/00-INDEX.md').write_text('# Reading list\n- naming paper\n')
+        self.skipped('--topic', 'naming')
+        self.skipped('--id', 'SRC-0001')
+
+    def test_unrelated_virtualenv_links_are_never_inspected(self):
+        outside = Path(self.tmp.name) / 'interpreter'; outside.write_text('outside')
+        bin_dir = self.root / 'research/tool/.venv/bin'; bin_dir.mkdir(parents=True)
+        (bin_dir / 'python').symlink_to(outside)
+        self.skipped()
+
+    def test_shipped_example_is_still_read(self):
+        result = run(self.INDEX, fixtures.ROOT / 'examples/conflicting-evidence', '--id', 'SRC-0001')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('SRC-0001', result.stdout)
+
+
+class SignatureFailsClosedTests(unittest.TestCase):
+    """An error while probing for the signature is a failure, never a SKIP."""
+
+    def setUp(self):
+        if hasattr(os, 'geteuid') and os.geteuid() == 0:
+            self.skipTest('permission bits do not bind the superuser')
+        self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name) / 'project'
+        self.locked = self.root / 'research/sources'; self.locked.mkdir(parents=True)
+        self.locked.chmod(0); self.addCleanup(self.locked.chmod, 0o755)
+
+    def test_doctor_fails_on_an_unreadable_record_folder(self):
+        result = run(DOCTOR, self.root)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertNotIn('SKIP', result.stdout)
+
+    def test_index_reader_rejects_an_unreadable_record_folder(self):
+        result = run(fixtures.ROOT / 'scripts/research-index.py', self.root)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertNotIn('SKIP', result.stdout)

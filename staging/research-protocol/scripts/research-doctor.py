@@ -6,15 +6,13 @@ import os
 from pathlib import Path
 import re
 import stat
-from research_paths import SafeTree, open_checked, parts
+from research_paths import INDEX_ID_RE, RECORD_FOLDERS, SafeTree, not_companion, open_checked, parts
 from research_records import ID_RE, heading_tokens, record_id
 
 TOKEN_RE = re.compile(r'\b(?:SRC|NOTE|RQ|SYN)-[A-Za-z0-9_-]+\b')
 REF_RE = re.compile(r'\b(?:SRC|NOTE|RQ|SYN)-[0-9]{4}\b')
 # Companion signature: an INDEX.md naming stable IDs (malformed digit runs
 # included, so they still fail), or a canonically named record.
-INDEX_ID_RE = re.compile(r'\b(?:SRC|NOTE|RQ|SYN)-[0-9]+')
-RECORD_FOLDERS = {'sources': 'SRC', 'notes': 'NOTE', 'questions': 'RQ', 'synthesis': 'SYN'}
 
 
 def fields(body, ident, errors):
@@ -135,37 +133,6 @@ def inspect(records):
     return errors, ids
 
 
-def not_companion(base):
-    """Return why research/ is not a research-protocol folder, or None if it is.
-
-    Only research/INDEX.md and the four canonical record folders are probed,
-    one level deep and without following links, so an unrelated folder (for
-    example one holding a virtualenv) is never walked.
-    """
-    with SafeTree(base) as tree:
-        names = set(os.listdir(tree.fd))
-        reason = 'no INDEX.md'
-        if 'INDEX.md' in names:
-            try:
-                text = tree.read('INDEX.md').decode('utf-8', 'replace')
-            except (OSError, ValueError):
-                return None  # an unsafe INDEX.md is reported by the full checks
-            if INDEX_ID_RE.search(text):
-                return None
-            reason = 'INDEX.md has no stable IDs'
-        for folder, prefix in RECORD_FOLDERS.items():
-            if folder not in names:
-                continue
-            info = os.stat(folder, dir_fd=tree.fd, follow_symlinks=False)
-            if not stat.S_ISDIR(info.st_mode):
-                continue
-            fd = open_checked(tree.fd, folder, directory=True)
-            try:
-                if any(re.fullmatch(prefix + r'-[0-9]{4}\.md', name) for name in os.listdir(fd)):
-                    return None
-            finally:
-                os.close(fd)
-        return reason
 
 
 def main(argv=None):

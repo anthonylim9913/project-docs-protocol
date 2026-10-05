@@ -49,7 +49,9 @@ is a duplicate lifecycle field. Accessibility has three explicit forms:
 | `private` | `Private-Reference` (opaque local reference), `Limitation` |
 | `unavailable` | supplied `URL`, `Attempted-Access`, `Limitation` |
 
-A supplied content digest must be 64 hexadecimal characters. Private/unavailable
+A supplied content digest must be 64 hexadecimal characters. When only a passage
+was supplied and the page was not fetched, hash the passage as supplied and say
+so in the record's prose; never present that digest as the page's. Private/unavailable
 records can omit unknown passages, access events and content identities; never
 invent values to satisfy a check. Private source bytes stay outside Git. The
 unavailable locator and attempted-access date describe what was actually supplied

@@ -1,23 +1,21 @@
 # STATUS
 
-*Last updated: 2026-10-02*
+*Last updated: 2026-10-05*
 
 ## Current phase
 
-**v0.4.0 public with cleaned history; independent review and the LG-0046 fresh-session test queued.**
+**v0.4.1 public: the reviewed fixes, recorded companion digests, and the README rewritten as a continuity system.**
 
-The research and Architect companions, the skill registry and Doctor 1.5.0 are released. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them (request sent 2026-10-02).
+Both companions validate against digests recorded after an independent re-review. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 4 live rows as of 2026-10-02, no P0/P1.
+`LEDGER.md` is authoritative: 3 live rows as of 2026-10-05, no P0/P1 (LG-0044 open, LG-0047 verifying, LG-0048 open).
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Independent review of v0.4.0 and branch fix/research-index-scope | review session | next | Settles LG-0044, LG-0045 and LG-0047 |
-| LG-0046 fresh-session scenarios S1–S3 | owner starts, agent scores | next | Throwaway fixture outside this repository |
-
-## Blocked
+| Narrow re-review of release/v0.4.1 (both companions and the registry digest change) | review session | next | One session, no agents; PASS/FAIL per companion and the digests to record |
+| Record the reviewed digests, merge, tag v0.4.1, push | owner, then agent | after the re-review | |
 
 *No items.*
 
@@ -31,10 +29,10 @@ The research and Architect companions, the skill registry and Doctor 1.5.0 are r
 
 ## Next
 
-1. Score the three LG-0046 sessions; fix the protocol text where a scenario fails for the text's sake.
-2. Act on the review: merge fix/research-index-scope and record its reviewed digest if it passes.
-3. GitHub Support confirms the purge.
+1. Close the acceptance-harness gaps (LG-0044) and give Doctor a pointer to the registry validator (LG-0048).
+2. Fix the re-review's deferred notes (LG-0049), with a re-review of any companion touched.
+3. GitHub Support confirms the purge, including the follow-up commit.
 
 ## Open questions (owner)
 
-1. **Copyright line: keep the full name, or use the GitHub handle?** — proposed: the handle, applied to every release with one more history rewrite — since 2026-10-02
+*None open.*

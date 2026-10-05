@@ -1,67 +1,101 @@
 # project-docs-protocol
 
-Three small files an AI agent reads at the start of a session and writes at the end, so a project's state survives the gap between sessions instead of being re-explained every time or guessed wrong. It ships as an [agent skill](https://www.anthropic.com/news/skills) for Claude Code and works with Codex and other `AGENTS.md`-driven agents.
+**A continuity system for AI-assisted projects.** Any AI model, in any app, on any machine, picks up a project exactly where the last session left off — what is in progress, what was decided and why, what is blocked, what comes next.
 
-The whole thing rests on one design property. `CHANGELOG.md` and `DECISIONS.md` are append-only registers: they only ever grow, so a bad edit cannot corrupt them and a session that dies mid-update leaves them intact. `STATUS.md` is the opposite, a short dashboard that is rewritten at every close and never appended to. And at close the CHANGELOG entry is written first, before STATUS is touched, so that if only one write gets through it is the one carrying the history. Separating what grows forever from what gets rewritten constantly is what stops the system decaying into either a bloated status file or a lost history. Everything else, a roadmap, a glossary, a brand sheet, a spec template, is optional scaffolding seeded only when a project needs it.
+Every AI session starts cold. Built-in memory belongs to one tool and one account, so it doesn't follow the project to another model, another app, another machine or another person. The result is a project re-explained at the start of every session, or worse, guessed. This system keeps the project's state inside the project, and is built to keep it accurate through long-running work: model switches, interrupted runs and handoffs.
 
-## Measured, not asserted
+## How it works
 
-Before this release the skill was audited, read-only, against every project on one machine that carried its three signature files: 25 in the dated 2026-09-02 census, which excludes worktree copies and review directories. Signature files do not establish installation provenance; some roots predate the skill. The anonymised evidence sheet ships in `docs/EVIDENCE.md`; the full report stays private.
+```mermaid
+flowchart LR
+    subgraph session["Every session"]
+        direction TB
+        B["Bootstrap<br/>read state, confirm"] --> W["Work"]
+        W --> C["Close<br/>log first, then rewrite"]
+        C -. "open questions" .-> BR["Brief<br/>owner decides"]
+    end
+    subgraph registers["Registers, inside the project"]
+        direction TB
+        CL["CHANGELOG<br/>append-only history"]
+        LG["LEDGER<br/>findings with a lifecycle"]
+        ST["STATUS<br/>rewritten dashboard"]
+        DE["DECISIONS<br/>append-only, alternatives named"]
+    end
+    C -- "1" --> CL
+    C -- "2" --> LG
+    C -- "3" --> ST
+    BR --> DE
+    B --> ST
+    DR["Doctor<br/>structural health checks"] -. "audits" .-> registers
+```
 
-- **The wiring block tracks the intended write pattern.** In the dated sample, projects whose instructions file carried the block rewrote STATUS (churn 0.67–0.83); projects without it or with a “top line” variant accreted history (0.01–0.16). This is an association across a small, provenance-mixed sample, including compatible hand-written instructions; it is not causal proof that this exact text produced the result.
-- **Append-only held without enforcement.** The largest CHANGELOG in the population had 11,369 lines added over its committed history and 1 line deleted. Nothing checks this; the instruction alone did it.
-- **The entry format transferred by itself.** 1,017 of 1,029 CHANGELOG headings across the population carry a date in the template's shape, 98.8%, with no linter, hook or check anywhere.
-- **A mature install stays small.** The one installation with real age, 91 entries over 125 days, had a STATUS of 42 lines. The template is 39 lines.
+Four mechanisms work together.
 
-The audit also found things wrong, and they are worth stating plainly. The bootstrap red flag "STATUS over ~40 lines" was true in 23 of 25 projects, including the skill's own template, so it carried no signal; the threshold is now ~60 lines, with a second signal for any single line over ~1 KB, which is history in disguise. The instruction to compact STATUS "once a quarter" fired exactly once in 25 projects; compaction is now triggered by size and by the red flags, not by the calendar. The skill triggered on three matching filenames alone, which pulled in registers it had never installed; the signature is now narrower (see "When it fires"). The wiring block never actually said that STATUS is *rewritten*, the property the churn numbers show matters most, so it says so now, with a precedence clause that stops project convention from quietly overriding it. And the brand template was never filled in on 8 of the 14 installs that kept it, so Install now asks for one concrete value before keeping it. Version 0.2.0 is the response to those findings.
+**Registers, each with one job and one rule.**
 
-## The modes
+| Register | Job | Rule |
+|---|---|---|
+| `STATUS.md` | The live dashboard: phase, in flight, blocked, next, open questions | Rewritten at every close, never appended to; kept under ~60 lines |
+| `CHANGELOG.md` | What happened and why | Append-only; written first at every close |
+| `DECISIONS.md` | Choices made, with the alternatives rejected | Append-only; a correction is a new entry, never an edit |
+| `LEDGER.md` *(optional)* | Findings and checks too many for STATUS | One row per item, six lifecycle states, closed rows archived with evidence |
+| `README.md` | How any agent uses the registers | The entry point for any model or app |
 
-**Install** runs once per project. It asks a short set of questions in one exchange (project name, where the docs live, whether the project is new or mid-flight, who reads the docs, whether brand and specs matter, whether a register already exists above this folder, whether a long findings list needs a ledger, and whether the project depends on other skills), then copies the templates into place and personalises them. The step that makes it stick is the wiring block appended to `CLAUDE.md` or `AGENTS.md`, so that bootstrap and logging fire from the instructions file every session instead of depending on the agent noticing a trigger phrase. STATUS is seeded from whatever context exists, flagged as approximate; the installation is logged as the first CHANGELOG entry; DECISIONS starts empty unless adopting the protocol was genuinely weighed against an alternative.
+**Rituals that run the session.** *Bootstrap* reads state before any work is proposed. *Close* runs after each meaningful piece of work in a fixed order. *Brief* turns open questions into decisions the owner picks explicitly, recorded with the alternatives they rejected. *Install* sets a project up in one exchange. *Doctor* checks the whole register.
 
-**Bootstrap** runs at the start of every session on an installed project, before any work is proposed. The agent reads STATUS in full while it is under ~60 lines and only its top line, headings and current-state sections past that; then the last three to five CHANGELOG entries, following any decision IDs they reference into DECISIONS; then skims DECISIONS for anything touching the area at hand, without re-litigating what was already decided. It uses the glossary as a dictionary if one exists, reads live LEDGER rows when installed (never the archive at Bootstrap), then the skill registry and a bounded slice of the research index when those are installed, then confirms current state with the user in one short exchange, since STATUS can lag by a session. Bootstrap is also where the red flags fire: an oversized STATUS, stacked session records, a changelog that has gone quiet for a month, decisions that contradict without a supersession link.
+**Integrity by design.** The write order is the safety mechanism: the history is written before the dashboard, so an interrupted session can lose a STATUS update but never the record of what happened. History registers only grow, so they can't be silently rewritten. STATUS has a size ceiling, because a growing dashboard is history leaking into it. Decisions name the alternatives they rejected, so a later session builds on them instead of re-arguing them.
 
-**Close** runs after each meaningful unit of work, not just at session end, because sessions rarely announce their last message. The order is fixed. First the CHANGELOG entry: date, one-line summary, one to three sentences of what and why, appended at the top, never editing old entries. Second, LEDGER rows are updated if installed, with terminal rows archived and verified before live removal. Third, STATUS is rewritten: completed items out, new in-flight items in, blockers and deferrals updated, every past-tense sentence deleted because it is already in the entry just written. Then, a DECISIONS entry only if a real alternative was rejected; if the rejected alternative cannot be named, it was a default, not a decision. Trivial work gets no close at all; the protocol asks for one to three entries a session, not an entry per file touched.
+**Automated checks.** Doctor is a read-only health check with up to 39 checks, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. Exit codes separate advisory drift from a broken property. It needs only Python's standard library.
 
-**Doctor** (added in 0.3.0) is a read-only health check for an installed project: `python3 scripts/docs-doctor.py <project-root>`. It runs the bootstrap red flags as a script — wiring, STATUS, changelog and decision registers, and, when LEDGER.md is installed, table shape, dates, state invariants, evidence, archive ID collisions and staleness — and prints one line per check with the measured value, its unit and the threshold. Standard library only, works without git, never edits. Run it on demand, after an install, or when a red flag fires; not at every session start.
+## Extensions, adopted when a project needs them
 
-**Brief** (added in 0.3.0) turns the open questions STATUS carries into decisions. On demand, or offered in one line at close when there is something askable, it presents each question in a fixed shape — context with jargon defined, options labelled by what they trade off, a recommendation with its reason, and what would change it — and records the owner's explicit answers as DECISIONS entries with the rejected alternatives named. Silence is not an answer, options are never padded to a count, and a question already settled is presented as settled rather than re-opened. Brief records CHANGELOG, reserved DECISIONS entries when warranted, LEDGER updates if installed, then STATUS. A default can cite the Brief CHANGELOG entry without inventing a decision; unanswered execution gates remain open. A worked example is in `docs/BRIEF-EXAMPLE.md`.
+- **Findings ledger and reviewed migration.** When a project's open findings outgrow STATUS, they move into a ledger with stable IDs, a six-state lifecycle and an evidence requirement for closing. A reviewed migration moves them across with a recovery journal, so an interrupted migration can be replayed without losing or duplicating a row.
+- **Research companion.** Sources, notes, open questions and syntheses with stable IDs and recorded provenance. Its checker fails closed on broken links, missing provenance and ambiguous IDs, so the trail from a claim back to its source passage stays intact.
+- **Architect companion.** For larger changes: each stage gets a frozen scope and acceptance criteria, an independent reviewer checks the exact version against them, and the handoff carries the evidence and the reviewer's verdicts.
+- **Skill registry.** Records which skills a project uses, who authorised each one, and a fingerprint of the reviewed version. A skill that has changed since review is treated as unavailable until it is reviewed again; nothing in the registry grants permission by itself.
 
-## When it fires
+## Works with any model, app or machine
 
-Trigger phrases ("set up project docs", "bootstrap this project", "where were we", "close out the session", and the rest listed in `SKILL.md`) start the matching mode. Beyond phrases, the skill recognises an installed project by its signature: `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` at the root or under `docs/`, **and** either the "Project docs protocol" block in `CLAUDE.md`/`AGENTS.md` or the install footer in the docs README. The three filenames alone are not enough; Keep-a-Changelog plus an ADR folder produces the same three names. On a register it did not install, the skill says so and offers Install, which on an existing register means wiring and reconciling, not overwriting.
+Plain text was a deliberate choice: it is the one format every model can read and write, every app can open, and every repository carries to a new machine.
+
+- **Apps that load `AGENTS.md` or `CLAUDE.md` at startup** run the system on their own. A short instruction block tells the agent to bootstrap before doing anything and to close after each piece of work.
+- **Any app that can read files** starts with one sentence: *"Read `docs/README.md` and follow its session bootstrap."*
+- **A plain chat window** still works: paste STATUS and the latest CHANGELOG entries in at the start, and paste the new entry and the rewritten STATUS back out at the end.
+
+## Verified, not asserted
+
+- **Audited across 25 projects** before going public. Projects whose instructions carried the block rewrote STATUS as designed (churn 0.67–0.83); projects without it accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
+- **567 automated tests** across the core and both companions, standard library only.
+- **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
+- **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
+
+Everything measured so far was run in Claude Code and Codex. Nothing in the system depends on either, but other apps and models haven't been measured yet.
 
 ## Install
 
-This repo *is* the skill. Drop it wherever your agent looks for skills:
+**With nothing installed.** Copy `README.md`, `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` from `templates/` into your project's `docs/` folder, fill in STATUS, and add the instruction block from *Step 2* of `SKILL.md` to `AGENTS.md` (and `CLAUDE.md` if you use Claude Code). That is a complete installation.
+
+**As a skill**, for Claude Code and Codex, which then run Install, Close, Doctor and Brief for you:
 
 ```bash
 git clone https://github.com/anthonylim9913/project-docs-protocol.git ~/.claude/skills/project-docs-protocol
+ln -s ~/.claude/skills/project-docs-protocol ~/.codex/skills/project-docs-protocol   # Codex
 ```
 
-For Codex or another `AGENTS.md`-driven agent, symlink it in instead of duplicating:
-
-```bash
-ln -s ~/.claude/skills/project-docs-protocol ~/.codex/skills/project-docs-protocol
-```
-
-Then, in any project, ask your agent to "set up project docs". It runs the install interview, copies the templates, and wires the block into the project's instructions file so the next session bootstraps on its own.
+Then, in any project, ask for "set up project docs". The skill recognises a project already using the system by its three registers plus either the instruction block or the install note in the docs README; the three filenames alone are not enough, because other conventions use them too.
 
 ## Files
 
-- **`SKILL.md`** — the operating instructions: when to trigger, and the full walkthrough for each of the five modes — Install, Bootstrap, Close, Doctor (the read-only health check, run by `scripts/docs-doctor.py`) and Brief (turns STATUS's open owner questions into DECISIONS entries with explicit picks).
-- **`templates/`** — the starter files. Four documentation files plus project-level agent wiring form the minimal installation: `README.md`, `STATUS.md`, `CHANGELOG.md`, `DECISIONS.md`. `ROADMAP.md`, `GLOSSARY.md`, `BRAND.md`, `SPEC_TEMPLATE.md` and `LEDGER.md` (the tracker for a findings list too long for STATUS) are the optional scaffolding above — seeded when the project needs them, not by default. This skill's own register also uses the optional ledger for review findings.
-- **`scripts/docs-doctor.py`** — the Doctor check.
-- **`scripts/docs-migrate.py`** — reviewed STATUS-to-LEDGER reconciliation with stable source mappings and replayable writes; see [migration workflow](docs/MIGRATION.md).
-- **`scripts/skill-registry.py`** — optional read-only validation for a project's `SKILL-REGISTRY.md`; absence is valid.
-- **`tests/`** — discoverable standard-library tests (`python3 -B -m unittest discover -v` or `python3 -B tests/run_regression.py`); [coverage and limitations](tests/README.md).
-- **`docs/`** — the skill's own registers. It runs the protocol it ships, so its STATUS, CHANGELOG and DECISIONS are a live example of the format; `EVIDENCE.md` holds the anonymised audit figures and `BRIEF-EXAMPLE.md` a worked brief.
-- **`staging/research-protocol/`** and **`staging/architect-protocol/`** — the two optional companions: durable, provenance-tracked research records, and staged architectural work with a frozen subject, independent review and an evidence-backed handoff. A project vendors and registers one only when it needs it; neither is part of the global installation or the four-document minimum. How they combine with the core is in `SKILL.md` under *Optional companions*.
-- **`templates/SKILL-REGISTRY.md`** — optional project skill inventory template; it does not activate or install skills.
+- **`SKILL.md`** — the full operating instructions: all five modes, the extensions, and which check to run when.
+- **`templates/`** — starter files for every register and extension.
+- **`scripts/`** — Doctor, the reviewed ledger migration, and the skill-registry validator.
+- **`staging/`** — the research and Architect companions.
+- **`tests/`** — the test suites: `python3 -B -m unittest discover -v`.
+- **`docs/`** — this project's own registers. It runs the system it ships, so its STATUS, CHANGELOG, DECISIONS and LEDGER are a working example.
 
 ## Status
 
-Built for and dogfooded on my own multi-session projects, then measured on one machine before going public. Sharing as-is in case the pattern is useful to others. Issues and pull requests are welcome, but treat it as a personal tool that is now public rather than a maintained product. The dated observations describe one owner's working habits and do not establish that the design will hold for everyone.
+Built for my own multi-session projects, then audited, reviewed and tested before going public. Sharing it in case it is useful to others. Issues and pull requests are welcome, but treat it as a personal tool made public rather than a maintained product.
 
 ## License
 

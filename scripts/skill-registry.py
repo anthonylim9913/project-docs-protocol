@@ -9,6 +9,8 @@ VERSION_RE = re.compile(r"^v?[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$")
 CONTENT_ID_RE = re.compile(r"sha256:[0-9a-f]{64}")
 STATUSES = {"active", "staged", "retired"}
 REQUIRED = {"required", "optional"}
+IGNORED_PARTS = {"__pycache__", ".git"}
+IGNORED_NAMES = {".DS_Store", "Thumbs.db"}
 HEADER = ("name", "trigger", "lifecycle", "workflow stages", "inputs", "outputs/evidence", "reviewer/gate", "required", "location", "version", "content-id", "missing-capability")
 
 def _registry_path(root: Path, requested: str | None, register_dir: str | None = None) -> Path | None:
@@ -42,8 +44,10 @@ def _tree_digest(path: Path) -> str:
     digest=hashlib.sha256()
     for child in sorted(path.rglob("*")):
         rel=child.relative_to(path)
+        # Caches, version-control internals and desktop metadata are not the skill.
+        if IGNORED_PARTS.intersection(rel.parts) or rel.name in IGNORED_NAMES: continue
         if child.is_symlink(): raise ValueError(f"symlinked registry target: {rel}")
-        if child.is_file() and "__pycache__" not in rel.parts:
+        if child.is_file():
             digest.update(str(rel).encode()); digest.update(b"\0"); digest.update(child.read_bytes()); digest.update(b"\0")
     return digest.hexdigest()
 

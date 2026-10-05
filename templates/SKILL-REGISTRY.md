@@ -21,7 +21,9 @@ reorders writes to the core registers.
 
 Record the reviewed version and full tree Content-ID. Its SHA256 encoding is
 sorted relative file path, NUL, file bytes, NUL for each file; exclude Python
-cache directories and refuse links. Record the digest of the tree
+caches, `.git` and desktop metadata (`.DS_Store`, `Thumbs.db`) and refuse links.
+Compute it on the files exactly as committed: a checkout that converts line
+endings produces a different digest. Record the digest of the tree
 the reviewer actually reviewed (`skill-registry.py <project-root> --digest
 <location>` computes it and labels it unreviewed). The validator diagnoses missing paths, stale
 identity and incomplete rows; a stale Content-ID means the skill changed since

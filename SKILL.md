@@ -68,7 +68,7 @@ When `SKILL-REGISTRY.md` is installed, keep one row per vendored skill and retai
 - Record the digest of the tree the reviewer reviewed (`skill-registry.py <project-root> --digest <location>` computes it, labelled unreviewed). A Content-ID that no longer matches the skill's tree means the skill changed since review. Treat it as unavailable until its reviewer gate re-passes and the owner records the newly reviewed digest; never paste in a digest to make the validator pass.
 - Registry state never blocks or reorders writes to CHANGELOG, LEDGER, STATUS or DECISIONS. An unavailable required skill blocks only its dependent task and is recorded as a STATUS blocker.
 
-Validate with `python3 <skill-dir>/scripts/skill-registry.py <project-root>` after any registry edit.
+Validate with `python3 <skill-dir>/scripts/skill-registry.py <project-root>` after any registry edit, and before invoking a registered skill.
 
 ### Step 2 — Wire up auto-triggering
 
@@ -159,7 +159,7 @@ Read in this order — do not skip or reorder:
 3. **`DECISIONS.md` — skim, don't read whole.** Look for: decisions touching the area you're about to work on, decisions referenced in recent CHANGELOG entries, and the most recent 2–3 regardless of topic (they often set frame). **Do not re-litigate resolved decisions.** If a D-entry chose X over Y, build on X; if the user wants to revisit, the move is a supersession entry, not a rewrite.
 4. **`GLOSSARY.md`, if installed, as a dictionary** — look up terms you don't recognize; don't guess and don't ask the user for a term defined here. Project definitions override general knowledge. Watch for flagged overloaded terms.
 5. **`LEDGER.md`, only if present** — read the live rows (OPEN, BLOCKED, VERIFYING, plus any `DO-NOT-RESURRECT` tombstones). Never read `LEDGER-ARCHIVE.md` at bootstrap — it is the closed record. Over the `ledger-live-size` WARN bar (100 live rows), read the P0/P1 rows plus the id list only. What is open is derived by reading the table, never from a hand-authored summary elsewhere — the measured one was wrong 31 minutes after it was written. A grouped view is a grep on a tag or an id, never a sorted copy.
-6. **`SKILL-REGISTRY.md`, only if present** — match the task's trigger and workflow stage to a row and read that row's inputs, outputs, reviewer gate and missing-capability fallback. The authority rules are under Install step 1: run an `active` row's skill only within its cited authorization, a `staged` one only when existing authorization explicitly covers it, a `retired` one never. An invalid registry is reported precisely without stopping unrelated core work; an absent one is valid.
+6. **`SKILL-REGISTRY.md`, only if present** — match the task's trigger and workflow stage to a row and read that row's inputs, outputs, reviewer gate and missing-capability fallback. The authority rules are under Install step 1: run an `active` row's skill only within its cited authorization, a `staged` one only when existing authorization explicitly covers it, a `retired` one never. Before invoking a registered skill, run the validator: a stale row means the skill is unavailable, so use its fallback and say so. An invalid registry is reported precisely without stopping unrelated core work; an absent one is valid.
 7. **`research/INDEX.md`, only if the research companion is installed** — read the index rows matching the task's topic or cited IDs, plus open research questions, never the whole index past ~100 lines. Follow an ID to its record only when the task needs it.
 8. **`SPEC_TEMPLATE.md`** only if the session involves authoring or reviewing a spec.
 9. **Confirm current state with the user** before substantive work — STATUS can lag by a session. One short exchange ("Still focused on X? Anything land that isn't in STATUS?"), not an interrogation.
@@ -400,7 +400,7 @@ Each part has its own read-only checker, and none runs another:
 | Checker | Run when | Companion absent | Exit codes |
 |---|---|---|---|
 | `scripts/docs-doctor.py` | on demand, on a Bootstrap red flag, after Install | — | 0 pass · 1 WARN only · 2 FAIL · 3 could not run |
-| `scripts/skill-registry.py` | after any registry edit | SKIP, exit 0 | 0 pass · 1 FAIL |
+| `scripts/skill-registry.py` | after any registry edit, and before invoking a registered skill | SKIP, exit 0 | 0 pass · 1 FAIL |
 | `staging/research-protocol/scripts/research-doctor.py` | after research writes, and before a Brief that cites research | SKIP, exit 0 | 0 pass · 1 FAIL |
 | `staging/architect-protocol/scripts/architect-doctor.py` | before calling a packet complete, and at handoff | SKIP, exit 0 | 0 pass · 1 FAIL |
 

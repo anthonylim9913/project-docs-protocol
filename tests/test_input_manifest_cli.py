@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-from tests.acceptance_support import copy_subject, generate, validate, invoke, commit, MANIFEST
+from tests.acceptance_support import copy_subject, generate, validate, invoke, invoke_isolated, commit, MANIFEST
 
 
 class InputManifestCliTests(unittest.TestCase):
@@ -64,8 +64,13 @@ class InputManifestCliTests(unittest.TestCase):
         self.reject('runtime hash input')
 
     def test_missing_required_fixture(self):
+        # The fixture is also read by the verdict, so the harness record now refuses first; either
+        # diagnostic is a rejection of the deletion.
         (self.root/'tests/fixtures/migration-20/STATUS.md').unlink()
-        self.reject('required input missing')
+        result = validate(self.root, self.directory, self.packet, self.hashes)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertRegex(result.stderr, 'harness file missing|required input missing')
+        self.assertNotIn('Traceback', result.stderr)
 
     def test_missing_required_template(self):
         (self.root/'templates/README.md').unlink()
@@ -100,14 +105,14 @@ class InputManifestCliTests(unittest.TestCase):
     def test_duplicate_json_key(self):
         path = self.directory/'duplicate.json'
         path.write_text(json.dumps(self.packet)[:-1] + ', "schema": 2}')
-        p = invoke(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
+        p = invoke_isolated(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
         self.assertEqual(p.returncode, 1)
         self.assertIn('duplicate JSON key: schema', p.stderr)
 
     def test_invalid_json_is_the_actual_refusal(self):
         path = self.directory/'malformed.json'
         path.write_text('{ not valid JSON')
-        p = invoke(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
+        p = invoke_isolated(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
         self.assertEqual(p.returncode, 1)
         self.assertIn('Expecting property name', p.stderr)
 
@@ -217,6 +222,74 @@ class InputManifestCliTests(unittest.TestCase):
         p=invoke(self.root,'tests/input_manifest.py',self.root,'--out',out)
         self.assertEqual(p.returncode,2)
         self.assertIn('output must be a regular unlinked file',p.stderr)
+
+    def add_document(self, name='docs/NEW-RULES.md'):
+        (self.root/name).write_text('# New normative rule\n')
+        commit(self.root)
+        return name
+
+    def test_new_normative_document_is_bound_by_default(self):
+        name = self.add_document()
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn(name, json.loads(out.read_text())['files'])
+
+    def test_new_normative_document_missing_from_old_hashes_is_rejected(self):
+        self.add_document()
+        self.reject('runtime hash manifest scope')
+
+    def test_new_normative_document_one_byte_change(self):
+        name = self.add_document()
+        self.packet, self.hashes = generate(self.root, self.directory)
+        self.assertIn(name, json.loads(self.hashes.read_text()))
+        self.assertEqual(validate(self.root, self.directory, self.packet, self.hashes).returncode, 0)
+        target = self.root/name
+        target.write_bytes(target.read_bytes() + b'x')
+        self.reject('runtime input hash mismatch')
+
+    def test_new_normative_document_omitted_from_both_hash_sets(self):
+        name = self.add_document()
+        self.packet, self.hashes = generate(self.root, self.directory)
+        self.packet['runtime_hashes'].pop(name)
+        self.hashes.write_text(json.dumps(self.packet['runtime_hashes']))
+        self.reject('runtime hash manifest scope')
+
+    def test_new_normative_document_deletion(self):
+        name = self.add_document()
+        (self.root/name).unlink()
+        self.reject('required input missing')
+
+    def test_new_untracked_document_is_not_ignored(self):
+        (self.root/'docs/UNTRACKED-RULES.md').write_text('# rule\n')
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 2)
+        self.assertIn('behavior inputs must be clean', p.stderr)
+
+    def test_new_root_file_and_new_directory_are_bound(self):
+        (self.root/'extras').mkdir()
+        (self.root/'extras/RULES.md').write_text('# rule\n')
+        (self.root/'CONTRIBUTING.md').write_text('# rule\n')
+        commit(self.root)
+        out = self.directory/'input.json'
+        self.assertEqual(invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out).returncode, 0)
+        files = json.loads(out.read_text())['files']
+        self.assertLessEqual({'extras/RULES.md', 'CONTRIBUTING.md'}, set(files))
+
+    def test_exclusions_are_exactly_the_reviewed_list(self):
+        from tests import input_manifest
+        self.assertEqual(set(input_manifest.EXCLUDED), {
+            'docs/STATUS.md', 'docs/CHANGELOG.md', 'docs/DECISIONS.md', 'docs/LEDGER.md',
+            'docs/LEDGER-ARCHIVE.md', 'docs/HARDENING-REVIEW.md', 'docs/LESSONS-REVIEW.md'})
+        for name in input_manifest.EXCLUDED:
+            self.assertTrue((self.root/name).is_file(), 'stale exclusion: ' + name)
+
+    def test_every_tracked_file_is_bound_or_explicitly_excluded(self):
+        from tests import input_manifest
+        tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=self.root, text=True).split('\0')) - {''}
+        bound = set(json.loads(self.hashes.read_text()))
+        self.assertEqual(tracked - bound, tracked & set(input_manifest.EXCLUDED))
 
 
 if __name__ == '__main__':

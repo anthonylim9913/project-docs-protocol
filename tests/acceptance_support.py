@@ -6,11 +6,19 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+REVIEWED_EXCLUSIONS = {'docs/STATUS.md', 'docs/CHANGELOG.md', 'docs/DECISIONS.md', 'docs/LEDGER.md',
+                       'docs/LEDGER-ARCHIVE.md', 'docs/HARDENING-REVIEW.md', 'docs/LESSONS-REVIEW.md'}
 MANIFEST = 'tests/fixtures/hardening-2026-09-12/acceptance-cases.json'
 
 
 def invoke(root, *args):
     return subprocess.run([sys.executable, '-B', *map(str, args)], cwd=root,
+                          capture_output=True, text=True, timeout=60)
+
+
+def invoke_isolated(root, *args):
+    """The validator must be started isolated (-I -B) or it refuses to judge."""
+    return subprocess.run([sys.executable, '-I', '-B', *map(str, args)], cwd=root,
                           capture_output=True, text=True, timeout=60)
 
 
@@ -39,10 +47,9 @@ def generate(root, directory):
     hashes = directory / 'hashes.json'
     # Scope comes from committed paths and this reviewed contract, never child output.
     paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', '-z', 'HEAD'], cwd=root, text=True).split('\0')
-    docs = {'docs/README.md', 'docs/MIGRATION.md', 'docs/PROTOCOLS.md', 'docs/SKILL-REGISTRY.md',
-            'docs/BRIEF-EXAMPLE.md', 'docs/EVIDENCE.md'}
-    expected = {p for p in paths if p.startswith(('scripts/', 'templates/', 'tests/', 'staging/', '.github/'))
-                or p in {'SKILL.md', 'AGENTS.md', 'CLAUDE.md', 'README.md', 'LICENSE'} | docs}
+    # Independent restatement of the binding rule: every tracked file except the reviewed
+    # exclusions. Deliberately not imported from input_manifest so the two can disagree.
+    expected = {p for p in paths if p and p not in REVIEWED_EXCLUSIONS}
     import hashlib
     hashes.write_text(json.dumps({name: hashlib.sha256((root / name).read_bytes()).hexdigest()
                                   for name in expected}))
@@ -52,4 +59,4 @@ def generate(root, directory):
 def validate(root, directory, packet, hashes):
     path = directory / 'validation.json'
     path.write_text(json.dumps(packet))
-    return invoke(root, 'tests/validate_acceptance.py', path, MANIFEST, hashes)
+    return invoke_isolated(root, 'tests/validate_acceptance.py', path, MANIFEST, hashes)

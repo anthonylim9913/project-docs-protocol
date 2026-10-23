@@ -10,15 +10,20 @@ The JSON mode gives dashboards one object per run with the text report's checks,
 
 ## In flight
 
-`LEDGER.md` is authoritative: 4 live rows as of 2026-10-23, no P0/P1 (LG-0044, LG-0048, LG-0049 and LG-0050 open).
+`LEDGER.md` is authoritative: 4 live rows as of 2026-10-23, no P0/P1 (LG-0044 open, second round awaiting re-review; LG-0048, LG-0049 and LG-0050 open).
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
 | Merge pull request #1 (`feat/doctor-json`) to `main` | owner's orchestrating session | 2026-10-23 | Approved in the brief of 2026-10-23; no tag |
+| Independent review of LG-0044 (`fix/lg-0044-acceptance-binding`, draft pull request) | owner's orchestrating session | next review | First review PARTIAL; second round applied (D-0026); closes only on a re-review using the trusted-checkout procedure |
 
 ## Blocked
 
 *No items.*
+
+## Found, not fixed
+
+`tests.test_migrate_semantics` has 15 failures on `main` on recent CPython patch releases; per the 2026-10-23 review they come from an `html.parser` buffering change that `docs-migrate` is not robust against. They predate this branch; the owner's review is opening a separate ledger item and pull request.
 
 ## Deferred
 
@@ -30,7 +35,7 @@ The JSON mode gives dashboards one object per run with the text report's checks,
 
 ## Next
 
-1. Close the acceptance-harness gaps (LG-0044) and give Doctor a pointer to the registry validator (LG-0048).
+1. Re-review the acceptance-harness fix (LG-0044) from a trusted checkout (`--subject-root`, tests/README.md), and give Doctor a pointer to the registry validator (LG-0048).
 2. Fix the re-review's deferred notes (LG-0049), with a re-review of any companion touched.
 3. GitHub Support confirms the purge, including the follow-up commit.
 

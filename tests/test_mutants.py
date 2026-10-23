@@ -56,7 +56,7 @@ class MutantSensitivityTests(unittest.TestCase):
         values = runtime_hashes(runtime)
         hashes.write_text(json.dumps(values, sort_keys=True), encoding="utf-8")
         return subprocess.run(
-            [sys.executable, "-B", str(runtime / "tests/validate_acceptance.py"), str(result_path),
+            [sys.executable, "-I", "-B", str(runtime / "tests/validate_acceptance.py"), str(result_path),
              str(runtime / "tests/fixtures/hardening-2026-09-12/acceptance-cases.json"), str(hashes)],
             cwd=ROOT, capture_output=True, text=True, timeout=15,
         )

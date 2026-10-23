@@ -16,6 +16,9 @@ except ModuleNotFoundError:
     from tests.input_manifest import hashes, required_paths, tree_hash, valid_path, dirty_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
+# ROOT is the judge: the checkout whose contract, fixtures and templates are read. SUBJECT is the
+# tree being judged. They are the same checkout unless a trusted validator judges another tree.
+SUBJECT = ROOT
 HASH = re.compile(r'[0-9a-f]{64}')
 
 
@@ -217,12 +220,12 @@ def validate_canonical(result, expected_cases):
     root_value = result.get('runtime_root')
     require(isinstance(root_value, str) and Path(root_value).is_absolute(), 'runtime root provenance')
     root = Path(root_value).resolve()
-    require(root == ROOT, 'runtime root must be the validator subject checkout')
-    expected_paths = required_paths(ROOT)
+    require(root == SUBJECT, 'runtime root must be the validator subject checkout')
+    expected_paths = required_paths(SUBJECT)
     values = result['runtime_hashes']
     hash_map(values, 'runtime hashes schema')
     require(set(values) == expected_paths, 'runtime hash manifest scope is incomplete or unexpected')
-    require(values == hashes(ROOT), 'runtime input hash mismatch')
+    require(values == hashes(SUBJECT), 'runtime input hash mismatch')
     provenance = result.get('source_provenance')
     require(isinstance(provenance, dict), 'source provenance schema')
     require(provenance.get('runtime_tree_sha256') == tree_hash(values), 'runtime tree digest mismatch')

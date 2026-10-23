@@ -4,9 +4,9 @@
 
 ## Current phase
 
-**v0.4.1 public; Doctor's `--json` mode waits on a draft pull request from `feat/doctor-json`.**
+**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` approved by the owner for merge to `main` via pull request #1.**
 
-The JSON mode gives dashboards one object per run with the text report's checks, summary and exit code; text output is unchanged. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
+The JSON mode gives dashboards one object per run with the text report's checks, summary, exit code, a `schema` version and the exit-3 `error` (D-0023, D-0024); text output is unchanged apart from the version number. No tag is made for 1.6.0. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
 
 ## In flight
 
@@ -14,7 +14,7 @@ The JSON mode gives dashboards one object per run with the text report's checks,
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Review the draft pull request for Doctor `--json` | owner | next | Not merged, version not bumped, nothing tagged; D-0023 records the JSON contract |
+| Merge pull request #1 (`feat/doctor-json`) to `main` | owner's orchestrating session | 2026-10-23 | Approved in the brief of 2026-10-23; no tag |
 
 ## Blocked
 
@@ -30,13 +30,10 @@ The JSON mode gives dashboards one object per run with the text report's checks,
 
 ## Next
 
-1. The owner reviews `feat/doctor-json`; merging, the version and any tag are the owner's.
-2. Close the acceptance-harness gaps (LG-0044) and give Doctor a pointer to the registry validator (LG-0048).
-3. Fix the re-review's deferred notes (LG-0049), with a re-review of any companion touched.
-4. GitHub Support confirms the purge, including the follow-up commit.
+1. Close the acceptance-harness gaps (LG-0044) and give Doctor a pointer to the registry validator (LG-0048).
+2. Fix the re-review's deferred notes (LG-0049), with a re-review of any companion touched.
+3. GitHub Support confirms the purge, including the follow-up commit.
 
 ## Open questions (owner)
 
-1. **Doctor's version for `--json`: still 1.5.0, so a consumer cannot tell from it whether the flag exists. Bump it, and give the object its own schema version?** — proposed: 1.6.0 at merge, no schema field until the shape changes — since 2026-10-23
-2. **A usage error exits 2, the FAIL code (LG-0050): move it to 3, a change to the exit-code contract?** — proposed: exit 3, with a DECISIONS entry extending D-0013 — since 2026-10-23
-3. **Should the JSON object also carry the exit-3 reason and the Scope disclaimer, now on stderr and in the docs only, and send `--help`/`--version` text to stderr under `--json`?** — proposed: not until a dashboard needs them — since 2026-10-23
+1. **A usage error exits 2, the FAIL code (LG-0050): move it to 3, a change to the exit-code contract?** — proposed: exit 3, with a DECISIONS entry extending D-0013 — since 2026-10-23 — postponed by owner 2026-10-23, revisit when a consumer needs usage errors told apart by exit code

@@ -89,17 +89,18 @@ Then, in any project, ask for "set up project docs". The skill recognises a proj
 `python3 scripts/docs-doctor.py "<project-root>" --json` runs the same checks as the text report and prints them as exactly one JSON object on stdout, on one line (wrapped here for reading):
 
 ```json
-{"tool": "docs-doctor", "version": "1.5.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
+{"tool": "docs-doctor", "schema": 1, "version": "1.6.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
  "today": "2026-10-23",
  "checks": [{"id": "wiring-block", "level": "PASS", "message": "present in 1 of 1 instructions files: AGENTS.md"}],
  "summary": {"pass": 1, "warn": 0, "fail": 0, "info": 0, "skip": 0},
- "exit_code": 0}
+ "exit_code": 0, "error": null}
 ```
 
+- **`schema`** is the version of this document's shape, currently `1`. It changes only when a key is added, removed or redefined, so a consumer can check it instead of parsing `version` (Doctor 1.6.0 is the first with `--json`).
 - **`checks`** are the text report's lines, in the same order. `id` is the check name (the table in `SKILL.md`, *Mode 4*), `level` is `PASS`, `WARN`, `FAIL`, `INFO` or `SKIP`, and `message` is the text after the name on the text line. Which checks appear depends on what the project uses: without `LEDGER.md` there is one `ledger` SKIP instead of the ledger checks.
 - **`summary`** counts `checks` by level. **`exit_code`** equals the process exit code and keeps the text mode's contract: 0 every check passed, 1 WARN only, 2 any FAIL, 3 the checker could not run.
 - **`root`** and **`register_dir`** are absolute, resolved paths. Passing a `docs/` directory reports its parent as `root`, as the text report does.
-- **A run that exits 3 still prints the object.** `register_dir` is `null` when no register was selected, `today` is `null` when `--today` was not a date, and `checks` holds whatever ran before a crash. The reason is on stderr, exactly as in text mode.
+- **A run that exits 3 still prints the object.** `register_dir` is `null` when no register was selected, `today` is `null` when `--today` was not a date, and `checks` holds whatever ran before a crash. The reason is on stderr, exactly as in text mode, and also in **`error`** (the same text without the `docs-doctor: ` prefix). `error` is `null` on exits 0–2.
 - **Nothing else goes to stdout,** and the object is ASCII-only, so no locale can alter it. A command-line usage error exits 2 with a usage message on stderr and prints no object, so a consumer tells it apart from a FAIL by the missing object. `--help` and `--version` print their usual text.
 
 The JSON says no more than the text report does: a structural PASS is still not semantic accuracy or a verified write order. Without `--json` the output is unchanged.

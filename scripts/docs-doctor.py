@@ -13,13 +13,15 @@ Prints one line per check — PASS / WARN / FAIL / INFO / SKIP — with the
 measured value and its unit, then a summary line.
 
 With --json, stdout carries exactly one JSON object instead, on one line:
-{"tool", "version", "root", "register_dir", "today", "checks": [{"id",
-"level", "message"}], "summary": {"pass", "warn", "fail", "info", "skip"},
-"exit_code"}. It holds the same checks in the same order; "id" is the check
-name and "message" the text after it on the text line. Exit codes are the
-same, stderr is the same, and a run that exits 3 still prints the object
-("register_dir" or "today" is null when it was never determined). Argument
-errors, --help and --version stay argparse's, as in text mode.
+{"tool", "schema", "version", "root", "register_dir", "today", "checks":
+[{"id", "level", "message"}], "summary": {"pass", "warn", "fail", "info",
+"skip"}, "exit_code", "error"}. "schema" is the document's shape version (1).
+It holds the same checks in the same order; "id" is the check name and
+"message" the text after it on the text line. Exit codes are the same,
+stderr is the same, and a run that exits 3 still prints the object
+("register_dir" or "today" is null when it was never determined, and
+"error" carries the reason printed on stderr; it is null on exits 0-2).
+Argument errors, --help and --version stay argparse's, as in text mode.
 
 Exit codes:
     0   every check passed (INFO and SKIP lines do not count)
@@ -48,7 +50,9 @@ import shutil
 import subprocess
 import sys
 
-VERSION = "1.5.0"
+VERSION = "1.6.0"
+# Version of the --json document's shape; bumped only when a key is added, removed or redefined.
+JSON_SCHEMA = 1
 STRUCTURAL_LIMITS = (
     "Structural health does not establish semantic accuracy, independent "
     "verification, product acceptance, historical byte integrity or actual write order. "
@@ -204,12 +208,14 @@ DISPOSITION_RE = re.compile(
 class Report:
     """The checks of one run. `echo` prints each line as it is added (text
     mode); with it off the report is only collected (--json). `root` and
-    `register_dir` are filled in by run() once they are known."""
+    `register_dir` are filled in by run() once they are known; `error` holds
+    the reason when the checker could not run (exit 3)."""
 
     def __init__(self, echo=True):
         self.echo = echo
         self.root = None
         self.register_dir = None
+        self.error = None
         self.lines = []
         self.counts = {"PASS": 0, "WARN": 0, "FAIL": 0, "INFO": 0, "SKIP": 0}
 
@@ -2088,12 +2094,14 @@ def run(root, today, no_git, register=None, rep=None):
     root = os.path.realpath(root)
     rep.root = root
     if not os.path.isdir(root):
-        print("docs-doctor: not a directory: %s" % root, file=sys.stderr)
+        rep.error = "not a directory: %s" % root
+        print("docs-doctor: %s" % rep.error, file=sys.stderr)
         return 3
     try:
         register_dir = find_register(root, register)
     except ValueError as exc:
-        print("docs-doctor: %s" % exc, file=sys.stderr)
+        rep.error = str(exc)
+        print("docs-doctor: %s" % rep.error, file=sys.stderr)
         return 3
     rep.register_dir = register_dir
     note = ""
@@ -2141,6 +2149,7 @@ def json_report(rep, today, code, given_root):
             root = os.path.abspath(given_root)
     return {
         "tool": "docs-doctor",
+        "schema": JSON_SCHEMA,
         "version": VERSION,
         "root": root,
         "register_dir": rep.register_dir,
@@ -2149,6 +2158,7 @@ def json_report(rep, today, code, given_root):
                    for level, check, value in rep.lines],
         "summary": {level.lower(): rep.counts[level] for level in ("PASS", "WARN", "FAIL", "INFO", "SKIP")},
         "exit_code": code,
+        "error": rep.error if code == 3 else None,
     }
 
 
@@ -2176,13 +2186,15 @@ def main(argv=None):
     rep = Report(echo=not args.json)
     today = parse_date(args.today) if args.today else dt.date.today()
     if args.today and today is None:
-        print("docs-doctor: --today must be YYYY-MM-DD", file=sys.stderr)
+        rep.error = "--today must be YYYY-MM-DD"
+        print("docs-doctor: %s" % rep.error, file=sys.stderr)
         code = 3
     else:
         try:
             code = run(args.root, today, args.no_git, args.register_dir, rep)
         except Exception as exc:  # noqa: BLE001 — a crash is exit 3, never a silent pass
-            print("docs-doctor: checker error: %s: %s" % (type(exc).__name__, exc), file=sys.stderr)
+            rep.error = "checker error: %s: %s" % (type(exc).__name__, exc)
+            print("docs-doctor: %s" % rep.error, file=sys.stderr)
             code = 3
     if args.json:
         # ASCII-only, so no locale can alter it; one line, newline-terminated.

@@ -30,7 +30,7 @@ FIXTURES = ROOT / "tests/fixtures/doctor-json"
 BASELINE = json.loads((FIXTURES / "baseline.json").read_text(encoding="utf-8"))
 BASELINE_VERSION = "1.5.0"
 TODAY = "2026-09-10"
-KEYS = ["tool", "version", "root", "register_dir", "today", "checks", "summary", "exit_code"]
+KEYS = ["tool", "schema", "version", "root", "register_dir", "today", "checks", "summary", "exit_code", "error"]
 LEVELS = ("PASS", "WARN", "FAIL", "INFO", "SKIP")
 CHECK_ID_RE = re.compile(r"^[a-z]+(?:-[a-z]+)*$")
 SUMMARY_RE = re.compile(r"^(\d+) checks: (\d+) pass, (\d+) warn, (\d+) fail, (\d+) info, (\d+) skipped — exit (\d+)$",
@@ -81,8 +81,15 @@ class DoctorJsonTests(unittest.TestCase):
         doc = json.loads(stdout.decode("ascii"))
         self.assertEqual(list(doc), KEYS)
         self.assertEqual(doc["tool"], "docs-doctor")
+        self.assertEqual(doc["schema"], 1)
+        self.assertEqual(doc["schema"], self.doctor.JSON_SCHEMA)
         self.assertEqual(doc["version"], self.doctor.VERSION)
         self.assertEqual(doc["exit_code"], process.returncode)
+        if process.returncode == 3:
+            self.assertIsInstance(doc["error"], str)
+            self.assertEqual("docs-doctor: %s\n" % doc["error"], process.stderr.decode("utf-8"))
+        else:
+            self.assertIsNone(doc["error"])
         self.assertIsInstance(doc["checks"], list)
         for check in doc["checks"]:
             self.assertEqual(list(check), ["id", "level", "message"])
@@ -166,6 +173,7 @@ class DoctorJsonTests(unittest.TestCase):
                 self.assertEqual(doc["today"], today)
                 self.assertEqual(doc["checks"], [])
                 self.assertEqual(sum(doc["summary"].values()), 0)
+                self.assertTrue(doc["error"])
 
     def test_a_docs_directory_argument_reports_its_parent_as_root(self):
         target = self.project("pass")
@@ -198,6 +206,7 @@ class DoctorJsonTests(unittest.TestCase):
         doc = json.loads(outputs[True])
         self.assertEqual(outputs[True].count("\n"), 1)
         self.assertEqual(doc["exit_code"], 3)
+        self.assertEqual(doc["error"], "checker error: RuntimeError: injected")
         self.assertEqual([c["id"] for c in doc["checks"]][-1], "changelog-decision-refs")
         self.assertNotIn("status-size", [c["id"] for c in doc["checks"]])
         self.assertEqual([text_line(c) for c in doc["checks"]], check_lines(outputs[False]))

@@ -45,7 +45,7 @@ Four mechanisms work together.
 
 **Integrity by design.** The write order is the safety mechanism: the history is written before the dashboard, so an interrupted session can lose a STATUS update but never the record of what happened. History registers only grow, so they can't be silently rewritten. STATUS has a size ceiling, because a growing dashboard is history leaking into it. Decisions name the alternatives they rejected, so a later session builds on them instead of re-arguing them.
 
-**Automated checks.** Doctor is a read-only health check with up to 39 checks, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. Exit codes separate advisory drift from a broken property. It needs only Python's standard library.
+**Automated checks.** Doctor is a read-only health check with up to 39 checks, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
 
 ## Extensions, adopted when a project needs them
 
@@ -65,7 +65,7 @@ Plain text was a deliberate choice: it is the one format every model can read an
 ## Verified, not asserted
 
 - **Audited across 25 projects** before going public. Projects whose instructions carried the block rewrote STATUS as designed (churn 0.67–0.83); projects without it accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
-- **567 automated tests** across the core and both companions, standard library only.
+- **572 automated tests** across the core and both companions, standard library only.
 - **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
 - **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
 
@@ -83,6 +83,26 @@ ln -s ~/.claude/skills/project-docs-protocol ~/.codex/skills/project-docs-protoc
 ```
 
 Then, in any project, ask for "set up project docs". The skill recognises a project already using the system by its three registers plus either the instruction block or the install note in the docs README; the three filenames alone are not enough, because other conventions use them too.
+
+## Doctor output for dashboards
+
+`python3 scripts/docs-doctor.py "<project-root>" --json` runs the same checks as the text report and prints them as exactly one JSON object on stdout, on one line (wrapped here for reading):
+
+```json
+{"tool": "docs-doctor", "version": "1.5.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
+ "today": "2026-10-23",
+ "checks": [{"id": "wiring-block", "level": "PASS", "message": "present in 1 of 1 instructions files: AGENTS.md"}],
+ "summary": {"pass": 1, "warn": 0, "fail": 0, "info": 0, "skip": 0},
+ "exit_code": 0}
+```
+
+- **`checks`** are the text report's lines, in the same order. `id` is the check name (the table in `SKILL.md`, *Mode 4*), `level` is `PASS`, `WARN`, `FAIL`, `INFO` or `SKIP`, and `message` is the text after the name on the text line. Which checks appear depends on what the project uses: without `LEDGER.md` there is one `ledger` SKIP instead of the ledger checks.
+- **`summary`** counts `checks` by level. **`exit_code`** equals the process exit code and keeps the text mode's contract: 0 every check passed, 1 WARN only, 2 any FAIL, 3 the checker could not run.
+- **`root`** and **`register_dir`** are absolute, resolved paths. Passing a `docs/` directory reports its parent as `root`, as the text report does.
+- **A run that exits 3 still prints the object.** `register_dir` is `null` when no register was selected, `today` is `null` when `--today` was not a date, and `checks` holds whatever ran before a crash. The reason is on stderr, exactly as in text mode.
+- **Nothing else goes to stdout,** and the object is ASCII-only, so no locale can alter it. A command-line usage error exits 2 with a usage message on stderr and prints no object, so a consumer tells it apart from a FAIL by the missing object. `--help` and `--version` print their usual text.
+
+The JSON says no more than the text report does: a structural PASS is still not semantic accuracy or a verified write order. Without `--json` the output is unchanged.
 
 ## Files
 

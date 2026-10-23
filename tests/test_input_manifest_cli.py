@@ -64,8 +64,13 @@ class InputManifestCliTests(unittest.TestCase):
         self.reject('runtime hash input')
 
     def test_missing_required_fixture(self):
+        # The fixture is also read by the verdict, so the harness record now refuses first; either
+        # diagnostic is a rejection of the deletion.
         (self.root/'tests/fixtures/migration-20/STATUS.md').unlink()
-        self.reject('required input missing')
+        result = validate(self.root, self.directory, self.packet, self.hashes)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertRegex(result.stderr, 'harness file missing|required input missing')
+        self.assertNotIn('Traceback', result.stderr)
 
     def test_missing_required_template(self):
         (self.root/'templates/README.md').unlink()

@@ -1,33 +1,48 @@
 #!/usr/bin/env python3
-"""Run and validate the frozen hardening acceptance bundle.
+"""Run the frozen hardening acceptance bundle and write the child result.
 
 The runner deliberately executes the real command-line tools in disposable
-projects.  It emits the child result even when validation rejects it so a
-mutant run retains the semantic observation that caused rejection.
+projects.  It emits the child result even when its self-check rejects it so a
+mutant run retains the semantic observation that caused rejection.  It never
+reports acceptance: that verdict is validate_acceptance.py's alone.  Like the
+validator, it runs isolated and loads the harness modules only from bytes that
+match tests/harness.sha256 (D-0025).
 """
 from __future__ import annotations
+
+import sys
+
+if __name__ == "__main__" and not (sys.flags.isolated and sys.flags.dont_write_bytecode):
+    import os  # already loaded at startup; see validate_acceptance.py
+    os.execv(sys.executable, [sys.executable, "-I", "-B", __file__] + sys.argv[1:])
 
 import argparse
 import hashlib
 import json
 from pathlib import Path
 import subprocess
-import sys
 import tempfile
+import types
 from collections.abc import Mapping
 
-try:
-    from acceptance_gate import GateError, validate_result
-    from input_manifest import hashes, dirty_inputs
-except ModuleNotFoundError:  # imported as tests.run_acceptance by unit tests
-    from tests.acceptance_gate import GateError, validate_result
-    from tests.input_manifest import hashes, dirty_inputs
+GateError = ValueError  # replaced by the verified gate's class in main()
+hashes = dirty_inputs = validate_result = None
 
 
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = ROOT / "tests/fixtures/hardening-2026-09-12"
 MANIFEST = BUNDLE / "acceptance-cases.json"
 TODAY = "2026-09-14"
+
+
+def load_bootstrap():
+    """Execute validate_acceptance.py's own bytes as a module; it verifies itself and the rest."""
+    path = ROOT / "tests/validate_acceptance.py"
+    module = types.ModuleType("validate_acceptance")
+    module.__file__ = str(path)
+    sys.modules["validate_acceptance"] = module
+    exec(compile(path.read_bytes(), str(path), "exec", dont_inherit=True), module.__dict__)
+    return module
 
 
 def runtime_hashes(runtime_root: Path) -> dict[str, str]:
@@ -269,8 +284,21 @@ def main(argv=None) -> int:
     parser.add_argument("--runtime-root", type=Path, required=True)
     parser.add_argument("--result", type=Path, required=True)
     parser.add_argument("--source-commit", required=True)
+    parser.add_argument("--harness-sha256", metavar="DIGEST",
+                        help="reviewer pin: SHA-256 of tests/harness.sha256, computed outside this program")
     args = parser.parse_args(argv)
     args.runtime_root = args.runtime_root.resolve()
+    global GateError, hashes, dirty_inputs, validate_result
+    try:
+        bootstrap = load_bootstrap()
+        modules, entries = bootstrap.load_harness(ROOT, args.harness_sha256)
+        if args.runtime_root != ROOT:
+            bootstrap.check_subject_harness(args.runtime_root, entries)
+    except (ValueError, OSError) as error:
+        print(f"REJECT: {error}", file=sys.stderr)
+        return 1
+    GateError, validate_result = modules["acceptance_gate"].GateError, modules["acceptance_gate"].validate_result
+    hashes, dirty_inputs = modules["input_manifest"].hashes, modules["input_manifest"].dirty_inputs
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     payload = {
         "schema": 2,
@@ -300,7 +328,8 @@ def main(argv=None) -> int:
                                 for case in manifest["cases"]]
             payload["generic_control"] = run_positive_migration(args.runtime_root, scratch)
         payload["successful"] = True
-        validate_result(payload, expected_cases(manifest), payload["runtime_hashes"], strict=True)
+        validate_result(payload, expected_cases(manifest), payload["runtime_hashes"], strict=True,
+                        subject_root=args.runtime_root)
     except (OSError, ValueError, TypeError, json.JSONDecodeError, GateError) as error:
         payload["failures"] = [{"type": type(error).__name__, "message": str(error)}]
         payload["successful"] = False
@@ -309,9 +338,10 @@ def main(argv=None) -> int:
     args.result.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n",
                            encoding="utf-8")
     if payload["successful"] and not payload["failures"]:
-        print(json.dumps({"accepted": True, "cases": len(payload["cases"])}, sort_keys=True))
+        # Not a verdict: validate_acceptance.py, run from a trusted checkout, gives that.
+        print(f"result written to {args.result}; self-check passed", file=sys.stderr)
         return 0
-    print("REJECT: acceptance bundle failed", file=sys.stderr)
+    print("REJECT: acceptance bundle failed: " + payload["failures"][0]["message"], file=sys.stderr)
     return 1
 
 

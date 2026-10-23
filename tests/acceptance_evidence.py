@@ -209,7 +209,13 @@ def plan_observation(record, expected_counts, titles, before, after, today):
     return plan
 
 
-def validate_canonical(result, expected_cases):
+def validate_canonical(result, expected_cases, subject_root=None):
+    """Judge `result` for the checkout `subject_root` (default: this one).
+
+    Expectations (contract, fixtures, templates) always come from this module's own
+    checkout, ROOT; only the subject's files, hashes and Git state come from `subject_root`.
+    """
+    subject = ROOT if subject_root is None else Path(subject_root).resolve()
     require(type(result.get('schema')) is int and result['schema'] == 2, 'result schema must be 2')
     contract = load_json((ROOT / 'tests/fixtures/acceptance-v2/contract.json').read_text())
     require(result.get('evidence_scope') == contract['scope'], 'canonical evidence scope is missing or untrusted')
@@ -217,12 +223,12 @@ def validate_canonical(result, expected_cases):
     root_value = result.get('runtime_root')
     require(isinstance(root_value, str) and Path(root_value).is_absolute(), 'runtime root provenance')
     root = Path(root_value).resolve()
-    require(root == ROOT, 'runtime root must be the validator subject checkout')
-    expected_paths = required_paths(ROOT)
+    require(root == subject, 'runtime root must be the subject checkout being judged')
+    expected_paths = required_paths(root)
     values = result['runtime_hashes']
     hash_map(values, 'runtime hashes schema')
     require(set(values) == expected_paths, 'runtime hash manifest scope is incomplete or unexpected')
-    require(values == hashes(ROOT), 'runtime input hash mismatch')
+    require(values == hashes(root), 'runtime input hash mismatch')
     provenance = result.get('source_provenance')
     require(isinstance(provenance, dict), 'source provenance schema')
     require(provenance.get('runtime_tree_sha256') == tree_hash(values), 'runtime tree digest mismatch')

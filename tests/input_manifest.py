@@ -25,15 +25,27 @@ EXCLUDED = frozenset({
 })
 # Never inputs: version control internals and per-run scratch space.
 EXCLUDED_DIRECTORIES = ('.git/', 'tests/.tmp/')
+# Finder metadata, skipped by basename only: Python cannot import it, and macOS writes it
+# into any folder opened in Finder. Other ignored files stay in scope (an ignored .py runs).
+SKIPPED_BASENAMES = frozenset({'.DS_Store'})
+# Python executes these, so they are never out of scope: present or committed, they are refused.
+BYTECODE_SUFFIXES = ('.pyc', '.pyo', '.so', '.pyd', '.pth')
 ROOT_FILES = {'SKILL.md', 'AGENTS.md', 'CLAUDE.md', 'README.md', 'LICENSE'}
 DOC_INPUTS = {'docs/README.md', 'docs/MIGRATION.md', 'docs/PROTOCOLS.md', 'docs/SKILL-REGISTRY.md',
               'docs/BRIEF-EXAMPLE.md', 'docs/EVIDENCE.md'}
-# The code that judges a run. Its digest is recorded beside it and checked before any
-# verdict is produced (D-0025). The record is bound like any other input but is not hashed
-# into its own digest.
+# Everything the verdict reads from the judging checkout: the code, the frozen cases and
+# contract, and the fixtures and template the expectations are computed from (D-0025). A test
+# audits the files the runner and validator open against this set. HARNESS_RECORD lists each
+# with its SHA-256 in `sha256sum` format; it is bound like any other input but not listed in itself.
 HARNESS_FILES = ('tests/validate_acceptance.py', 'tests/acceptance_gate.py', 'tests/acceptance_evidence.py',
                  'tests/input_manifest.py', 'tests/run_acceptance.py',
-                 'tests/fixtures/hardening-2026-09-12/acceptance-cases.json')
+                 'tests/fixtures/hardening-2026-09-12/acceptance-cases.json') + tuple(
+    'tests/fixtures/hardening-2026-09-12/cases/' + n + '.md' for n in (
+        'doctor-a1', 'doctor-a1-positive', 'doctor-a2', 'doctor-a2-positive',
+        'migration-split-cdata', 'migration-split-pi')) + (
+    'tests/fixtures/acceptance-v2/contract.json', 'tests/fixtures/acceptance-v2/contiguous-cdata.md',
+    'tests/fixtures/acceptance-v2/contiguous-pi.md', 'tests/fixtures/migration-20/STATUS.md',
+    'templates/LEDGER.md')
 HARNESS_RECORD = 'tests/harness.sha256'
 # Floor, not scope: these must exist even if the rule above were to miss them.
 REQUIRED = ROOT_FILES | DOC_INPUTS | {
@@ -56,10 +68,12 @@ def valid_path(value):
 
 
 def in_scope(name):
-    if not name or '__pycache__' in name.split('/') or name.endswith('.pyc'):
+    if not name or name.rsplit('/', 1)[-1] in SKIPPED_BASENAMES:
         return False
     if name in EXCLUDED or name == '.git' or name.startswith(EXCLUDED_DIRECTORIES):
         return False
+    if '__pycache__' in name.split('/') or name.endswith(BYTECODE_SUFFIXES):
+        raise ValueError('bytecode or import hook in the reviewed tree (remove it): ' + name)
     if not valid_path(name):
         raise ValueError('unsupported behavior input path: ' + repr(name))
     return True
@@ -71,10 +85,10 @@ def present_paths(root):
     for base, directories, files in os.walk(root):
         relative = Path(base).relative_to(root).as_posix()
         prefix = '' if relative == '.' else relative + '/'
-        directories[:] = [d for d in directories if d not in ('.git', '__pycache__')
+        directories[:] = [d for d in directories if d != '.git'
                           and not (prefix + d + '/').startswith(EXCLUDED_DIRECTORIES)]
         found += [prefix + d for d in directories if (Path(base) / d).is_symlink()]
-        found += [prefix + f for f in files]
+        found += [prefix + f for f in files if f not in SKIPPED_BASENAMES]
     return found
 
 
@@ -137,30 +151,19 @@ def tree_hash(values):
     return hashlib.sha256((''.join(k + ':' + values[k] + '\n' for k in sorted(values))).encode()).hexdigest()
 
 
-def harness_digest(root):
-    """Tree digest of the judging code, over the same `path:sha256` records as the manifest."""
-    return tree_hash({name: hashlib.sha256((root / name).read_bytes()).hexdigest()
-                      for name in HARNESS_FILES})
+def harness_record(root):
+    """The text of HARNESS_RECORD for `root`: `sha256sum` lines, sorted by path.
 
-
-def verify_harness(root, pinned=None):
-    """Refuse to judge unless the running harness matches its record (and a reviewer's pin).
-
-    Raises ValueError. The record catches an edit that did not also re-record; the pin is
-    a digest the reviewer computed outside the candidate tree.
+    validate_acceptance.py checks it (it does not import this module to do so); a reviewer
+    checks it with `sha256sum -c tests/harness.sha256` and pins `sha256sum tests/harness.sha256`.
     """
-    try:
-        actual = harness_digest(root)
-    except OSError as error:
-        raise ValueError('harness file missing or unreadable: ' + str(error)) from error
-    try:
-        recorded = (root / HARNESS_RECORD).read_text(encoding='utf-8').strip()
-    except OSError as error:
-        raise ValueError('harness digest record missing or unreadable: ' + HARNESS_RECORD) from error
-    if actual != recorded:
-        raise ValueError('harness digest does not match its record: validator or harness modules changed')
-    if pinned is not None and (not re.fullmatch('[0-9a-f]{64}', pinned) or pinned != actual):
-        raise ValueError('harness digest does not match the reviewer pin')
+    return ''.join(hashlib.sha256((root / name).read_bytes()).hexdigest() + '  ' + name + '\n'
+                   for name in sorted(HARNESS_FILES))
+
+
+def harness_digest(root):
+    """SHA-256 of the record `root` should carry: the value a reviewer pins."""
+    return hashlib.sha256(harness_record(root).encode('utf-8')).hexdigest()
 
 
 def main():
@@ -168,10 +171,15 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('root', type=Path); p.add_argument('--out', type=Path)
     p.add_argument('--print-harness-digest', action='store_true',
-                   help='print the digest of the judging code, for a reviewer to pin, and exit')
+                   help='print the SHA-256 of the harness record this tree should carry, and exit')
+    p.add_argument('--print-harness-record', action='store_true',
+                   help='print the harness record (sha256sum format) for this tree, and exit')
     a = p.parse_args(); root = a.root.resolve()
     if a.print_harness_digest:
         print(harness_digest(root))
+        return
+    if a.print_harness_record:
+        print(harness_record(root), end='')
         return
     if a.out is None:
         p.error('--out is required')
@@ -182,8 +190,10 @@ def main():
             metadata = a.out.lstat()
             if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
                 p.error('output must be a regular unlinked file')
-        if dirty_inputs(root):
-            p.error('behavior inputs must be clean before manifest generation')
+        dirty = dirty_inputs(root)
+        if dirty:
+            shown = ', '.join(dirty[:10]) + (' and %d more' % (len(dirty) - 10) if len(dirty) > 10 else '')
+            p.error('behavior inputs must be clean before manifest generation: ' + shown)
         values = hashes(root)
     except (ValueError, OSError, subprocess.CalledProcessError) as error:
         p.error(str(error))

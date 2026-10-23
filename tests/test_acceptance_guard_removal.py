@@ -5,11 +5,12 @@ first passes intact, then fails because the intended contract is violated,
 not because the fixture broke, Git was dirty, or another diagnostic was emitted.
 The summary-selector mutant restores a known false rejection of valid prose.
 """
+import json
 from pathlib import Path
 import tempfile
 import unittest
 from tests import input_manifest
-from tests.acceptance_support import copy_subject, commit, invoke
+from tests.acceptance_support import MANIFEST, copy_subject, commit, external, generate, invoke
 
 
 class AcceptanceGuardRemovalTests(unittest.TestCase):
@@ -25,7 +26,7 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
             self.assertEqual(text.count(needle), 1, 'mutation must match one specific guard')
             path.write_text(text.replace(needle, replacement, 1))
             # An honest coordinated edit re-records the harness digest; these cases isolate the named guard.
-            (root/input_manifest.HARNESS_RECORD).write_text(input_manifest.harness_digest(root) + '\n')
+            (root/input_manifest.HARNESS_RECORD).write_text(input_manifest.harness_record(root))
             commit(root)
             mutant = invoke(root, *command)
             self.assertEqual(mutant.returncode, 1, mutant.stdout + mutant.stderr)
@@ -68,9 +69,17 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
 
     def test_harness_binding_guard(self):
         self.removal('test_validator_edited_to_skip_canonical_checks_cannot_approve_itself',
-                     "verify_harness(Path(__file__).resolve().parents[1], pinned)", 'pass',
+                     "    blobs = verified_bytes(root, entries)", "    blobs = {n: (root / n).read_bytes() for n in entries}",
                      module='tests.test_acceptance_harness_binding.HarnessBindingTests',
-                     source='tests/validate_acceptance.py')
+                     source='tests/validate_acceptance.py', assertion='AssertionError: 0 != 1 : edited validator approved its own run')
+
+    def test_shadow_scan_guard(self):
+        # Without the scan the planted package is still never imported: the harness loads from
+        # verified bytes, so the real gate runs and refuses the forged packet on its own grounds.
+        self.removal('test_shadowing_package_is_refused', '    planted = shadowing(root)\n', '    planted = []\n',
+                     module='tests.test_acceptance_harness_binding.HarnessBindingTests',
+                     source='tests/validate_acceptance.py',
+                     assertion="not found in 'REJECT: canonical evidence scope is missing or untrusted")
 
     def test_journal_schema_guard(self):
         self.removal('test_journal_schema_downgrade', "journal['version'] == 1", 'True')
@@ -83,6 +92,66 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
 
     def test_journal_target_schema_guard(self):
         self.removal('test_journal_extra_target_key', "set(target) == {'content', 'after'}", 'True')
+
+
+
+class InTreeLimitTests(unittest.TestCase):
+    """The documented limit of the in-tree check, tested rather than asserted (D-0025).
+
+    Each mutant edits the judging code inside the candidate and does not re-record. The
+    candidate's own validator then approves a packet the real gate rejects, because code in a
+    tree cannot vouch for itself. The external check, a trusted checkout's runner and validator
+    judging the candidate, refuses every one.
+    """
+    MUTANTS = {
+        # The refusal after a failed harness check no longer fails the run (the review's line-60 mutant).
+        'refusal-exit': [('tests/validate_acceptance.py',
+                          '        print(f"REJECT: {error}", file=sys.stderr)\n        return 1\n    GateError',
+                          '        print(f"REJECT: {error}", file=sys.stderr)\n        return 0\n    GateError')],
+        # The digest comparison never fails, and strictness is off (the review's line-160 mutant).
+        'digest-comparison': [('tests/validate_acceptance.py', '    if changed:\n', '    if False:\n'),
+                              ('tests/validate_acceptance.py', 'strict=True,', 'strict=False,')],
+        # The verification call is gone and strictness is off; passes even with the correct pin.
+        'verification-removed': [('tests/validate_acceptance.py', '    entries = read_record(root, pinned)\n',
+                                  '    entries = read_record(root)\n'),
+                                 ('tests/validate_acceptance.py', '    blobs = verified_bytes(root, entries)\n',
+                                  '    blobs = {n: (root / n).read_bytes() for n in entries}\n'),
+                                 ('tests/validate_acceptance.py', 'strict=True,', 'strict=False,')],
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        cls.temp = tempfile.TemporaryDirectory(prefix='in-tree limit ')
+        cls.trusted = Path(cls.temp.name) / 'trusted'
+        copy_subject(cls.trusted)
+        cls.pin = __import__('hashlib').sha256((cls.trusted / input_manifest.HARNESS_RECORD).read_bytes()).hexdigest()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.temp.cleanup()
+
+    def test_in_tree_check_is_defeated_and_external_check_refuses(self):
+        for name, edits in self.MUTANTS.items():
+            with self.subTest(mutant=name), tempfile.TemporaryDirectory(prefix='in-tree limit ') as directory:
+                directory = Path(directory)
+                root = directory / 'candidate'
+                copy_subject(root)
+                packet, hashes = generate(root, directory)
+                for source, needle, replacement in edits:
+                    text = (root / source).read_text()
+                    self.assertEqual(text.count(needle), 1, needle)
+                    (root / source).write_text(text.replace(needle, replacement, 1))
+                commit(root)
+                packet.pop('evidence_scope')
+                path = directory / 'forged.json'
+                path.write_text(json.dumps(packet))
+                pin = ('--harness-sha256', self.pin) if name == 'verification-removed' else ()
+                inside = invoke(root, 'tests/validate_acceptance.py', *pin, path, MANIFEST, hashes)
+                self.assertEqual(inside.returncode, 0, 'in-tree limit no longer holds; update D-0025: ' + inside.stderr)
+                _, outside = external(self.trusted, root, directory, '--harness-sha256', self.pin)
+                self.assertEqual(outside.returncode, 1, outside.stdout)
+                self.assertIn('REJECT: candidate judging files differ from the trusted checkout: tests/validate_acceptance.py',
+                              outside.stderr)
 
 
 if __name__ == '__main__':

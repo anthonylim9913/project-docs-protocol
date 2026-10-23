@@ -30,8 +30,13 @@ class GateError(ValueError):
 
 
 def validate_result(result: Mapping, expected_cases: Mapping[str, Mapping],
-                    runtime_hashes: Mapping[str, str], *, strict: bool = False) -> None:
-    """Raise ``GateError`` for malformed, incomplete, or false-green output."""
+                    runtime_hashes: Mapping[str, str], *, strict: bool = False,
+                    subject_root: Path | None = None) -> None:
+    """Raise ``GateError`` for malformed, incomplete, or false-green output.
+
+    ``subject_root`` is the checkout the result claims to describe; it defaults to the
+    checkout this module was loaded from.
+    """
     if not isinstance(result, Mapping):
         raise GateError("result must be an object")
     if type(result.get("successful")) is not bool:
@@ -106,12 +111,12 @@ def validate_result(result: Mapping, expected_cases: Mapping[str, Mapping],
                 from acceptance_evidence import validate_canonical
             except ModuleNotFoundError:
                 from tests.acceptance_evidence import validate_canonical
-            validate_canonical(result, expected_cases)
+            validate_canonical(result, expected_cases, subject_root)
         except (ValueError, OSError, subprocess.CalledProcessError) as error:
             raise GateError(str(error)) from error
 
 
-def validate_json(result, expected_cases, runtime_hashes, *, strict: bool = False):
+def validate_json(result, expected_cases, runtime_hashes, *, strict: bool = False, subject_root=None):
     """JSON-friendly wrapper used by the command-line evidence checker."""
-    validate_result(result, expected_cases, runtime_hashes, strict=strict)
+    validate_result(result, expected_cases, runtime_hashes, strict=strict, subject_root=subject_root)
     return {"accepted": True, "cases": len(expected_cases)}

@@ -8,7 +8,7 @@ import sys
 import tempfile
 import unittest
 
-from tests.run_acceptance import runtime_hashes
+from tests.input_manifest import hashes as runtime_hashes
 from tests.acceptance_support import copy_subject, commit
 
 

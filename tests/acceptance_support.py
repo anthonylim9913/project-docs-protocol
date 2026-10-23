@@ -16,6 +16,12 @@ def invoke(root, *args):
                           capture_output=True, text=True, timeout=60)
 
 
+def invoke_isolated(root, *args):
+    """The validator must be started isolated (-I -B) or it refuses to judge."""
+    return subprocess.run([sys.executable, '-I', '-B', *map(str, args)], cwd=root,
+                          capture_output=True, text=True, timeout=60)
+
+
 def commit(root):
     subprocess.run(['git', 'add', '.'], cwd=root, check=True, capture_output=True)
     subprocess.run(['git', '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
@@ -53,4 +59,4 @@ def generate(root, directory):
 def validate(root, directory, packet, hashes):
     path = directory / 'validation.json'
     path.write_text(json.dumps(packet))
-    return invoke(root, 'tests/validate_acceptance.py', path, MANIFEST, hashes)
+    return invoke_isolated(root, 'tests/validate_acceptance.py', path, MANIFEST, hashes)

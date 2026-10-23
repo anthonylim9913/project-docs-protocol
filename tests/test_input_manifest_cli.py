@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-from tests.acceptance_support import copy_subject, generate, validate, invoke, commit, MANIFEST
+from tests.acceptance_support import copy_subject, generate, validate, invoke, invoke_isolated, commit, MANIFEST
 
 
 class InputManifestCliTests(unittest.TestCase):
@@ -100,14 +100,14 @@ class InputManifestCliTests(unittest.TestCase):
     def test_duplicate_json_key(self):
         path = self.directory/'duplicate.json'
         path.write_text(json.dumps(self.packet)[:-1] + ', "schema": 2}')
-        p = invoke(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
+        p = invoke_isolated(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
         self.assertEqual(p.returncode, 1)
         self.assertIn('duplicate JSON key: schema', p.stderr)
 
     def test_invalid_json_is_the_actual_refusal(self):
         path = self.directory/'malformed.json'
         path.write_text('{ not valid JSON')
-        p = invoke(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
+        p = invoke_isolated(self.root, 'tests/validate_acceptance.py', path, MANIFEST, self.hashes)
         self.assertEqual(p.returncode, 1)
         self.assertIn('Expecting property name', p.stderr)
 

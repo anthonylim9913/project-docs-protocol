@@ -25,7 +25,7 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
             self.assertEqual(text.count(needle), 1, 'mutation must match one specific guard')
             path.write_text(text.replace(needle, replacement, 1))
             # An honest coordinated edit re-records the harness digest; these cases isolate the named guard.
-            (root/input_manifest.HARNESS_RECORD).write_text(input_manifest.harness_digest(root) + '\n')
+            input_manifest.write_harness_record(root)
             commit(root)
             mutant = invoke(root, *command)
             self.assertEqual(mutant.returncode, 1, mutant.stdout + mutant.stderr)
@@ -68,9 +68,16 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
 
     def test_harness_binding_guard(self):
         self.removal('test_validator_edited_to_skip_canonical_checks_cannot_approve_itself',
-                     "verify_harness(Path(__file__).resolve().parents[1], pinned)", 'pass',
-                     module='tests.test_acceptance_harness_binding.HarnessBindingTests',
+                     "if hashlib.sha256(blobs[path]).hexdigest() != digest:", 'if False:',
+                     module='tests.test_acceptance_harness_binding.HarnessRecordTests',
                      source='tests/validate_acceptance.py')
+
+    def test_isolation_guard(self):
+        self.removal('test_not_isolated_or_writing_bytecode_is_refused',
+                     "if not (sys.flags.isolated and sys.flags.dont_write_bytecode):", 'if False:',
+                     module='tests.test_acceptance_harness_binding.IsolationTests',
+                     source='tests/validate_acceptance.py',
+                     assertion="AssertionError: 'run isolated' not found")  # the origin check still refuses, with its own message
 
     def test_journal_schema_guard(self):
         self.removal('test_journal_schema_downgrade', "journal['version'] == 1", 'True')

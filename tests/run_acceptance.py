@@ -18,10 +18,10 @@ from collections.abc import Mapping
 
 try:
     from acceptance_gate import GateError, validate_result
-    from input_manifest import hashes, dirty_inputs
+    from input_manifest import hashes, dirty_inputs, verify_harness
 except ModuleNotFoundError:  # imported as tests.run_acceptance by unit tests
     from tests.acceptance_gate import GateError, validate_result
-    from tests.input_manifest import hashes, dirty_inputs
+    from tests.input_manifest import hashes, dirty_inputs, verify_harness
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -290,6 +290,8 @@ def main(argv=None) -> int:
         "cases": [],
     }
     try:
+        # No verdict from a runner whose own code or inputs differ from the recorded digest.
+        verify_harness(ROOT)
         verify_manifest(manifest)
         payload["runtime_hashes"] = runtime_hashes(args.runtime_root)
         payload["source_provenance"] = git_provenance(args.runtime_root, args.source_commit)

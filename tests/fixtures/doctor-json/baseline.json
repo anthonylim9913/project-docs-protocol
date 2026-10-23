@@ -1,0 +1,62 @@
+{
+  "captured_with": "scripts/docs-doctor.py at 6c96571 (v0.4.1, Doctor 1.5.0), before --json existed",
+  "source_sha256": "4d85a401320ed9df019cfba4368b02544d745b0291fb592e5a386152e99516f3",
+  "python": "3.14.4",
+  "cases": {
+    "pass": {
+      "args": [
+        "--today",
+        "2026-09-10",
+        "--no-git"
+      ],
+      "exit": 0,
+      "stdout": "baseline/pass.stdout",
+      "stdout_sha256": "b6d48122bd1b85764466d98b711f744bab6e9bf4617367a74cb78c4fc996af9f",
+      "stderr": ""
+    },
+    "warn": {
+      "args": [
+        "--today",
+        "2026-09-10",
+        "--no-git"
+      ],
+      "exit": 1,
+      "stdout": "baseline/warn.stdout",
+      "stdout_sha256": "59939ed6f9ec71a40ca84a4d66aad8df6041712a97a4ad6a7dde4faa9820e592",
+      "stderr": ""
+    },
+    "fail": {
+      "args": [
+        "--today",
+        "2026-09-10",
+        "--no-git"
+      ],
+      "exit": 2,
+      "stdout": "baseline/fail.stdout",
+      "stdout_sha256": "d764f69622aeb65cc54e6112dd4f983f276864aa7d06afda3a169ac8cf88f3fa",
+      "stderr": ""
+    },
+    "no-register": {
+      "args": [
+        "--today",
+        "2026-09-10",
+        "--no-git"
+      ],
+      "exit": 3,
+      "stdout": "baseline/no-register.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "docs-doctor: no complete register (STATUS.md + CHANGELOG.md + DECISIONS.md); migration of a pre-install source requires --pre-install --register-dir PATH\n"
+    },
+    "bad-today": {
+      "args": [
+        "--today",
+        "2026-13-40",
+        "--no-git"
+      ],
+      "exit": 3,
+      "stdout": "baseline/bad-today.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "docs-doctor: --today must be YYYY-MM-DD\n"
+    }
+  }
+}

@@ -8,6 +8,7 @@ The summary-selector mutant restores a known false rejection of valid prose.
 from pathlib import Path
 import tempfile
 import unittest
+from tests import input_manifest
 from tests.acceptance_support import copy_subject, commit, invoke
 
 
@@ -23,6 +24,8 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
             text = path.read_text()
             self.assertEqual(text.count(needle), 1, 'mutation must match one specific guard')
             path.write_text(text.replace(needle, replacement, 1))
+            # An honest coordinated edit re-records the harness digest; these cases isolate the named guard.
+            (root/input_manifest.HARNESS_RECORD).write_text(input_manifest.harness_digest(root) + '\n')
             commit(root)
             mutant = invoke(root, *command)
             self.assertEqual(mutant.returncode, 1, mutant.stdout + mutant.stderr)
@@ -62,6 +65,12 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
                      "dirty.update(p for p in current if current[p] != committed[p])", 'pass',
                      module='tests.test_input_manifest_cli.InputManifestCliTests', source='tests/input_manifest.py',
                      assertion='AssertionError: 0 != 2')
+
+    def test_harness_binding_guard(self):
+        self.removal('test_validator_edited_to_skip_canonical_checks_cannot_approve_itself',
+                     "verify_harness(Path(__file__).resolve().parents[1], pinned)", 'pass',
+                     module='tests.test_acceptance_harness_binding.HarnessBindingTests',
+                     source='tests/validate_acceptance.py')
 
     def test_journal_schema_guard(self):
         self.removal('test_journal_schema_downgrade', "journal['version'] == 1", 'True')

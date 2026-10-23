@@ -8,9 +8,11 @@ from pathlib import Path
 try:
     from acceptance_gate import GateError, validate_json
     from acceptance_evidence import load_json
+    from input_manifest import verify_harness
 except ModuleNotFoundError:
     from tests.acceptance_gate import GateError, validate_json
     from tests.acceptance_evidence import load_json
+    from tests.input_manifest import verify_harness
 
 
 def validate_manifest_file(path):
@@ -39,9 +41,23 @@ def validate_manifest_file(path):
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
+    pinned = None
+    if "--harness-sha256" in argv:
+        at = argv.index("--harness-sha256")
+        if at + 1 >= len(argv):
+            print("usage: --harness-sha256 needs a digest", file=sys.stderr)
+            return 2
+        pinned = argv[at + 1]
+        del argv[at:at + 2]
     if len(argv) != 3:
-        print("usage: validate_acceptance.py RESULT.json CASES.json HASHES.json", file=sys.stderr)
+        print("usage: validate_acceptance.py [--harness-sha256 DIGEST] RESULT.json CASES.json HASHES.json", file=sys.stderr)
         return 2
+    try:
+        # Before any verdict: the code about to judge must be the code that was recorded.
+        verify_harness(Path(__file__).resolve().parents[1], pinned)
+    except ValueError as error:
+        print(f"REJECT: {error}", file=sys.stderr)
+        return 1
     canonical_cases = (Path(__file__).parent / "fixtures/hardening-2026-09-12/acceptance-cases.json").resolve()
     if Path(argv[1]).resolve() != canonical_cases:
         print("REJECT: expected case manifest is not the frozen reviewed bundle", file=sys.stderr)

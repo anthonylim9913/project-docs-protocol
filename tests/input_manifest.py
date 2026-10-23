@@ -13,10 +13,29 @@ import tempfile
 import re
 import subprocess
 
+# Binding rule (D-0025): every file in the repository, tracked at HEAD or present on disk,
+# is a behavior input unless it is listed here. The list is the reviewed exception, not
+# an inclusion allowlist: a file added later is bound by default.
+EXCLUDED = frozenset({
+    # Live registers: rewritten by every Close, state rather than normative input.
+    'docs/STATUS.md', 'docs/CHANGELOG.md', 'docs/DECISIONS.md', 'docs/LEDGER.md',
+    'docs/LEDGER-ARCHIVE.md',
+    # Review reports: dated history of how the repository was checked, not instructions.
+    'docs/HARDENING-REVIEW.md', 'docs/LESSONS-REVIEW.md',
+})
+# Never inputs: version control internals and per-run scratch space.
+EXCLUDED_DIRECTORIES = ('.git/', 'tests/.tmp/')
 ROOT_FILES = {'SKILL.md', 'AGENTS.md', 'CLAUDE.md', 'README.md', 'LICENSE'}
-DIRECTORIES = ('scripts/', 'templates/', 'tests/', 'staging/', '.github/')
 DOC_INPUTS = {'docs/README.md', 'docs/MIGRATION.md', 'docs/PROTOCOLS.md', 'docs/SKILL-REGISTRY.md',
               'docs/BRIEF-EXAMPLE.md', 'docs/EVIDENCE.md'}
+# The code that judges a run. Its digest is recorded beside it and checked before any
+# verdict is produced (D-0025). The record is bound like any other input but is not hashed
+# into its own digest.
+HARNESS_FILES = ('tests/validate_acceptance.py', 'tests/acceptance_gate.py', 'tests/acceptance_evidence.py',
+                 'tests/input_manifest.py', 'tests/run_acceptance.py',
+                 'tests/fixtures/hardening-2026-09-12/acceptance-cases.json')
+HARNESS_RECORD = 'tests/harness.sha256'
+# Floor, not scope: these must exist even if the rule above were to miss them.
 REQUIRED = ROOT_FILES | DOC_INPUTS | {
     'scripts/docs-doctor.py', 'scripts/docs-migrate.py', 'scripts/register_paths.py',
     'scripts/skill-registry.py', 'tests/run_acceptance.py', 'tests/acceptance_gate.py',
@@ -37,19 +56,31 @@ def valid_path(value):
 
 
 def in_scope(name):
-    if '__pycache__' in name.split('/') or name.endswith('.pyc') or name.startswith('tests/.tmp/'):
+    if not name or '__pycache__' in name.split('/') or name.endswith('.pyc'):
         return False
-    selected = name in ROOT_FILES | DOC_INPUTS or name.startswith(DIRECTORIES)
-    if selected and not valid_path(name):
+    if name in EXCLUDED or name == '.git' or name.startswith(EXCLUDED_DIRECTORIES):
+        return False
+    if not valid_path(name):
         raise ValueError('unsupported behavior input path: ' + repr(name))
-    return selected
+    return True
+
+
+def present_paths(root):
+    """Files and links on disk; linked directories are reported, never followed."""
+    found = []
+    for base, directories, files in os.walk(root):
+        relative = Path(base).relative_to(root).as_posix()
+        prefix = '' if relative == '.' else relative + '/'
+        directories[:] = [d for d in directories if d not in ('.git', '__pycache__')
+                          and not (prefix + d + '/').startswith(EXCLUDED_DIRECTORIES)]
+        found += [prefix + d for d in directories if (Path(base) / d).is_symlink()]
+        found += [prefix + f for f in files]
+    return found
 
 
 def required_paths(root):
     tracked = subprocess.check_output(['git', '-C', str(root), 'ls-tree', '-r', '--name-only', '-z', 'HEAD'], text=True).split('\0')
-    present = [p.relative_to(root).as_posix() for prefix in DIRECTORIES
-               for p in (root / prefix).rglob('*') if p.is_file() or p.is_symlink()]
-    paths = REQUIRED | {p for p in tracked + present if in_scope(p)}
+    paths = REQUIRED | {p for p in tracked + present_paths(root) if in_scope(p)}
     for name in sorted(paths):
         path = root / name
         if not path.is_file() or any(p.is_symlink() for p in [path] + list(path.parents) if p != root and root in p.parents):
@@ -106,11 +137,44 @@ def tree_hash(values):
     return hashlib.sha256((''.join(k + ':' + values[k] + '\n' for k in sorted(values))).encode()).hexdigest()
 
 
+def harness_digest(root):
+    """Tree digest of the judging code, over the same `path:sha256` records as the manifest."""
+    return tree_hash({name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+                      for name in HARNESS_FILES})
+
+
+def verify_harness(root, pinned=None):
+    """Refuse to judge unless the running harness matches its record (and a reviewer's pin).
+
+    Raises ValueError. The record catches an edit that did not also re-record; the pin is
+    a digest the reviewer computed outside the candidate tree.
+    """
+    try:
+        actual = harness_digest(root)
+    except OSError as error:
+        raise ValueError('harness file missing or unreadable: ' + str(error)) from error
+    try:
+        recorded = (root / HARNESS_RECORD).read_text(encoding='utf-8').strip()
+    except OSError as error:
+        raise ValueError('harness digest record missing or unreadable: ' + HARNESS_RECORD) from error
+    if actual != recorded:
+        raise ValueError('harness digest does not match its record: validator or harness modules changed')
+    if pinned is not None and (not re.fullmatch('[0-9a-f]{64}', pinned) or pinned != actual):
+        raise ValueError('harness digest does not match the reviewer pin')
+
+
 def main():
     import argparse
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('root', type=Path); p.add_argument('--out', type=Path, required=True)
+    p.add_argument('root', type=Path); p.add_argument('--out', type=Path)
+    p.add_argument('--print-harness-digest', action='store_true',
+                   help='print the digest of the judging code, for a reviewer to pin, and exit')
     a = p.parse_args(); root = a.root.resolve()
+    if a.print_harness_digest:
+        print(harness_digest(root))
+        return
+    if a.out is None:
+        p.error('--out is required')
     if root == a.out.resolve() or root in a.out.resolve().parents:
         p.error('input manifest output must be outside the reviewed tree')
     try:

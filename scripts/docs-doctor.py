@@ -2,7 +2,7 @@
 """docs-doctor — health check for a project-docs-protocol installation.
 
 Usage:
-    python3 docs-doctor.py <project-root> [--today YYYY-MM-DD] [--no-git]
+    python3 docs-doctor.py <project-root> [--today YYYY-MM-DD] [--no-git] [--json]
 
 Reads the register (STATUS.md, CHANGELOG.md, DECISIONS.md, plus README.md,
 BRAND.md and LEDGER.md when present) at <project-root> or
@@ -11,6 +11,15 @@ AGENTS.md) at the project root. LEDGER-ARCHIVE.md is checked only for ID
 syntax and collisions; its row semantics are outside the Doctor boundary.
 Prints one line per check — PASS / WARN / FAIL / INFO / SKIP — with the
 measured value and its unit, then a summary line.
+
+With --json, stdout carries exactly one JSON object instead, on one line:
+{"tool", "version", "root", "register_dir", "today", "checks": [{"id",
+"level", "message"}], "summary": {"pass", "warn", "fail", "info", "skip"},
+"exit_code"}. It holds the same checks in the same order; "id" is the check
+name and "message" the text after it on the text line. Exit codes are the
+same, stderr is the same, and a run that exits 3 still prints the object
+("register_dir" or "today" is null when it was never determined). Argument
+errors, --help and --version stay argparse's, as in text mode.
 
 Exit codes:
     0   every check passed (INFO and SKIP lines do not count)
@@ -32,6 +41,7 @@ on each line so they can be argued with.
 
 import argparse
 import datetime as dt
+import json
 import os
 import re
 import shutil
@@ -192,14 +202,22 @@ DISPOSITION_RE = re.compile(
 # --- small helpers ------------------------------------------------------
 
 class Report:
-    def __init__(self):
+    """The checks of one run. `echo` prints each line as it is added (text
+    mode); with it off the report is only collected (--json). `root` and
+    `register_dir` are filled in by run() once they are known."""
+
+    def __init__(self, echo=True):
+        self.echo = echo
+        self.root = None
+        self.register_dir = None
         self.lines = []
         self.counts = {"PASS": 0, "WARN": 0, "FAIL": 0, "INFO": 0, "SKIP": 0}
 
     def add(self, level, check, value):
         self.counts[level] += 1
         self.lines.append((level, check, value))
-        print("%-4s  %-26s %s" % (level, check, value))
+        if self.echo:
+            print("%-4s  %-26s %s" % (level, check, value))
 
     def exit_code(self):
         if self.counts["FAIL"]:
@@ -2065,9 +2083,10 @@ def check_git(rep, root, register_dir, no_git):
 
 # --- main ---------------------------------------------------------------
 
-def run(root, today, no_git, register=None):
-    rep = Report()
+def run(root, today, no_git, register=None, rep=None):
+    rep = Report() if rep is None else rep
     root = os.path.realpath(root)
+    rep.root = root
     if not os.path.isdir(root):
         print("docs-doctor: not a directory: %s" % root, file=sys.stderr)
         return 3
@@ -2076,15 +2095,18 @@ def run(root, today, no_git, register=None):
     except ValueError as exc:
         print("docs-doctor: %s" % exc, file=sys.stderr)
         return 3
+    rep.register_dir = register_dir
     note = ""
     # The docs directory itself was passed: the instructions files live one up.
     if (register_dir == root and os.path.basename(root) == "docs"
             and not any(os.path.isfile(os.path.join(root, f)) for f in INSTRUCTION_FILES)):
         root = os.path.dirname(root)
+        rep.root = root
         note = " — a docs/ directory was given; treating its parent as the project root"
-    print("docs-doctor %s — register at %s (relative to the project root), today %s%s"
-          % (VERSION, rel_label(register_dir, root), today, note))
-    print()
+    if rep.echo:
+        print("docs-doctor %s — register at %s (relative to the project root), today %s%s"
+              % (VERSION, rel_label(register_dir, root), today, note))
+        print()
     dec = scan_decisions(register_dir)
     check_wiring(rep, root, rel_label(register_dir, root))
     check_readme_footer(rep, register_dir)
@@ -2097,13 +2119,37 @@ def run(root, today, no_git, register=None):
     check_sibling_register(rep, root, register_dir)
     check_ledger(rep, register_dir, dec, today)
     check_git(rep, root, register_dir, no_git)
-    print()
     c = rep.counts
     code = rep.exit_code()
-    print("%d checks: %d pass, %d warn, %d fail, %d info, %d skipped — exit %d"
-          % (sum(c.values()), c["PASS"], c["WARN"], c["FAIL"], c["INFO"], c["SKIP"], code))
-    print("Scope: " + STRUCTURAL_LIMITS)
+    if rep.echo:
+        print()
+        print("%d checks: %d pass, %d warn, %d fail, %d info, %d skipped — exit %d"
+              % (sum(c.values()), c["PASS"], c["WARN"], c["FAIL"], c["INFO"], c["SKIP"], code))
+        print("Scope: " + STRUCTURAL_LIMITS)
     return code
+
+
+def json_report(rep, today, code, given_root):
+    """The --json document: the run's checks as data, nothing the text report
+    does not already say. `root` falls back to the given path when run() never
+    resolved it (a bad --today exits before it starts)."""
+    root = rep.root
+    if root is None:
+        try:
+            root = os.path.realpath(given_root)
+        except (OSError, ValueError):
+            root = os.path.abspath(given_root)
+    return {
+        "tool": "docs-doctor",
+        "version": VERSION,
+        "root": root,
+        "register_dir": rep.register_dir,
+        "today": today.isoformat() if today is not None else None,
+        "checks": [{"id": check, "level": level, "message": str(value)}
+                   for level, check, value in rep.lines],
+        "summary": {level.lower(): rep.counts[level] for level in ("PASS", "WARN", "FAIL", "INFO", "SKIP")},
+        "exit_code": code,
+    }
 
 
 def main(argv=None):
@@ -2123,17 +2169,25 @@ def main(argv=None):
     ap.add_argument("--register-dir", help="explicit register directory, relative to project root or absolute")
     ap.add_argument("--today", help="date to measure dormancy from (YYYY-MM-DD); default: today", default=None)
     ap.add_argument("--no-git", action="store_true", help="skip git-based checks even when git is available")
+    ap.add_argument("--json", action="store_true",
+                    help="print exactly one JSON object (the same checks, summary and exit code) instead of the text report")
     ap.add_argument("--version", action="version", version="docs-doctor %s" % VERSION)
     args = ap.parse_args(argv)
+    rep = Report(echo=not args.json)
     today = parse_date(args.today) if args.today else dt.date.today()
     if args.today and today is None:
         print("docs-doctor: --today must be YYYY-MM-DD", file=sys.stderr)
-        return 3
-    try:
-        return run(args.root, today, args.no_git, args.register_dir)
-    except Exception as exc:  # noqa: BLE001 — a crash is exit 3, never a silent pass
-        print("docs-doctor: checker error: %s: %s" % (type(exc).__name__, exc), file=sys.stderr)
-        return 3
+        code = 3
+    else:
+        try:
+            code = run(args.root, today, args.no_git, args.register_dir, rep)
+        except Exception as exc:  # noqa: BLE001 — a crash is exit 3, never a silent pass
+            print("docs-doctor: checker error: %s: %s" % (type(exc).__name__, exc), file=sys.stderr)
+            code = 3
+    if args.json:
+        # ASCII-only, so no locale can alter it; one line, newline-terminated.
+        print(json.dumps(json_report(rep, today, code, args.root)))
+    return code
 
 
 if __name__ == "__main__":

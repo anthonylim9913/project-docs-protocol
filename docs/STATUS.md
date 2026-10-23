@@ -10,11 +10,12 @@ The JSON mode gives dashboards one object per run with the text report's checks,
 
 ## In flight
 
-`LEDGER.md` is authoritative: 4 live rows as of 2026-10-23, no P0/P1 (LG-0044, LG-0048, LG-0049 and LG-0050 open).
+`LEDGER.md` is authoritative: 5 live rows as of 2026-10-23, no P0/P1 (LG-0044, LG-0048, LG-0049 and LG-0050 open; LG-0051 verifying).
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
 | Merge pull request #1 (`feat/doctor-json`) to `main` | owner's orchestrating session | 2026-10-23 | Approved in the brief of 2026-10-23; no tag |
+| Independently review the LG-0051 fix (draft PR, `fix/lg-0051-htmlparser-feed`) | independent reviewer | 2026-10-23 | Migration parses each HTML line immediately; CPython gh-153030 buffering broke `HtmlBoundary` on 3.10.21+/3.11.16+/3.12.14+/3.13.15+/3.14.7+ |
 
 ## Blocked
 

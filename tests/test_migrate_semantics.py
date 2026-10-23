@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/docs-migrate.py"
@@ -249,6 +250,30 @@ class MigrationSemanticsTests(unittest.TestCase):
         ledger = self.apply(plan)
         self.assertNotIn("Example parser", ledger)
         self.assertIn("Actual finding", ledger)
+
+    def test_long_raw_text_line_then_short_closing_line_closes_block(self):
+        # CPython's buffered feed (gh-153030) used to leave a short closing
+        # line unparsed after a long raw-text line; the block never closed.
+        long_line = "x" * 5000
+        for tag in ("pre", "script", "style", "textarea"):
+            with self.subTest(tag=tag):
+                self.source(f"<{tag}>\n{long_line}\n</{tag}>\n\n- Actual finding.\n")
+                plan = self.reviewed()
+                self.assertEqual(len(plan["mappings"]), 1)
+                self.assertEqual(plan["mappings"][0]["source"]["text"], "- Actual finding.")
+                self.assertEqual(len(plan["unmapped"]), 1)
+
+    def test_boundary_parses_each_line_despite_a_buffering_base_feed(self):
+        def buffering_feed(parser, data):
+            parser._pending.append(data)  # a base that defers short chunks
+
+        with mock.patch.object(MIGRATE.HTMLParser, "feed", buffering_feed):
+            boundary = MIGRATE.HtmlBoundary(raw_block=True)
+            for line in ("<pre>\n", "x" * 5000 + "\n", "</pre>\n"):
+                boundary.feed(line)
+            self.assertTrue(boundary.complete)
+            boundary.close()
+            self.assertTrue(boundary.complete)
 
     def test_raw_html_keeps_quoted_opener_and_first_closing_tag_contract(self):
         for tag in ("pre", "script", "style", "textarea"):

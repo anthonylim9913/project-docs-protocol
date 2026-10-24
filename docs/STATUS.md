@@ -1,20 +1,20 @@
 # STATUS
 
-*Last updated: 2026-10-23*
+*Last updated: 2026-10-24*
 
 ## Current phase
 
-**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` approved by the owner for merge to `main` via pull request #1.**
+**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` is on `main` (pull request #1 merged as `89ed3aa`), untagged.**
 
-The JSON mode gives dashboards one object per run with the text report's checks, summary, exit code, a `schema` version and the exit-3 `error` (D-0023, D-0024); text output is unchanged apart from the version number. No tag is made for 1.6.0. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
+The JSON mode gives dashboards one object per run with the text report's checks, summary, exit code, a `schema` version and the exit-3 `error` (D-0023, D-0024); text output is unchanged apart from the version number. No tag is made for 1.6.0. The LG-0051 migration fix is on draft pull request #3 with the independent review's five findings addressed (D-0026). Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 4 live rows as of 2026-10-23, no P0/P1 (LG-0044, LG-0048, LG-0049 and LG-0050 open).
+`LEDGER.md` is authoritative: 5 live rows as of 2026-10-24, no P0/P1 (LG-0044, LG-0048, LG-0049 and LG-0050 open; LG-0051 verifying).
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Merge pull request #1 (`feat/doctor-json`) to `main` | owner's orchestrating session | 2026-10-23 | Approved in the brief of 2026-10-23; no tag |
+| Decide on merging the LG-0051 fix (draft PR #3, `fix/lg-0051-htmlparser-feed`), then close LG-0051 | owner | — | Review findings fixed 2026-10-24: faithful gh-153030 test, RCDATA choice pinned (D-0026); suites pass on 3.11.17 and 3.13.17 |
 
 ## Blocked
 

@@ -159,6 +159,12 @@ class HtmlBoundary(HTMLParser):
     No DOM, implied closures, or general HTML rendering is inferred here.
     """
     CDATA_CONTENT_ELEMENTS = ("script", "style", "pre", "textarea")
+    # Pinned to () on purpose (D-0026): this removes the ``title`` and
+    # ``textarea`` RCDATA handling that Python 3.10+ ships, so a closing tag
+    # inside a quoted attribute keeps a ``title`` block open, as on 3.9. That
+    # is a fail-closed choice, not a restoration of earlier behaviour; the four
+    # raw-text elements above are the whole contract on every version.
+    RCDATA_CONTENT_ELEMENTS = ()
     VOID_ELEMENTS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 
     def __init__(self, *, raw_block=False):
@@ -166,6 +172,16 @@ class HtmlBoundary(HTMLParser):
         self.open_tags = []
         self.seen_tag = False
         self.raw_block = raw_block
+
+    def feed(self, data):
+        # Parse every physical line immediately. CPython 3.10.21+/3.11.16+/
+        # 3.12.14+/3.13.15+/3.14.7+ (gh-153030) buffer small chunks in the base
+        # ``feed`` and skip parsing, so a short closing line such as ``</pre>``
+        # after a long raw-text line would not close its block when ``complete``
+        # is read. ``close()`` still works: it only flushes the base's
+        # ``_pending`` list, which this method never fills.
+        self.rawdata += data
+        self.goahead(0)
 
     @property
     def complete(self):

@@ -159,8 +159,11 @@ class HtmlBoundary(HTMLParser):
     No DOM, implied closures, or general HTML rendering is inferred here.
     """
     CDATA_CONTENT_ELEMENTS = ("script", "style", "pre", "textarea")
-    # Pinned so a base-class change cannot add RCDATA (``title``, ``textarea``)
-    # handling; the four raw-text elements above are the whole contract.
+    # Pinned to () on purpose (D-0026): this removes the ``title`` and
+    # ``textarea`` RCDATA handling that Python 3.10+ ships, so a closing tag
+    # inside a quoted attribute keeps a ``title`` block open, as on 3.9. That
+    # is a fail-closed choice, not a restoration of earlier behaviour; the four
+    # raw-text elements above are the whole contract on every version.
     RCDATA_CONTENT_ELEMENTS = ()
     VOID_ELEMENTS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 

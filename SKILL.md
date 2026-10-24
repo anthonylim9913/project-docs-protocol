@@ -416,7 +416,7 @@ A companion checker's FAIL is a failure, not advisory drift: only docs-doctor se
 
 - `SKILL.md` (this file) — all operating instructions for the five modes.
 - `templates/` — the starter files. Copy these when installing.
-- `scripts/docs-doctor.py` — the Doctor check. Python 3 standard library, read-only, git optional.
+- `scripts/docs-doctor.py` — the Doctor check. Python 3.9 or newer, standard library, read-only, git optional.
 - `scripts/docs-migrate.py` — reviewed STATUS-to-LEDGER migration; see `docs/MIGRATION.md`.
 - `scripts/skill-registry.py` — optional read-only validator for `SKILL-REGISTRY.md`.
 - `staging/research-protocol/`, `staging/architect-protocol/` — the optional companions; see *Optional companions*.

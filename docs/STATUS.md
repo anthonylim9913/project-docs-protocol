@@ -10,13 +10,12 @@ The closing control for LG-0044 is external. A trusted checkout's runner and val
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 live rows as of 2026-10-25, no P0/P1 (LG-0044 and LG-0051 verifying; LG-0048, LG-0049 and LG-0050 open).
+`LEDGER.md` is authoritative: 4 live rows as of 2026-10-25, no P0/P1 (LG-0044 verifying; LG-0048, LG-0049 and LG-0050 open). LG-0051 is closed and archived.
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
 | Independent re-check of LG-0044 (`fix/lg-0044-acceptance-binding-alt`) | owner's orchestrating session | next review | Run the external check exactly as `tests/README.md` states, with the pin above; not to be merged before it passes |
 | Run the suites on the owner's Mac (Python 3.9.6, default `TMPDIR`) | owner | next review | The macOS and 3.9 fixes were checked only on Linux; the 3.9.6 bytecode-test cause is unconfirmed (CHANGELOG 2026-10-25) |
-| Close LG-0051 | owner's orchestrating session | this session | Pull request #3 merged as `66c11c3` on 2026-10-25 |
 
 ## Blocked
 

@@ -4,9 +4,9 @@
 
 ## Current phase
 
-**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` and the LG-0051 migration fix are on `main` (pull requests #1 and #3, merged), untagged; LG-0044 is reworked on `fix/lg-0044-acceptance-binding-alt` and awaits a new independent review.**
+**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` and the LG-0051 migration fix are on `main` (pull requests #1 and #3, merged), untagged; LG-0044 is fixed again on `fix/lg-0044-acceptance-binding-alt` after a further independent review, and awaits an independent re-check.**
 
-The 2026-10-23 review of the LG-0044 fix was PARTIAL: the binding rule holds, but the candidate could approve its own run. The rework moves the closing control outside the candidate: a trusted checkout's runner and validator judge a separate candidate tree, load their own code only from verified bytes under `python3 -I -B`, and refuse bytecode anywhere (D-0025). `main` (`66c11c3`) is merged into the branch. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
+The closing control for LG-0044 is external. A trusted checkout's runner and validator judge a fresh clone of the candidate, load their own code only from verified bytes under `python3 -I -B`, and refuse bytecode anywhere. Every Git command they run is hardened against the candidate's `.git`. The reviewer's procedure in `tests/README.md` requires a throwaway account or container, every step to exit 0, and a second `sha256sum -c` before the validator (D-0025, D-0027). Harness pin: `fb17b7f7da9e7c043de69556231b28972bdc30ea063dd50b4f25c107f34c6277`. Suites (621 tests) pass on Linux with Python 3.9 to 3.14. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
 
 ## In flight
 
@@ -14,8 +14,9 @@ The 2026-10-23 review of the LG-0044 fix was PARTIAL: the binding rule holds, bu
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| New independent review of LG-0044 (`fix/lg-0044-acceptance-binding-alt`) | owner's orchestrating session | next review | Must run the external check from a trusted checkout (`tests/README.md`); not to be merged before it passes |
-| Close LG-0051 | owner | — | Pull request #3 merged as `66c11c3` on 2026-10-25 |
+| Independent re-check of LG-0044 (`fix/lg-0044-acceptance-binding-alt`) | owner's orchestrating session | next review | Run the external check exactly as `tests/README.md` states, with the pin above; not to be merged before it passes |
+| Run the suites on the owner's Mac (Python 3.9.6, default `TMPDIR`) | owner | next review | The macOS and 3.9 fixes were checked only on Linux; the 3.9.6 bytecode-test cause is unconfirmed (CHANGELOG 2026-10-25) |
+| Close LG-0051 | owner's orchestrating session | this session | Pull request #3 merged as `66c11c3` on 2026-10-25 |
 
 ## Blocked
 
@@ -31,7 +32,7 @@ The 2026-10-23 review of the LG-0044 fix was PARTIAL: the binding rule holds, bu
 
 ## Next
 
-1. Review LG-0044 independently, running the external check from a trusted checkout of the reviewed commit and pinning its `tests/harness.sha256`; then give Doctor a pointer to the registry validator (LG-0048).
+1. Re-check LG-0044 independently: the external check from a trusted checkout of the reviewed commit against a fresh clone of the candidate, exactly as `tests/README.md` states; then give Doctor a pointer to the registry validator (LG-0048).
 2. Fix the re-review's deferred notes (LG-0049), with a re-review of any companion touched.
 3. GitHub Support confirms the purge, including the follow-up commit.
 

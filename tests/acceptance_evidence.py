@@ -8,12 +8,11 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import subprocess
 
 try:
-    from input_manifest import hashes, required_paths, tree_hash, valid_path, dirty_inputs
+    from input_manifest import hashes, required_paths, tree_hash, valid_path, dirty_inputs, git
 except ModuleNotFoundError:
-    from tests.input_manifest import hashes, required_paths, tree_hash, valid_path, dirty_inputs
+    from tests.input_manifest import hashes, required_paths, tree_hash, valid_path, dirty_inputs, git
 
 ROOT = Path(__file__).resolve().parents[1]
 HASH = re.compile(r'[0-9a-f]{64}')
@@ -234,7 +233,7 @@ def validate_canonical(result, expected_cases, subject_root=None):
     require(provenance.get('runtime_tree_sha256') == tree_hash(values), 'runtime tree digest mismatch')
     source = result.get('source_commit')
     require(isinstance(source, str) and re.fullmatch('[0-9a-f]{40}', source), 'source commit provenance')
-    head = subprocess.check_output(['git', '-C', str(root), 'rev-parse', '--verify', 'HEAD'], text=True).strip()
+    head = git(root, 'rev-parse', '--verify', 'HEAD', text=True).strip()
     require(head == source and not dirty_inputs(root), 'source commit does not match a clean reviewed runtime')
     require(provenance.get('verified') is True and provenance.get('dirty') is False and
             provenance.get('git_head') == source and provenance.get('source_commit_argument') == source,

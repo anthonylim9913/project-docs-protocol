@@ -26,7 +26,7 @@ import types
 from collections.abc import Mapping
 
 GateError = ValueError  # replaced by the verified gate's class in main()
-hashes = dirty_inputs = validate_result = None
+hashes = dirty_inputs = validate_result = git = None
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -100,8 +100,7 @@ def tree_hash(hashes: Mapping[str, str]) -> str:
 
 def git_provenance(root: Path, supplied: str) -> dict:
     try:
-        head = subprocess.run(["git", "-C", str(root), "rev-parse", "--verify", "HEAD"],
-                              capture_output=True, text=True, check=True).stdout.strip()
+        head = git(root, "rev-parse", "--verify", "HEAD", text=True, stderr=subprocess.PIPE).strip()
         dirty = dirty_inputs(root)
     except (OSError, subprocess.CalledProcessError):
         return {"runtime_tree_sha256": "", "verified": False,
@@ -288,7 +287,7 @@ def main(argv=None) -> int:
                         help="reviewer pin: SHA-256 of tests/harness.sha256, computed outside this program")
     args = parser.parse_args(argv)
     args.runtime_root = args.runtime_root.resolve()
-    global GateError, hashes, dirty_inputs, validate_result
+    global GateError, hashes, dirty_inputs, validate_result, git
     try:
         bootstrap = load_bootstrap()
         modules, entries = bootstrap.load_harness(ROOT, args.harness_sha256)
@@ -299,6 +298,7 @@ def main(argv=None) -> int:
         return 1
     GateError, validate_result = modules["acceptance_gate"].GateError, modules["acceptance_gate"].validate_result
     hashes, dirty_inputs = modules["input_manifest"].hashes, modules["input_manifest"].dirty_inputs
+    git = modules["input_manifest"].git
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     payload = {
         "schema": 2,

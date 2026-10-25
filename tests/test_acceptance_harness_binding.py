@@ -10,6 +10,8 @@ import hashlib
 import json
 from pathlib import Path
 import py_compile
+import shlex
+import subprocess
 import sys
 import tempfile
 import textwrap
@@ -208,7 +210,7 @@ class HarnessBindingTests(unittest.TestCase):
                     _, p = self.planted({name: cfile.read_bytes()}, committed)
                 self.assert_reject(p, 'module or bytecode in tests/ could shadow the harness: tests/__pycache__')
 
-    def test_module_from_an_unexpected_path_is_refused_after_loading(self):
+    def probe_stray_module(self, root):
         probe = textwrap.dedent('''\
             import sys, types
             from pathlib import Path
@@ -225,8 +227,40 @@ class HarnessBindingTests(unittest.TestCase):
             ''')
         script = self.directory / 'probe.py'
         script.write_text(probe)
-        p = isolated(self.directory, script, self.root)
+        return isolated(self.directory, script, root)
+
+    def test_module_from_an_unexpected_path_is_refused_after_loading(self):
+        p = self.probe_stray_module(self.root)
         self.assertIn('module helper was loaded from an unexpected path', p.stdout, p.stderr)
+
+    def test_module_from_an_unexpected_path_is_refused_through_a_linked_root(self):
+        # macOS's default TMPDIR is under /var, a link to /private/var: the root as given
+        # and the module's resolved origin must be compared in the same form.
+        link = self.directory / 'linked-subject'
+        if not link.exists():
+            link.symlink_to(self.root, target_is_directory=True)
+        p = self.probe_stray_module(link)
+        self.assertIn('module helper was loaded from an unexpected path', p.stdout, p.stderr)
+
+    def test_stdlib_named_module_is_refused_without_stdlib_module_names(self):
+        # Python 3.9 has no sys.stdlib_module_names; the refusal must not depend on it.
+        root, directory = self.candidate()
+        (root / 'tests/json.py').write_text('print("planted")\n')
+        probe = directory / 'probe.py'
+        probe.write_text(textwrap.dedent('''\
+            import sys, types
+            from pathlib import Path
+            if hasattr(sys, "stdlib_module_names"):
+                del sys.stdlib_module_names
+            root = Path(sys.argv[1])
+            path = root / "tests/validate_acceptance.py"
+            boot = types.ModuleType("validate_acceptance"); boot.__file__ = str(path)
+            exec(compile(path.read_bytes(), str(path), "exec"), boot.__dict__)
+            print(boot.shadowing(root))
+            '''))
+        p = isolated(directory, probe, root)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn('tests/json.py', p.stdout)
 
     # R3: everything the verdict reads is in the harness ---------------------------------
 
@@ -326,6 +360,77 @@ class HarnessBindingTests(unittest.TestCase):
         # The candidate's packet, judged as if it described the trusted checkout.
         p = isolated(self.root, VALIDATOR, directory / 'external-result.json', MANIFEST, directory / 'external-hashes.json')
         self.assert_reject(p, 'runtime root must be the subject checkout being judged')
+
+    # Git in the candidate: its own .git must not run code or change what the judge reads --
+
+    def test_every_git_command_in_the_harness_goes_through_the_hardened_helper(self):
+        for name in input_manifest.HARNESS_FILES:
+            if name.endswith('.py'):
+                with self.subTest(name=name):
+                    source = (ROOT / name).read_text()
+                    self.assertNotRegex(source, r"""[\[(]\s*['"]git['"]\s*,\s*['"]-C""")
+        source = (ROOT / 'tests/input_manifest.py').read_text()
+        self.assertEqual(source.count("('git',)"), 1)
+        self.assertIn("GIT_NO_REPLACE_OBJECTS='1'", source)
+        self.assertEqual(input_manifest.GIT_HARDENING,
+                         ('-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null'))
+
+    def test_candidate_fsmonitor_hook_never_runs(self):
+        digest = hashlib.sha256((self.root / input_manifest.HARNESS_RECORD).read_bytes()).hexdigest()
+        for mutant in (False, True):
+            with self.subTest(mutant=mutant):
+                candidate, directory = self.candidate()
+                if mutant:
+                    self.edited('scripts/docs-doctor.py', lambda b: b.replace(
+                        b'root_transition = bool(stack) and matched == 0', b'root_transition = False', 1), candidate)
+                    commit(candidate)
+                marker = directory / 'fsmonitor-ran'
+                hook = directory / 'fsmonitor.sh'
+                hook.write_text('#!/bin/sh\necho ran > "%s"\nexit 1\n' % marker)
+                hook.chmod(0o755)
+                # Git runs the value through the shell; the temporary path contains spaces.
+                subprocess.run(['git', 'config', 'core.fsmonitor', shlex.quote(str(hook))], cwd=candidate, check=True)
+                subprocess.run(['git', 'ls-files', '--others'], cwd=candidate, check=True, capture_output=True)
+                self.assertTrue(marker.exists(), 'precondition: plain Git runs the hook')
+                marker.unlink()
+                runner, validator = external(self.root, candidate, directory, '--harness-sha256', digest)
+                self.assertFalse(marker.exists(), "the judge ran the candidate's core.fsmonitor command")
+                if mutant:
+                    self.assertEqual(runner.returncode, 1, runner.stderr)
+                    self.assertIn('REJECT', validator.stderr)
+                    self.assertNotIn('candidate judging files differ', validator.stderr)
+                else:
+                    self.assertEqual(runner.returncode, 0, runner.stderr)
+                    self.assertEqual((validator.returncode, json.loads(validator.stdout or '{}')),
+                                     (0, {'accepted': True, 'cases': 4}), validator.stderr)
+
+    def test_candidate_replace_ref_cannot_change_what_the_judge_sees(self):
+        candidate, directory = self.candidate()
+        doctor = candidate / 'scripts/docs-doctor.py'
+        honest_bytes = doctor.read_bytes()
+        honest = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=candidate, text=True).strip()
+        doctor.write_bytes(honest_bytes.replace(
+            b'root_transition = bool(stack) and matched == 0', b'root_transition = False', 1))
+        mutant = commit(candidate)
+        # Control: the mutant commit, checked out as itself, is rejected by behavior.
+        runner, validator = external(self.root, candidate, directory)
+        self.assertEqual(runner.returncode, 1, runner.stderr)
+        self.assertIn('REJECT', validator.stderr)
+        # The mutant commit stays HEAD, the worktree holds the honest bytes, and a replace
+        # ref makes the mutant commit read as the honest one to plain Git.
+        doctor.write_bytes(honest_bytes)
+        subprocess.run(['git', 'replace', mutant, honest], cwd=candidate, check=True)
+        shown = subprocess.check_output(['git', 'cat-file', 'blob', 'HEAD:scripts/docs-doctor.py'], cwd=candidate)
+        self.assertEqual(shown, honest_bytes, 'precondition: plain Git honours the replace ref')
+        runner, validator = external(self.root, candidate, directory)
+        self.assertEqual(validator.returncode, 1, 'accepted a commit whose real content is the mutant: ' + validator.stdout)
+        self.assertIn('REJECT', validator.stderr)
+        recorded = json.loads((directory / 'external-result.json').read_text())['source_provenance']
+        self.assertEqual((recorded['git_head'], recorded['dirty'], recorded['verified']), (mutant, True, False))
+        self.assertEqual(input_manifest.dirty_inputs(candidate), ['scripts/docs-doctor.py'])
+        self.assertEqual(input_manifest.committed_hashes(candidate, ['scripts/docs-doctor.py'])['scripts/docs-doctor.py'],
+                         hashlib.sha256(honest_bytes.replace(b'root_transition = bool(stack) and matched == 0',
+                                                             b'root_transition = False', 1)).hexdigest())
 
     # R6: the runner reports no verdict ----------------------------------------------------
 

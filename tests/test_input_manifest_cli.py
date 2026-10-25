@@ -363,7 +363,10 @@ class InputManifestCliTests(unittest.TestCase):
         subprocess.run(['git', 'add', '-f', name], cwd=self.root, check=True)
         commit(self.root)
         doctor = invoke(self.root, 'scripts/docs-doctor.py', '.', '--no-git')
-        self.assertIn('replaced by bytecode', doctor.stderr)
+        # With a pycache prefix (PYTHONPYCACHEPREFIX, -X pycache_prefix) Python never reads a
+        # __pycache__ beside the source, so the premise holds only without one; the refusal holds either way.
+        if sys.pycache_prefix is None:
+            self.assertIn('replaced by bytecode', doctor.stderr)
         p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', self.directory/'input.json')
         self.assertEqual(p.returncode, 2)
         self.assertIn(name, p.stderr)

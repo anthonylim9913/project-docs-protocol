@@ -61,6 +61,18 @@ REQUIRED = ROOT_FILES | DOC_INPUTS | {
 } | {'templates/' + n for n in ('README.md', 'STATUS.md', 'CHANGELOG.md', 'DECISIONS.md', 'LEDGER.md')}
 
 
+# The candidate controls its own .git: config, hooks and replacement refs. Every Git command
+# the judge runs goes through git() so none of them can run the candidate's code or show
+# content other than the objects' real bytes (D-0027).
+GIT_HARDENING = ('-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null')
+
+
+def git(root, *args, **kwargs):
+    """subprocess.check_output for `git -C root ARGS`, hardened against the candidate's .git."""
+    env = dict(os.environ, GIT_NO_REPLACE_OBJECTS='1')
+    return subprocess.check_output(('git',) + GIT_HARDENING + ('-C', str(root)) + args, env=env, **kwargs)
+
+
 def valid_path(value):
     return (isinstance(value, str) and bool(value) and not any(c in value for c in '\\:\n\r\0')
             and not PurePosixPath(value).is_absolute()
@@ -93,7 +105,7 @@ def present_paths(root):
 
 
 def required_paths(root):
-    tracked = subprocess.check_output(['git', '-C', str(root), 'ls-tree', '-r', '--name-only', '-z', 'HEAD'], text=True).split('\0')
+    tracked = git(root, 'ls-tree', '-r', '--name-only', '-z', 'HEAD', text=True).split('\0')
     paths = REQUIRED | {p for p in tracked + present_paths(root) if in_scope(p)}
     for name in sorted(paths):
         path = root / name
@@ -106,7 +118,7 @@ def committed_hashes(root, names):
     """Read immutable HEAD blob bytes; index flags cannot suppress this check."""
     names = sorted(names)
     requests = ''.join('HEAD:' + name + '\n' for name in names).encode('utf-8')
-    raw = subprocess.check_output(['git', '-C', str(root), 'cat-file', '--batch'], input=requests)
+    raw = git(root, 'cat-file', '--batch', input=requests)
     values = {}
     offset = 0
     for name in names:
@@ -126,10 +138,8 @@ def committed_hashes(root, names):
 
 def dirty_inputs(root):
     """NUL-separated paths include both sides of renames and untracked files."""
-    modified = subprocess.check_output(['git', '-C', str(root), 'diff', '--name-only',
-                                        '--no-renames', '-z', 'HEAD'], text=True)
-    untracked = subprocess.check_output(['git', '-C', str(root), 'ls-files', '--others',
-                                        '-z'], text=True)
+    modified = git(root, 'diff', '--name-only', '--no-renames', '-z', 'HEAD', text=True)
+    untracked = git(root, 'ls-files', '--others', '-z', text=True)
     dirty = {p for p in (modified + untracked).split('\0') if in_scope(p)}
     current = hashes(root)
     # Untracked paths already fail; avoid requesting a nonexistent HEAD blob.
@@ -197,8 +207,7 @@ def main():
         values = hashes(root)
     except (ValueError, OSError, subprocess.CalledProcessError) as error:
         p.error(str(error))
-    result = {'schema': 1, 'kind': 'behavior-inputs', 'subject_commit': subprocess.check_output(
-        ['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip(),
+    result = {'schema': 1, 'kind': 'behavior-inputs', 'subject_commit': git(root, 'rev-parse', 'HEAD', text=True).strip(),
         'files': values, 'tree_sha256': tree_hash(values)}
     a.out.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(prefix='.input-manifest-', dir=str(a.out.parent))

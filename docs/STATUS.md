@@ -1,28 +1,25 @@
 # STATUS
 
-*Last updated: 2026-10-23*
+*Last updated: 2026-10-25*
 
 ## Current phase
 
-**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` on `main` (pull request #1, merged); LG-0044 reworked on draft pull request #2 and awaiting a new independent review.**
+**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` and the LG-0051 migration fix are on `main` (pull requests #1 and #3, merged), untagged; LG-0044 is reworked on `fix/lg-0044-acceptance-binding-alt` and awaits a new independent review.**
 
-The 2026-10-23 review of #2 was PARTIAL: the binding rule holds, but the candidate could approve its own run. The rework moves the closing control outside the candidate. A trusted checkout's runner and validator judge a separate candidate tree, load their own code only from verified bytes under `python3 -I -B`, and refuse bytecode anywhere (D-0025, revised in place). Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
+The 2026-10-23 review of the LG-0044 fix was PARTIAL: the binding rule holds, but the candidate could approve its own run. The rework moves the closing control outside the candidate: a trusted checkout's runner and validator judge a separate candidate tree, load their own code only from verified bytes under `python3 -I -B`, and refuse bytecode anywhere (D-0025). `main` (`66c11c3`) is merged into the branch. Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 4 live rows as of 2026-10-23, no P0/P1 (LG-0044 verifying; LG-0048, LG-0049 and LG-0050 open).
+`LEDGER.md` is authoritative: 5 live rows as of 2026-10-25, no P0/P1 (LG-0044 and LG-0051 verifying; LG-0048, LG-0049 and LG-0050 open).
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| New independent review of LG-0044 (`fix/lg-0044-acceptance-binding`, draft pull request #2) | owner's orchestrating session | next review | Must run the external check from a trusted checkout (`tests/README.md`); not to be merged before it passes |
+| New independent review of LG-0044 (`fix/lg-0044-acceptance-binding-alt`) | owner's orchestrating session | next review | Must run the external check from a trusted checkout (`tests/README.md`); not to be merged before it passes |
+| Close LG-0051 | owner | — | Pull request #3 merged as `66c11c3` on 2026-10-25 |
 
 ## Blocked
 
 *No items.*
-
-## Found, not fixed
-
-`tests.test_migrate_semantics` has 15 failures on recent CPython patch releases (3.10.21+, 3.11.16+, 3.12.14+, 3.13.15+, 3.14.7+). An `html.parser` change (gh-153030 / CVE-2026-15308) buffers the small `feed()` calls that `docs-migrate` makes when it scans HTML boundaries line by line. They are tracked as LG-0051 and fixed on a separate pull request; not this branch.
 
 ## Deferred
 

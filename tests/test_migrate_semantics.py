@@ -1,4 +1,5 @@
 """Reviewed-write regressions for source state, gates, and opaque examples."""
+import contextlib
 import copy
 import importlib.util
 import json
@@ -8,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/docs-migrate.py"
@@ -15,6 +17,49 @@ SPEC = importlib.util.spec_from_file_location("migrate_semantics", SCRIPT)
 MIGRATE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MIGRATE)
 TODAY = "2026-09-11"
+
+
+@contextlib.contextmanager
+def gh153030_base_feed():
+    """Give the base HTMLParser CPython's gh-153030 buffered feed.
+
+    A copy of the fixed reset/feed/close: chunks pile up in ``_pending`` until
+    ``_pending_len`` reaches ``_parse_threshold``, which becomes the buffer
+    length whenever ``goahead`` makes no progress, and ``close`` flushes
+    ``_pending``. It runs on interpreters with or without the fix.
+    """
+    base = MIGRATE.HTMLParser
+    original_reset = base.reset
+
+    def reset(self):
+        original_reset(self)
+        self._pending = []
+        self._pending_len = 0
+        self._parse_threshold = 1
+
+    def feed(self, data):
+        self._pending_len += len(data)
+        if self._pending_len < self._parse_threshold:
+            self._pending.append(data)
+            return
+        self._pending.append(data)
+        self.rawdata += "".join(self._pending)
+        self._pending.clear()
+        self._pending_len = 0
+        n = len(self.rawdata)
+        self.goahead(0)
+        self._parse_threshold = 1 if len(self.rawdata) < n else len(self.rawdata)
+
+    def close(self):
+        if self._pending:
+            self.rawdata += "".join(self._pending)
+            self._pending.clear()
+            self._pending_len = 0
+        self.goahead(1)
+
+    with mock.patch.object(base, "reset", reset), mock.patch.object(base, "feed", feed), \
+            mock.patch.object(base, "close", close):
+        yield
 
 
 class MigrationSemanticsTests(unittest.TestCase):
@@ -249,6 +294,58 @@ class MigrationSemanticsTests(unittest.TestCase):
         ledger = self.apply(plan)
         self.assertNotIn("Example parser", ledger)
         self.assertIn("Actual finding", ledger)
+
+    def assert_long_raw_text_line_then_short_closing_line_closes_block(self):
+        long_line = "x" * 5000
+        for tag in ("pre", "script", "style", "textarea"):
+            with self.subTest(tag=tag):
+                self.source(f"<{tag}>\n{long_line}\n</{tag}>\n\n- Actual finding.\n")
+                plan = self.reviewed()
+                self.assertEqual(len(plan["mappings"]), 1)
+                self.assertEqual(plan["mappings"][0]["source"]["text"], "- Actual finding.")
+                self.assertEqual(len(plan["unmapped"]), 1)
+
+    def test_long_raw_text_line_then_short_closing_line_closes_block(self):
+        # CPython's buffered feed (gh-153030) used to leave a short closing
+        # line unparsed after a long raw-text line; the block never closed.
+        self.assert_long_raw_text_line_then_short_closing_line_closes_block()
+
+    def test_long_raw_text_regression_under_a_gh153030_base_feed(self):
+        # The same regression on any interpreter, fixed or not: the base class
+        # gets gh-153030's buffered reset/feed/close for the duration.
+        with gh153030_base_feed():
+            self.assert_long_raw_text_line_then_short_closing_line_closes_block()
+
+    def test_boundary_parses_each_line_despite_a_gh153030_base_feed(self):
+        with gh153030_base_feed():
+            boundary = MIGRATE.HtmlBoundary(raw_block=True)
+            for line in ("<pre>\n", "x" * 5000 + "\n", "</pre>\n"):
+                boundary.feed(line)
+            self.assertEqual(boundary.open_tags, [])
+            self.assertTrue(boundary.complete)
+            boundary.close()
+            self.assertTrue(boundary.complete)
+
+    def test_title_is_not_rcdata_so_a_quoted_closing_tag_keeps_the_block_open(self):
+        # D-0026: RCDATA_CONTENT_ELEMENTS is pinned to (), so title (and
+        # textarea, already raw text here) get no RCDATA handling even on
+        # Python 3.10+. "</title>" inside the href is an attribute value, as on
+        # Python 3.9; the block stays open and fails closed.
+        line = '<title><a href="</title>">\n'
+        boundary = MIGRATE.HtmlBoundary()
+        boundary.feed(line)
+        self.assertFalse(boundary.complete)
+        self.assertEqual(boundary.open_tags, ["title", "a"])
+        if getattr(MIGRATE.HTMLParser, "RCDATA_CONTENT_ELEMENTS", ()):
+            # Where the base ships RCDATA, restoring it ends title at the
+            # quoted "</title>" and reports the block complete: the input
+            # tells the two choices apart.
+            class BaseRcdata(MIGRATE.HtmlBoundary):
+                RCDATA_CONTENT_ELEMENTS = MIGRATE.HTMLParser.RCDATA_CONTENT_ELEMENTS
+
+            boundary = BaseRcdata()
+            boundary.feed(line)
+            self.assertTrue(boundary.complete)
 
     def test_raw_html_keeps_quoted_opener_and_first_closing_tag_contract(self):
         for tag in ("pre", "script", "style", "textarea"):

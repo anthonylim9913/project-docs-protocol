@@ -65,7 +65,7 @@ Plain text was a deliberate choice: it is the one format every model can read an
 ## Verified, not asserted
 
 - **Audited across 25 projects** before going public. Projects whose instructions carried the block rewrote STATUS as designed (churn 0.67–0.83); projects without it accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
-- **612 automated tests** across the core and both companions, standard library only.
+- **616 automated tests** across the core and both companions. Python 3.9 or newer, standard library only.
 - **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
 - **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
 

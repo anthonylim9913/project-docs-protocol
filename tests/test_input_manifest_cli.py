@@ -302,7 +302,8 @@ class InputManifestCliTests(unittest.TestCase):
         bound = set(json.loads(out.read_text())['files'])
         self.assertEqual(bound, tracked - set(input_manifest.EXCLUDED))
 
-    # R5: macOS Finder metadata is skipped by name; nothing else that is ignored is.
+    # R5: macOS Finder metadata is skipped by name when untracked or ignored; a committed one is
+    # bound like any tracked file (D-0028), and nothing else that is ignored is skipped.
 
     def test_ignored_ds_store_is_skipped_by_name(self):
         self.assertIn('.DS_Store', (self.root/'.gitignore').read_text().split())
@@ -315,6 +316,50 @@ class InputManifestCliTests(unittest.TestCase):
         self.packet, self.hashes = generate(self.root, self.directory)
         result = validate(self.root, self.directory, self.packet, self.hashes)
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_untracked_unignored_ds_store_is_skipped_by_name(self):
+        gitignore = self.root/'.gitignore'
+        gitignore.write_text(''.join(l + '\n' for l in gitignore.read_text().split() if l != '.DS_Store'))
+        commit(self.root)
+        (self.root/'docs/.DS_Store').write_bytes(b'\0\0\0\1Bud1')
+        self.assertIn('?? docs/.DS_Store', subprocess.check_output(['git', 'status', '--porcelain'], cwd=self.root, text=True))
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertNotIn('docs/.DS_Store', json.loads(out.read_text())['files'])
+
+    def test_committed_ds_store_is_bound_like_any_tracked_file(self):
+        before = self.directory/'before.json'
+        self.assertEqual(invoke(self.root, 'tests/input_manifest.py', self.root, '--out', before).returncode, 0)
+        (self.root/'docs/.DS_Store').write_bytes(b'\0\0\0\1Bud1')
+        subprocess.run(['git', 'add', '-f', 'docs/.DS_Store'], cwd=self.root, check=True)
+        commit(self.root)
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        manifest = json.loads(out.read_text())
+        self.assertIn('docs/.DS_Store', manifest['files'])
+        self.assertNotEqual(manifest['tree_sha256'], json.loads(before.read_text())['tree_sha256'])
+        self.packet, self.hashes = generate(self.root, self.directory)
+        self.assertIn('docs/.DS_Store', self.packet['runtime_hashes'])
+        self.assertEqual(validate(self.root, self.directory, self.packet, self.hashes).returncode, 0)
+        target = self.root/'docs/.DS_Store'
+        target.write_bytes(target.read_bytes() + b'x')
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 2)
+        self.assertIn('must be clean before manifest generation: docs/.DS_Store', p.stderr)
+        self.reject('runtime input hash mismatch')
+        target.unlink()
+        self.reject('required input missing')
+
+    def test_manifest_cli_reruns_itself_isolated(self):
+        marker = self.directory/'planted-ran'
+        (self.root/'tests/json.py').write_text(
+            'import pathlib\npathlib.Path(%r).write_text("ran")\nraise SystemExit(0)\n' % str(marker))
+        from tests import input_manifest
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--print-harness-digest')
+        self.assertFalse(marker.exists(), 'input_manifest.py imported a module planted in tests/')
+        self.assertEqual((p.returncode, p.stdout.strip()), (0, input_manifest.harness_digest(self.root)), p.stderr)
 
     def test_ds_store_rule_does_not_skip_other_ignored_files(self):
         (self.root/'.DS_Store').write_bytes(b'\0')

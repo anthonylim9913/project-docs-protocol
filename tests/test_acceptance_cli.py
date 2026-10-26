@@ -37,7 +37,10 @@ class AcceptanceCliTests(unittest.TestCase):
     def test_complete_real_cli_packet_passes(self):
         p = self.check(self.packet)
         self.assertEqual(p.returncode, 0, p.stderr)
-        self.assertEqual(json.loads(p.stdout), {'accepted': True, 'cases': 4})
+        # The accepted line names what was judged, for the reviewer to compare with the PR head.
+        self.assertEqual(json.loads(p.stdout), {
+            'accepted': True, 'cases': 4, 'source_commit': self.packet['source_commit'],
+            'runtime_tree_sha256': self.packet['source_provenance']['runtime_tree_sha256']})
 
     def test_reduced_positive_control(self):
         self.rejected(lambda p: p['cases'][0].update(positive_control={'passed': True}), 'positive control identity')

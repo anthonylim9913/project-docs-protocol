@@ -4,6 +4,15 @@ A tree digest is SHA256 of UTF-8 sorted `path:sha256\n` records. Paths are
 POSIX relative paths; colons/newlines are forbidden. The manifest never hashes
 itself: it is generated outside this scope after the behavior subject freezes.
 """
+import sys
+
+if __name__ == '__main__' and not (sys.flags.isolated and sys.flags.dont_write_bytecode):
+    # Before any import that searches sys.path: re-run isolated, so a module planted beside
+    # this script (tests/json.py) is never found, and no bytecode is written. Only as a
+    # script: the validator loads this module from verified bytes under another name.
+    import os
+    os.execv(sys.executable, [sys.executable, '-I', '-B', __file__] + sys.argv[1:])
+
 from pathlib import Path, PurePosixPath
 import hashlib
 import json
@@ -25,8 +34,10 @@ EXCLUDED = frozenset({
 })
 # Never inputs: version control internals and per-run scratch space.
 EXCLUDED_DIRECTORIES = ('.git/', 'tests/.tmp/')
-# Finder metadata, skipped by basename only: Python cannot import it, and macOS writes it
-# into any folder opened in Finder. Other ignored files stay in scope (an ignored .py runs).
+# Finder metadata, skipped by basename only and only when untracked or ignored: Python cannot
+# import it, and macOS writes it into any folder opened in Finder. A committed one is bound like
+# any tracked file, so a commit that adds one has its own tree digest (D-0028). Other ignored
+# files stay in scope (an ignored .py runs).
 SKIPPED_BASENAMES = frozenset({'.DS_Store'})
 # Python executes these, so they are never out of scope: present or committed, they are refused.
 BYTECODE_SUFFIXES = ('.pyc', '.pyo', '.so', '.pyd', '.pth')
@@ -79,8 +90,8 @@ def valid_path(value):
             and all(p not in ('', '.', '..') for p in value.split('/')))
 
 
-def in_scope(name):
-    if not name or name.rsplit('/', 1)[-1] in SKIPPED_BASENAMES:
+def in_scope(name, tracked=False):
+    if not name or (not tracked and name.rsplit('/', 1)[-1] in SKIPPED_BASENAMES):
         return False
     if name in EXCLUDED or name == '.git' or name.startswith(EXCLUDED_DIRECTORIES):
         return False
@@ -106,7 +117,8 @@ def present_paths(root):
 
 def required_paths(root):
     tracked = git(root, 'ls-tree', '-r', '--name-only', '-z', 'HEAD', text=True).split('\0')
-    paths = REQUIRED | {p for p in tracked + present_paths(root) if in_scope(p)}
+    paths = REQUIRED | {p for p in tracked if in_scope(p, tracked=True)} | {
+        p for p in present_paths(root) if in_scope(p)}
     for name in sorted(paths):
         path = root / name
         if not path.is_file() or any(p.is_symlink() for p in [path] + list(path.parents) if p != root and root in p.parents):
@@ -140,7 +152,8 @@ def dirty_inputs(root):
     """NUL-separated paths include both sides of renames and untracked files."""
     modified = git(root, 'diff', '--name-only', '--no-renames', '-z', 'HEAD', text=True)
     untracked = git(root, 'ls-files', '--others', '-z', text=True)
-    dirty = {p for p in (modified + untracked).split('\0') if in_scope(p)}
+    dirty = ({p for p in modified.split('\0') if in_scope(p, tracked=True)}
+             | {p for p in untracked.split('\0') if in_scope(p)})
     current = hashes(root)
     # Untracked paths already fail; avoid requesting a nonexistent HEAD blob.
     if not dirty:

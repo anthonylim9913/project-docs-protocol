@@ -256,6 +256,9 @@ def main(argv=None):
     except (OSError, ValueError, TypeError, json.JSONDecodeError, GateError) as error:
         print(f"REJECT: {error}", file=sys.stderr)
         return 1
+    # Name what was judged (both verified above), for the reviewer to compare with the PR head.
+    accepted.update(source_commit=result["source_commit"],
+                    runtime_tree_sha256=result["source_provenance"]["runtime_tree_sha256"])
     print(json.dumps(accepted, sort_keys=True))
     return 0
 

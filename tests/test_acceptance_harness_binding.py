@@ -31,6 +31,12 @@ def forged(packet):
     return packet
 
 
+def accepted_line(packet):
+    """The validator's accepted line for `packet`: the verdict and what it judged."""
+    return {'accepted': True, 'cases': 4, 'source_commit': packet['source_commit'],
+            'runtime_tree_sha256': packet['source_provenance']['runtime_tree_sha256']}
+
+
 class HarnessBindingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -81,7 +87,7 @@ class HarnessBindingTests(unittest.TestCase):
         path = self.directory / 'packet.json'
         path.write_text(json.dumps(self.packet))
         p = isolated(self.root, VALIDATOR, path, MANIFEST, self.hashes)
-        self.assertEqual((p.returncode, json.loads(p.stdout or '{}')), (0, {'accepted': True, 'cases': 4}), p.stderr)
+        self.assertEqual((p.returncode, json.loads(p.stdout or '{}')), (0, accepted_line(self.packet)), p.stderr)
 
     def test_validator_edited_to_skip_canonical_checks_cannot_approve_itself(self):
         control = self.run_validator(forged(self.packet))
@@ -328,8 +334,13 @@ class HarnessBindingTests(unittest.TestCase):
         digest = hashlib.sha256((self.root / input_manifest.HARNESS_RECORD).read_bytes()).hexdigest()
         runner, validator = external(self.root, candidate, directory, '--harness-sha256', digest)
         self.assertEqual(runner.returncode, 0, runner.stderr)
+        # The accepted line names the judged commit and the tree digest of its bound inputs.
+        head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=candidate, text=True).strip()
+        out = directory / 'candidate-inputs.json'
+        self.assertEqual(isolated(self.root, 'tests/input_manifest.py', candidate, '--out', out).returncode, 0)
         self.assertEqual((validator.returncode, json.loads(validator.stdout or '{}')),
-                         (0, {'accepted': True, 'cases': 4}), validator.stderr)
+                         (0, {'accepted': True, 'cases': 4, 'source_commit': head,
+                              'runtime_tree_sha256': json.loads(out.read_text())['tree_sha256']}), validator.stderr)
 
     def test_external_check_rejects_a_product_mutant_by_behavior(self):
         candidate, directory = self.candidate()
@@ -401,8 +412,8 @@ class HarnessBindingTests(unittest.TestCase):
                     self.assertNotIn('candidate judging files differ', validator.stderr)
                 else:
                     self.assertEqual(runner.returncode, 0, runner.stderr)
-                    self.assertEqual((validator.returncode, json.loads(validator.stdout or '{}')),
-                                     (0, {'accepted': True, 'cases': 4}), validator.stderr)
+                    self.assertEqual((validator.returncode, json.loads(validator.stdout or '{}').get('accepted')),
+                                     (0, True), validator.stderr)
 
     def test_candidate_replace_ref_cannot_change_what_the_judge_sees(self):
         candidate, directory = self.candidate()

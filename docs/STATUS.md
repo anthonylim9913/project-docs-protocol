@@ -6,7 +6,7 @@
 
 **v0.4.1 remains the latest public tag. Doctor 1.6.0 and the PR #3 migration repair are on main, untagged.**
 
-PR #3 merged on 2026-10-25 (b9ac127, 66c11c3); LG-0051 is CLOSED in the archive after independent native Python 3.14.7 verification. The owner confirms the completed purge of all 30 old GitHub commit IDs. The local review branch is unpushed and awaiting the owner; pull request #2 (LG-0044) is still an open draft. No release or remote write is authorized.
+PR #3 merged on 2026-10-25 (b9ac127, 66c11c3); LG-0051 is CLOSED in the archive after independent native Python 3.14.7 verification. The owner confirms the completed purge of all 30 old GitHub commit IDs. The local review branch is unpushed and awaiting the owner; pull request #2 (LG-0044) is still an open draft. Round-three repairs narrow migration's over-refusal without pruning reservations, remove Doctor's duplicate failure, and clarify checker documentation and Architect errors. No release or remote write is authorized.
 
 ## In flight
 

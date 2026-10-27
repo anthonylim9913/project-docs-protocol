@@ -1,3 +1,21 @@
+## 2026-10-27 — Close round three of the local independent review
+
+An independent review was filed outside the repository. Its follow-up found
+that round two's migration repair over-refused legitimate root-layout
+projects by rejecting executable file links before checking their relevance
+to Markdown reservations. The repair ignores those files without pruning
+reservation-bearing trees, and keeps the hidden-reservation protections.
+The read-only corpus comparison and regression controls are retained with
+that review. The non-Markdown FIFO control already passed before this fix.
+
+Also corrected Doctor's required-input table, removed its duplicate failure
+for unreadable DECISIONS, clarified missing Architect selections, and completed
+the registry checker row. Core now has 362 methods; the unique advertised total
+is 603 with the unchanged 123 research and 118 Architect methods. No new work
+is deferred; the five existing live rows and their owner gates remain. Both
+companion identities remain unreviewed and unrecorded. This branch is local
+and unpushed; no release or remote write is authorized.
+
 ## 2026-10-27 — Complete the registry checker's missing-input row
 
 The checker table now includes an explicit missing --registry file and a

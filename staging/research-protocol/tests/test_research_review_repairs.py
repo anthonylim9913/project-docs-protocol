@@ -199,3 +199,7 @@ class ResearchReviewRepairTests(unittest.TestCase):
         self.rejected(self.doctor(),'missing nonempty URL')
         result=self.cli(boundaries.INDEX,self.root,'--id','SRC-0001')
         self.accepted(result);self.assertIn('## Analysis',result.stdout)
+
+
+if __name__ == '__main__':
+    unittest.main()

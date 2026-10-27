@@ -6,7 +6,7 @@
 
 **v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` is on `main` (pull request #1 merged as `89ed3aa`), untagged.**
 
-The local review branch is in progress and remains unpushed. Doctor, migration and Architect repairs have targeted regressions; checker documentation now matches measured behavior. The old/new Doctor comparison covers 5,789 qualifying registers with zero differing check lines. Research entry-point completion and final verification precede the final Close, which will reconcile the owner-verified merge and purge. No tag or remote write is authorized.
+The local review branch is in progress and remains unpushed. Doctor, migration and Architect repairs have targeted regressions; checker documentation matches measured behavior, and every research test module now has a complete direct entry point. The old/new Doctor comparison covers 5,789 qualifying registers with zero differing check lines. Final verification precedes the final Close, which will reconcile the owner-verified merge and purge. No tag or remote write is authorized.
 
 ## In flight
 
@@ -14,7 +14,7 @@ The local review branch is in progress and remains unpushed. Doctor, migration a
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Complete entry-point coverage, final verification and Close | reviewer, then owner | — | Both companion identities require independent review before owner recording |
+| Complete final verification and Close | reviewer, then owner | — | Both companion identities require independent review before owner recording |
 
 ## Blocked
 

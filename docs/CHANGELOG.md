@@ -1,3 +1,13 @@
+## 2026-10-27 — Complete the remaining research direct test entry points
+
+Confirmed that direct execution of five research test modules exited zero
+without running tests. Added final main guards and a module-wide AST
+regression that failed for all five missing guards before the repair. Scope
+discovery now passes 25 methods; the five direct modules run their actual
+tests rather than silently returning. Existing permission-capability skips
+remain explicit, not claims of preserved special bits. The research registry
+identity remains stale until independent review and owner recording.
+
 ## 2026-10-27 — Align checker documentation with measured behavior
 
 Corrected the registry digest description: only the target root's .git is

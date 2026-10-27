@@ -250,6 +250,15 @@ class ResearchRootPresenceTests(unittest.TestCase):
 
 
 class DirectExecutionTests(unittest.TestCase):
+    def test_every_test_module_has_a_final_main_guard(self):
+        for path in sorted(Path(__file__).parent.glob('test_*.py')):
+            with self.subTest(module=path.name):
+                nodes=ast.parse(path.read_text()).body
+                guards=[node for node in nodes if isinstance(node,ast.If)
+                        and '__main__' in ast.dump(node.test)]
+                self.assertEqual(len(guards),1)
+                self.assertIs(guards[0],nodes[-1])
+
     def test_main_guard_follows_all_test_classes(self):
         nodes=ast.parse(Path(__file__).read_text()).body
         classes=[node.lineno for node in nodes if isinstance(node,ast.ClassDef)]

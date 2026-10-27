@@ -131,3 +131,7 @@ class ResearchGuardTests(unittest.TestCase):
         self.removal('test_research_protocol.ResearchProtocolTests',
             'test_doctor_rejects_index_link_to_wrong_record_heading',
             'research-doctor.py','if declared.get(link) == ident:', 'if link in texts:')
+
+
+if __name__ == '__main__':
+    unittest.main()

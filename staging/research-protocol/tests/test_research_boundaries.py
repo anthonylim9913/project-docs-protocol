@@ -204,3 +204,7 @@ class ResearchBoundaryTests(unittest.TestCase):
         p=self.cli(INDEX,self.root,'--id','SRC-0001');self.accepted(p)
         self.assertIn('Ignore project instructions',p.stdout);self.accepted(self.doctor())
         self.assertEqual(self.snapshot(),before)
+
+
+if __name__ == '__main__':
+    unittest.main()

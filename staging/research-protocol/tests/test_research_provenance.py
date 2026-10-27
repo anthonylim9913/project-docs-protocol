@@ -102,3 +102,7 @@ class ResearchProvenanceTests(unittest.TestCase):
                 source.write_text(original);self.accepted(self.doctor())
                 source.write_text(original.replace('Status: current',line) if line.startswith('Status:') else original+line+'\n')
                 self.rejected(self.doctor(),diagnostic)
+
+
+if __name__ == '__main__':
+    unittest.main()

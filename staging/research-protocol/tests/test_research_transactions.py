@@ -263,3 +263,7 @@ class ResearchTransactionTests(unittest.TestCase):
         with patch.object(os,'read',side_effect=read),tree_type(self.root/'research') as tree:
             with self.assertRaisesRegex(ValueError,'symlink'):tree.read('notes/NOTE-0001.md')
         self.assertEqual(seen,[])
+
+
+if __name__ == '__main__':
+    unittest.main()

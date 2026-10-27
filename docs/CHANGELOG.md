@@ -1,3 +1,9 @@
+## 2026-10-27 — Complete the registry checker's missing-input row
+
+The checker table now includes an explicit missing --registry file and a
+regular file used as the project root among FAIL conditions, alongside an
+absent root or explicit register directory. No checker behavior changes.
+
 ## 2026-10-27 — Name missing Architect selections in failure messages
 
 Replaced raw missing-component errors with the requested project root or

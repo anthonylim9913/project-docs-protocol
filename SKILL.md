@@ -406,7 +406,7 @@ Each part has its own read-only checker, and none runs another:
 | Checker | Run when | Companion absent | Exit codes |
 |---|---|---|---|
 | `scripts/docs-doctor.py` | on demand, on a Bootstrap red flag, after Install | — | 0 pass · 1 WARN only · 2 FAIL · 3 could not run |
-| `scripts/skill-registry.py` | after any registry edit, and before invoking a registered skill | SKIP, exit 0 under a usable root; a nonexistent project root or missing explicit `--register-dir` FAILS. | 0 pass · 1 FAIL |
+| `scripts/skill-registry.py` | after any registry edit, and before invoking a registered skill | SKIP, exit 0 under a usable root; a nonexistent or non-directory project root, missing explicit `--register-dir`, or missing explicit `--registry` file FAILS. | 0 pass · 1 FAIL |
 | `staging/research-protocol/scripts/research-doctor.py` | after research writes, and before a Brief that cites research | SKIP, exit 0 under a usable root; a nonexistent, file or dangling-link project root FAILS. | 0 pass · 1 FAIL |
 | `staging/architect-protocol/scripts/architect-doctor.py` | before calling a packet complete, and at handoff | Only an absent default `docs/architect` under a usable root: SKIP, exit 0. Invalid roots and missing explicit `--packet-dir` paths FAIL. | 0 pass · 1 FAIL |
 

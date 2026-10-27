@@ -89,7 +89,7 @@ Then, in any project, ask for "set up project docs". The skill recognises a proj
 `python3 scripts/docs-doctor.py "<project-root>" --json` runs the same checks as the text report and prints them as exactly one JSON object on stdout, on one line (wrapped here for reading):
 
 ```json
-{"tool": "docs-doctor", "schema": 1, "version": "1.6.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
+{"tool": "docs-doctor", "schema": 1, "version": "1.7.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
  "today": "2026-10-23",
  "checks": [{"id": "wiring-block", "level": "PASS", "message": "present in 1 of 1 instructions files: AGENTS.md"}],
  "summary": {"pass": 1, "warn": 0, "fail": 0, "info": 0, "skip": 0},

@@ -51,7 +51,7 @@ import stat
 import subprocess
 import sys
 
-VERSION = "1.6.0"
+VERSION = "1.7.0"
 # Version of the --json document's shape; bumped only when a key is added, removed or redefined.
 JSON_SCHEMA = 1
 STRUCTURAL_LIMITS = (

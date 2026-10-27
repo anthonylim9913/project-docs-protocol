@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate the optional project's canonical, versioned skill registry."""
 from __future__ import annotations
-import argparse, hashlib, re
+import argparse, hashlib, re, stat
 from pathlib import Path
 
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,63}$")
@@ -9,9 +9,14 @@ VERSION_RE = re.compile(r"^v?[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$")
 CONTENT_ID_RE = re.compile(r"sha256:[0-9a-f]{64}")
 STATUSES = {"active", "staged", "retired"}
 REQUIRED = {"required", "optional"}
-IGNORED_PARTS = {"__pycache__", ".git"}
+IGNORED_PARTS = {"__pycache__"}
 IGNORED_NAMES = {".DS_Store", "Thumbs.db"}
 HEADER = ("name", "trigger", "lifecycle", "workflow stages", "inputs", "outputs/evidence", "reviewer/gate", "required", "location", "version", "content-id", "missing-capability")
+
+def _present(path: Path) -> bool:
+    try: path.lstat()
+    except FileNotFoundError: return False
+    return True
 
 def _registry_path(root: Path, requested: str | None, register_dir: str | None = None) -> Path | None:
     if requested:
@@ -21,9 +26,9 @@ def _registry_path(root: Path, requested: str | None, register_dir: str | None =
         directory = Path(register_dir); directory = directory if directory.is_absolute() else root / directory
         if not directory.is_dir(): raise ValueError(f"register directory not found: {register_dir}")
         path = directory / "SKILL-REGISTRY.md"
-        return path if path.is_file() else None
+        return path if _present(path) else None
     candidates = [root / "docs" / "SKILL-REGISTRY.md", root / "SKILL-REGISTRY.md"]
-    present = [path for path in candidates if path.is_file()]
+    present = [path for path in candidates if _present(path)]
     if len(present) > 1: raise ValueError("multiple SKILL-REGISTRY.md files; pass --registry or --register-dir")
     return present[0] if present else None
 
@@ -42,13 +47,18 @@ def _rows(text: str):
 
 def _tree_digest(path: Path) -> str:
     digest=hashlib.sha256()
-    for child in sorted(path.rglob("*")):
+    def files(directory):
+        for child in sorted(directory.iterdir()):
+            rel=child.relative_to(path)
+            info=child.lstat()
+            if stat.S_ISLNK(info.st_mode): raise ValueError(f"symlinked registry target: {rel}")
+            if IGNORED_PARTS.intersection(rel.parts) or rel.name in IGNORED_NAMES or rel == Path('.git'): continue
+            if stat.S_ISDIR(info.st_mode): yield from files(child)
+            elif stat.S_ISREG(info.st_mode): yield child
+            else: raise ValueError(f"registry target must be a regular file: {rel}")
+    for child in sorted(files(path)):
         rel=child.relative_to(path)
-        # Caches, version-control internals and desktop metadata are not the skill.
-        if IGNORED_PARTS.intersection(rel.parts) or rel.name in IGNORED_NAMES: continue
-        if child.is_symlink(): raise ValueError(f"symlinked registry target: {rel}")
-        if child.is_file():
-            digest.update(str(rel).encode()); digest.update(b"\0"); digest.update(child.read_bytes()); digest.update(b"\0")
+        digest.update(str(rel).encode()); digest.update(b"\0"); digest.update(child.read_bytes()); digest.update(b"\0")
     return digest.hexdigest()
 
 def validate(path: Path, project_root: Path | None = None) -> list[str]:
@@ -109,15 +119,17 @@ def main(argv=None) -> int:
     parser.add_argument("--digest",metavar="LOCATION",help="print the tree digest of LOCATION (relative to the project root) for a reviewer "
                         "to record after review; the printed digest is not an approval")
     args=parser.parse_args(argv)
+    if not args.root.is_dir():
+        print("FAIL skill-registry: project root is not a directory"); return 1
     if args.digest is not None:
         target=Path(args.digest) if Path(args.digest).is_absolute() else args.root/args.digest
         if not target.is_dir() or target.is_symlink():
             print(f"FAIL skill-registry: digest location is not a real directory: {args.digest}"); return 1
         try: value=_tree_digest(target)
-        except ValueError as exc: print(f"FAIL skill-registry: {exc}"); return 1
+        except (OSError,RuntimeError,ValueError) as exc: print(f"FAIL skill-registry: {exc}"); return 1
         print(f"DIGEST {args.digest}: sha256:{value} (unreviewed: record it only after the reviewer gate passes)"); return 0
     try: path=_registry_path(args.root,args.registry,args.register_dir)
-    except ValueError as exc: print(f"FAIL skill-registry: {exc}"); return 1
+    except (OSError,RuntimeError,ValueError) as exc: print(f"FAIL skill-registry: {exc}"); return 1
     if path is None:
         where_absent=f" in {args.register_dir}" if args.register_dir is not None else ""
         print(f"SKIP skill-registry: SKILL-REGISTRY.md absent{where_absent}"); return 0

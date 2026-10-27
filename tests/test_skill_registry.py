@@ -1,4 +1,4 @@
-import hashlib, re, subprocess, sys, tempfile, unittest
+import hashlib, os, re, subprocess, sys, tempfile, unittest
 from pathlib import Path
 ROOT = Path(__file__).parents[1]; CHECK = ROOT / "scripts" / "skill-registry.py"
 HEADER = "| Name | Trigger | Lifecycle | Workflow stages | Inputs | Outputs/Evidence | Reviewer/Gate | Required | Location | Version | Content-ID | Missing-capability |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
@@ -82,4 +82,55 @@ class SkillRegistryTests(unittest.TestCase):
             (skill/".DS_Store").write_bytes(b"finder"); (skill/".git").mkdir(); (skill/".git/HEAD").write_text("ref: x\n")
             r=self.run_check(root)
         self.assertEqual(r.returncode,0,r.stdout+r.stderr)
+    def test_invalid_project_roots_fail_instead_of_skipping(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory); regular=root/'file'; regular.write_text('not a directory')
+            for target in (root/'missing',regular):
+                with self.subTest(target=target.name):
+                    result=self.run_check(target)
+                    self.assertEqual(result.returncode,1,result.stdout+result.stderr)
+                    self.assertIn('project root',result.stdout)
+    def test_existing_invalid_registry_is_not_absent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory); (root/'docs').mkdir(); registry=root/'docs/SKILL-REGISTRY.md'
+            for kind in ('dangling link','directory'):
+                with self.subTest(kind=kind):
+                    if kind=='dangling link': registry.symlink_to(root/'missing')
+                    else: registry.mkdir()
+                    result=self.run_check(root)
+                    if kind=='dangling link': registry.unlink()
+                    else: registry.rmdir()
+                    self.assertEqual(result.returncode,1,result.stdout+result.stderr)
+                    self.assertIn('FAIL skill-registry',result.stdout)
+    def test_ignored_metadata_links_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory); self.make_registry(root); skill=root/'staging/research-protocol'
+            for name in ('.DS_Store','Thumbs.db','__pycache__','.git'):
+                with self.subTest(name=name):
+                    link=skill/name; link.symlink_to(root/'missing')
+                    result=self.run_check(root)
+                    self.assertEqual(result.returncode,1,result.stdout+result.stderr)
+                    self.assertIn('symlinked registry target',result.stdout)
+                    link.unlink()
+    def test_nested_git_contents_are_bound(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory); self.make_registry(root); skill=root/'staging/research-protocol'
+            nested=skill/'scripts/.git'; nested.mkdir(parents=True); (nested/'payload.py').write_text('changed')
+            result=self.run_check(root)
+            self.assertEqual(result.returncode,1,result.stdout+result.stderr)
+            self.assertIn('stale content-id',result.stdout)
+    def test_unreadable_digest_subtree_fails_closed(self):
+        if hasattr(os,'geteuid') and os.geteuid()==0: self.skipTest('permission bits do not bind the superuser')
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory); self.make_registry(root); skill=root/'staging/research-protocol'
+            locked=skill/'locked'; locked.mkdir(); (locked/'payload.py').write_text('unreviewed')
+            locked.chmod(0)
+            try:
+                result=self.run_check(root)
+                printed=self.run_check(root,'--digest','staging/research-protocol')
+            finally: locked.chmod(0o755)
+            for outcome in (result,printed):
+                self.assertEqual(outcome.returncode,1,outcome.stdout+outcome.stderr)
+                self.assertIn('FAIL skill-registry',outcome.stdout)
+                self.assertNotIn('Traceback',outcome.stderr)
 if __name__ == "__main__": unittest.main()

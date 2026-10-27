@@ -21,7 +21,9 @@ reorders writes to the core registers.
 
 Record the reviewed version and full tree Content-ID. Its SHA256 encoding is
 sorted relative file path, NUL, file bytes, NUL for each file; exclude Python
-caches, `.git` and desktop metadata (`.DS_Store`, `Thumbs.db`) and refuse links.
+caches, the target root's `.git` and desktop metadata (`.DS_Store`, `Thumbs.db`).
+Nested `.git` contents are bound. Refuse links even when their names are excluded,
+and fail if an included directory cannot be read rather than hashing a partial tree.
 Compute it on the files exactly as committed: a checkout that converts line
 endings produces a different digest. Record the digest of the tree
 the reviewer actually reviewed (`skill-registry.py <project-root> --digest

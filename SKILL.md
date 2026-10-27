@@ -406,7 +406,7 @@ Each part has its own read-only checker, and none runs another:
 | `scripts/docs-doctor.py` | on demand, on a Bootstrap red flag, after Install | — | 0 pass · 1 WARN only · 2 FAIL · 3 could not run |
 | `scripts/skill-registry.py` | after any registry edit, and before invoking a registered skill | SKIP, exit 0 | 0 pass · 1 FAIL |
 | `staging/research-protocol/scripts/research-doctor.py` | after research writes, and before a Brief that cites research | SKIP, exit 0 | 0 pass · 1 FAIL |
-| `staging/architect-protocol/scripts/architect-doctor.py` | before calling a packet complete, and at handoff | SKIP, exit 0 | 0 pass · 1 FAIL |
+| `staging/architect-protocol/scripts/architect-doctor.py` | before calling a packet complete, and at handoff | Only an absent default `docs/architect` under a usable root: SKIP, exit 0. Invalid roots and missing explicit `--packet-dir` paths FAIL. | 0 pass · 1 FAIL |
 
 A companion checker's FAIL is a failure, not advisory drift: only docs-doctor separates WARN from FAIL by exit code.
 

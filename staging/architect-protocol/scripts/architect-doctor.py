@@ -8,7 +8,7 @@ from architect_packet import Invalid, validate
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('root',type=Path)
-    parser.add_argument('--packet-dir',default='docs/architect',help='project-relative packet directory')
+    parser.add_argument('--packet-dir',help='project-relative packet directory (default: docs/architect; explicit paths must exist)')
     parser.add_argument('--structural-example',action='store_true',help='explicit non-production example only')
     args=parser.parse_args(argv)
     try:

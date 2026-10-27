@@ -614,9 +614,15 @@ class CommittedProject(Project):
         need(head==self.revision,'immutable snapshot head mismatch')
 
 
-def validate(root,packet_dir='docs/architect',example=False):
+def validate(root,packet_dir=None,example=False):
+    explicit=packet_dir is not None
+    if packet_dir is None:packet_dir='docs/architect'
     project=Project(root);parts=path_parts(packet_dir)
+    with project.directory([]):pass
     try:
         with project.directory(parts):pass
-    except FileNotFoundError:return 'SKIP architect: packet absent'
+    except FileNotFoundError:
+        if explicit:raise
+        with project.directory([]):pass
+        return 'SKIP architect: packet absent'
     return validate_project(project,packet_dir,example)

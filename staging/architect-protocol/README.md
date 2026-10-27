@@ -26,8 +26,11 @@ project checkout (Python 3.9+, Git and safe POSIX descriptors):
 python3 -B /path/to/architect-protocol/scripts/architect-doctor.py .
 ```
 
-An absent `docs/architect/` directory is valid and produces `SKIP`; a partial
-or malformed packet fails. This candidate is not globally activated.
+An absent default `docs/architect/` directory under a usable project root is
+valid and produces `SKIP`, exit 0. A nonexistent root, file root or dangling-link
+root fails, exit 1. An explicit `--packet-dir` must exist (even when it names
+`docs/architect`); a missing explicit directory or a partial or malformed packet
+fails, exit 1. This candidate is not globally activated.
 
 The minimal example is intentionally unfrozen. Run it with
 `python3 -B scripts/architect-doctor.py examples/minimal --structural-example`.

@@ -1,3 +1,14 @@
+## 2026-10-27 — Architect limits optional absence to the default packet
+
+Reproduced successful SKIP for missing or dangling project roots and missing
+explicit packet paths. Root validation now occurs outside optional packet
+discovery; explicit --packet-dir selection must exist, even when it names
+the default. Only absent default docs/architect beneath a usable root skips.
+Five targeted methods pass after reproducing four failing assertions on the
+old code; file roots already failed and remain covered. Companion and core
+checker documentation describe the boundary. The Architect registry row is
+intentionally stale pending independent review and owner recording.
+
 ## 2026-10-27 — Migration enumerates reservation history without silent omissions
 
 Reproduced previews allocating LG-0001 and reviewed writes succeeding while

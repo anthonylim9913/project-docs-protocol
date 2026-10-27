@@ -81,6 +81,11 @@ read-only doctor before claiming the packet is structurally complete:
 python3 -B scripts/architect-doctor.py /path/to/project
 ```
 
+Only an absent default `docs/architect/` under a usable project root returns
+SKIP (exit 0). A nonexistent, file or dangling-link project root returns FAIL
+(exit 1). An explicit `--packet-dir` must exist, even when it names the default;
+a missing explicit directory or a malformed present packet returns FAIL.
+
 The doctor validates the packet only; it does not infer behavioral correctness
 or approve a merge.
 

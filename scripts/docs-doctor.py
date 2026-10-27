@@ -1247,7 +1247,9 @@ def scan_decisions(register_dir, rep=None):
 
 def check_decisions(rep, dec):
     if dec is None:
-        rep.add("FAIL", "decisions-ids", "DECISIONS.md unreadable")
+        if not any(level == "FAIL" and check == "decisions-ids"
+                   for level, check, message in rep.lines):
+            rep.add("FAIL", "decisions-ids", "DECISIONS.md unreadable")
         return
     lines, size = dec["lines"], dec["size"]
     entries, malformed = dec["entries"], dec["malformed"]

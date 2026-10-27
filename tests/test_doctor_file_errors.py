@@ -14,6 +14,31 @@ DOCTOR = Path(__file__).resolve().parents[1] / "scripts/docs-doctor.py"
 
 
 class DoctorFileErrorsTests(unittest.TestCase):
+    def test_unreadable_decisions_emits_exactly_one_failure(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            seed_register(project)
+            target = project / "docs/DECISIONS.md"
+            target.chmod(0)
+            try:
+                try:
+                    target.read_bytes()
+                except PermissionError:
+                    pass
+                else:
+                    self.skipTest("runtime can read mode-000 files")
+                result = subprocess.run(
+                    [sys.executable, "-B", str(DOCTOR), str(project),
+                     "--today", "2026-09-10", "--no-git"],
+                    capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                failures = [line for line in result.stdout.splitlines()
+                            if line.startswith("FAIL") and "decisions-ids" in line]
+                self.assertEqual(len(failures), 1, result.stdout)
+                self.assertIn("unusable", failures[0])
+            finally:
+                target.chmod(0o600)
+
     def test_unusable_optional_files_fail_instead_of_appearing_absent(self):
         for name, check in (("docs/LEDGER.md", "ledger"),
                             ("docs/LEDGER-ARCHIVE.md", "ledger-archive-ids"),

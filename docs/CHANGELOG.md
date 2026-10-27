@@ -1,3 +1,12 @@
+## 2026-10-27 — Emit one Doctor failure for unreadable DECISIONS
+
+An unreadable regular DECISIONS file produced both its specific unusable-file
+FAIL and a generic unreadable FAIL. The generic fallback now runs only when
+the specific decisions-ids failure has not already been reported. A CLI
+regression counts the FAIL lines, reproduces two before the fix and requires
+exactly one afterward. All three unusable-input methods pass. The independent
+review retains the read-only main-versus-new corpus comparison.
+
 ## 2026-10-27 — Distinguish required-file discovery failures in Doctor's table
 
 Corrected the input-availability row: unreadable regular required files reach

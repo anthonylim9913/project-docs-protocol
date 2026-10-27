@@ -1,3 +1,7 @@
+## 2026-10-28 — LG-0050: document usage errors at exit 2 (D-0032)
+
+Clarify SKILL.md's exit-code paragraph: command-line usage errors exit 2 with usage on stderr in either mode and no object under `--json`; exit 2 with a report means FAIL. Add the shared usage-error rule below the checker table. Reproduced missing-root and unknown-flag errors in both modes, and contrasted them with a reported FAIL in both modes on native Python 3.14.7. No runtime or schema change. D-0032 supplies the owner's closing ruling; close LG-0050 and move its terminal row verbatim to the archive. Its consumer and schema revisit triggers remain in D-0032.
+
 ## 2026-10-28 — brief: the owner answers the plan for the open ledger rows
 
 - The owner confirms v0.5.0 at `97db924` and approves recording the amended answers centrally before implementation; implementation lanes cite D-0028–D-0032 rather than allocating parallel decisions.

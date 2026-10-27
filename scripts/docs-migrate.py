@@ -16,6 +16,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import sys
 import tempfile
 
@@ -88,10 +89,22 @@ def canonical_id(ident):
 
 def fingerprints(docs):
     # Every Markdown register can contain reservations, including nested history.
-    result = {}
-    for path in sorted(docs.rglob("*.md")):
-        if any(parent.is_symlink() for parent in path.parents if parent != docs.parent):
+    def registers(directory):
+        if directory.is_symlink():
             raise ValueError("symlinked register directories are not supported")
+        for path in sorted(directory.iterdir()):
+            mode = path.lstat().st_mode
+            if stat.S_ISLNK(mode):
+                raise ValueError(f"refusing symlink input or target: {path.relative_to(docs)}")
+            if stat.S_ISDIR(mode):
+                yield from registers(path)
+            elif path.suffix == ".md":
+                if not stat.S_ISREG(mode):
+                    raise ValueError(f"register must be a regular file: {path.relative_to(docs)}")
+                yield path
+
+    result = {}
+    for path in sorted(registers(docs)):
         result[path.relative_to(docs).as_posix()] = digest(read(path))
     for name in ("STATUS.md", "CHANGELOG.md", "LEDGER.md", "LEDGER-ARCHIVE.md"):
         result.setdefault(name, None)

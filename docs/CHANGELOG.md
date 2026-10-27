@@ -1,3 +1,14 @@
+## 2026-10-27 — Migration enumerates reservation history without silent omissions
+
+Reproduced previews allocating LG-0001 and reviewed writes succeeding while
+unreadable or symlinked history hid the LG-0099 reservation. Replaced rglob
+with explicit directory enumeration, propagating unreadable-directory errors
+and refusing symlinked folders and files with the existing refusal exit 2.
+Four regression methods check preview and reviewed-write refusal, preserved
+symlink-file refusal, and readable nested history allocating LG-0100. All
+four pass on Python 3.14.4 and 3.14.7; 90 focused migration methods pass on
+3.14.4. Doctor is unchanged by this repair.
+
 ## 2026-10-27 — Doctor distinguishes absent files from unusable inputs
 
 Reproduced silent SKIP/INFO for present optional inputs. Doctor now uses lstat

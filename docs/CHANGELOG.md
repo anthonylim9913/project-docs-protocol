@@ -1,3 +1,15 @@
+## 2026-10-27 — Align checker documentation with measured behavior
+
+Corrected the registry digest description: only the target root's .git is
+excluded, while nested .git content is bound. The checker table now states
+invalid-root failures. Doctor's table names the bare ledger group and
+ledger-date, routes deep-only decisions to decisions-ids, describes all three
+blocked-gate failures and their schema overlap, and includes empty/unreadable
+STATUS, future-entry INFO, undated-entry SKIP and absent-archive SKIP. The
+majority wording for ledger-stale-open is unchanged. Disposable CLI probes
+confirm the documented branches. README now conditions docs-parent inference
+on the absence of an instructions file. No Doctor behavior changed here.
+
 ## 2026-10-27 — Architect limits optional absence to the default packet
 
 Reproduced successful SKIP for missing or dangling project roots and missing

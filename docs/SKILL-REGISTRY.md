@@ -3,7 +3,8 @@
 This canonical, versioned registry describes project-local capabilities. It
 records activation requirements and evidence ownership; it never installs or
 globally activates a skill. `content-id` is a deterministic SHA-256 over the
-target tree (paths and bytes, excluding Python caches, `.git` and desktop metadata), so stale paths and
+target tree (paths and bytes, excluding Python caches, the target root's `.git`
+and desktop metadata; nested `.git` contents are included), so stale paths and
 edited candidates fail validation. Workflow stages name invocation points, distinct
 from lifecycle. Existing project/user authorization governs every invocation; staged
 rows require explicit scope authorization. Retired rows are historical. Missing

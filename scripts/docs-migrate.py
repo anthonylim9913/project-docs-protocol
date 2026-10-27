@@ -95,7 +95,15 @@ def fingerprints(docs):
         for path in sorted(directory.iterdir()):
             mode = path.lstat().st_mode
             if stat.S_ISLNK(mode):
-                raise ValueError(f"refusing symlink input or target: {path.relative_to(docs)}")
+                if path.suffix == ".md":
+                    raise ValueError(f"refusing symlink input or target: {path.relative_to(docs)}")
+                try:
+                    target_mode = path.stat().st_mode
+                except FileNotFoundError:
+                    continue
+                if stat.S_ISDIR(target_mode):
+                    raise ValueError(f"refusing symlinked register directory: {path.relative_to(docs)}")
+                continue
             if stat.S_ISDIR(mode):
                 yield from registers(path)
             elif path.suffix == ".md":

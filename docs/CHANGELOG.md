@@ -1,3 +1,18 @@
+## 2026-10-27 — Narrow migration refusal to reservation-bearing entries
+
+The independent follow-up found that round two's explicit walk over-refused
+ordinary executable file links in root-layout projects. Non-Markdown file
+links and special entries are now ignored; Markdown links, linked directories
+and unreadable reservation subtrees still refuse preview and write. Nothing
+is pruned from dependency trees or nested worktrees. Three new link/root-layout
+tests fail before the repair and pass after it on Python 3.14.4 and 3.14.7;
+the non-Markdown FIFO control already passed before the repair. Nine inventory
+methods now pass on both versions, including the original hidden-reservation
+guards and a Markdown FIFO refusal. Main and the repair both allocate above
+the nested-worktree reservation in the root-layout fixture. MIGRATION now
+documents the recursive scope and refusal boundary. The read-only corpus
+comparison is retained with the external independent review.
+
 ## 2026-10-27 — Close rounds one and two of the local independent review
 
 An independent review was filed outside the repository. Round one repaired

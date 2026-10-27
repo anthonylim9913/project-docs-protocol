@@ -1,5 +1,6 @@
 """Reservation discovery must fail closed before planning or writing."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -86,6 +87,46 @@ class MigrationInventoryTests(unittest.TestCase):
         result = self.cli("--write")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("| LG-0100 |", (self.docs / "LEDGER.md").read_text())
+
+    def root_layout(self):
+        for path in self.docs.iterdir():
+            path.rename(self.root / path.name)
+        self.docs.rmdir()
+        self.docs = self.root
+
+    def test_node_bin_file_link_does_not_block_reservations(self):
+        binary = self.docs / "node_modules/.bin/tool"
+        binary.parent.mkdir(parents=True)
+        target = self.root / "tool.js"
+        target.write_text("executable\n")
+        binary.symlink_to(target)
+        self.reviewed_plan()
+
+    def test_venv_python_file_link_does_not_block_reservations(self):
+        binary = self.docs / "venv/bin/python"
+        binary.parent.mkdir(parents=True)
+        binary.symlink_to(sys.executable)
+        self.reviewed_plan()
+
+    def test_non_markdown_fifo_does_not_block_reservations(self):
+        os.mkfifo(self.docs / "events")
+        self.reviewed_plan()
+
+    def test_root_layout_keeps_nested_worktree_reservations(self):
+        self.root_layout()
+        binary = self.root / "node_modules/.bin/tool"
+        binary.parent.mkdir(parents=True)
+        binary.symlink_to(sys.executable)
+        history = self.root / ".worktrees/candidate/docs"
+        history.mkdir(parents=True)
+        (history / "OLD.md").write_text("LG-0099 is permanently reserved.\n")
+        self.reviewed_plan()
+        plan = json.loads(self.plan.read_text())
+        self.assertEqual(plan["mappings"][0]["id"], "LG-0100")
+
+    def test_markdown_fifo_still_refuses(self):
+        os.mkfifo(self.docs / "OLD.md")
+        self.refused()
 
 
 if __name__ == "__main__":

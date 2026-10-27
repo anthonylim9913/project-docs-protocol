@@ -1,3 +1,10 @@
+## 2026-10-27 — Distinguish required-file discovery failures in Doctor's table
+
+Corrected the input-availability row: unreadable regular required files reach
+their named FAIL checks, but dangling links, directories and FIFOs replacing
+STATUS, CHANGELOG or DECISIONS prevent discovery, exit 3 with no checks.
+This is documentation only; Doctor and its exit-code contract are unchanged.
+
 ## 2026-10-27 — Narrow migration refusal to reservation-bearing entries
 
 The independent follow-up found that round two's explicit walk over-refused

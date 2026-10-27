@@ -1,3 +1,15 @@
+## 2026-10-27 — Doctor distinguishes absent files from unusable inputs
+
+Reproduced silent SKIP/INFO for present optional inputs. Doctor now uses lstat
+to distinguish absence and reports FAIL with the file and filesystem reason
+for unreadable files, dangling links and nonregular inputs, without opening a
+FIFO. This includes the live ledger, archive, BRAND, instructions and README;
+required-file read failures also retain FAIL rather than becoming checker
+errors. The exit-code contract is unchanged. Two regression methods cover
+20 unusable-file cases and genuinely absent optional inputs; the focused
+Doctor suites pass 88 methods. The read-only cross-project comparison is
+retained outside the repository and the final Close records its result.
+
 ## 2026-10-24 — LG-0051 review fixes: a faithful gh-153030 test, the RCDATA choice pinned (D-0026), STATUS corrected
 
 An independent review of the draft pull request returned five findings; all are addressed on `fix/lg-0051-htmlparser-feed`, still a draft. **The patched-feed test now copies gh-153030 itself:** a context manager gives the base `HTMLParser` the fixed `reset`, `feed` and `close` (`_pending`, `_pending_len`, a `_parse_threshold` that becomes the buffer length when `goahead` makes no progress, `close` flushing `_pending`), and the long raw-text regression also runs under it. The previous test appended to `_pending` from a stub, so with the override reverted it raised `AttributeError` (an ERROR, not a FAIL) on any interpreter without the fix. With the override reverted, the module now gives 24 failures and no error on 3.11.17, 3.12.3 and 3.13.17 here, and 6 failures and no error on 3.11.17 with a pre-fix `feed` loaded in the test process; with it, all 31 tests pass in each case.

@@ -47,6 +47,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 
@@ -237,15 +238,17 @@ def read_text(path):
     """Read a file as text without ever crashing on its bytes.
 
     NUL bytes are dropped, CRLF and lone CR become LF, undecodable bytes are
-    replaced. Returns (text, size_bytes). Missing file -> (None, 0).
+    replaced. Returns (text, size_bytes). Only an absent path -> (None, 0).
+    Present but unusable files raise OSError, including dangling links.
     """
-    if not os.path.isfile(path):
-        return None, 0
     try:
-        with open(path, "rb") as fh:
-            raw = fh.read()
-    except OSError:
+        os.lstat(path)
+    except FileNotFoundError:
         return None, 0
+    if not stat.S_ISREG(os.stat(path).st_mode):
+        raise OSError("not a regular file: %s" % path)
+    with open(path, "rb") as fh:
+        raw = fh.read()
     size = len(raw)
     raw = raw.replace(b"\x00", b"")
     text = raw.decode("utf-8", errors="replace")
@@ -663,7 +666,11 @@ def run_git(root, args, timeout=30):
 def check_wiring(rep, root, register_label):
     present = {}
     for name in INSTRUCTION_FILES:
-        text, _ = read_text(os.path.join(root, name))
+        try:
+            text, _ = read_text(os.path.join(root, name))
+        except OSError as exc:
+            rep.add("FAIL", "wiring-block", "%s unusable: %s" % (name, exc))
+            continue
         if text is None:
             continue
         present[name] = text
@@ -762,7 +769,11 @@ def check_wiring(rep, root, register_label):
 
 
 def check_readme_footer(rep, register_dir):
-    text, _ = read_text(os.path.join(register_dir, "README.md"))
+    try:
+        text, _ = read_text(os.path.join(register_dir, "README.md"))
+    except OSError as exc:
+        rep.add("FAIL", "readme-footer", "README.md unusable: %s" % exc)
+        return
     if text is None:
         rep.add("WARN", "readme-footer", "no README.md in the register directory — the map file is missing")
         return
@@ -861,7 +872,11 @@ def status_metadata_lines(lines):
 
 def check_status(rep, register_dir, changelog_newest, today):
     path = os.path.join(register_dir, "STATUS.md")
-    text, size = read_text(path)
+    try:
+        text, size = read_text(path)
+    except OSError as exc:
+        rep.add("FAIL", "status-size", "STATUS.md unusable: %s" % exc)
+        return None
     lines = split_lines(text)
     n = len(lines)
     if text is None:
@@ -1096,7 +1111,11 @@ def cited_ids_with_ranges(text):
 
 def check_changelog(rep, register_dir, today):
     """Returns (newest_date, install_date, cited_ids_in_headings)."""
-    text, size = read_text(os.path.join(register_dir, "CHANGELOG.md"))
+    try:
+        text, size = read_text(os.path.join(register_dir, "CHANGELOG.md"))
+    except OSError as exc:
+        rep.add("FAIL", "changelog-entries", "CHANGELOG.md unusable: %s" % exc)
+        return None, None, None
     lines = split_lines(text)
     if text is None:
         rep.add("FAIL", "changelog-entries", "CHANGELOG.md unreadable")
@@ -1173,10 +1192,15 @@ def fmt_id(p, n, s=""):
     return ("%s%0*d" % (p, w, n)) + s
 
 
-def scan_decisions(register_dir):
+def scan_decisions(register_dir, rep=None):
     """Read DECISIONS.md once and census its headings. Returns a dict, or
     None when the file is unreadable."""
-    text, size = read_text(os.path.join(register_dir, "DECISIONS.md"))
+    try:
+        text, size = read_text(os.path.join(register_dir, "DECISIONS.md"))
+    except OSError as exc:
+        if rep is not None:
+            rep.add("FAIL", "decisions-ids", "DECISIONS.md unusable: %s" % exc)
+        return None
     if text is None:
         return None
     lines = split_lines(text)
@@ -1430,7 +1454,11 @@ def check_changelog_decision_refs(rep, cited, dec):
 
 def check_brand(rep, register_dir, install_date):
     path = os.path.join(register_dir, "BRAND.md")
-    text, size = read_text(path)
+    try:
+        text, size = read_text(path)
+    except OSError as exc:
+        rep.add("FAIL", "brand-placeholders", "BRAND.md unusable: %s" % exc)
+        return
     if text is None:
         rep.add("INFO", "brand-placeholders", "no BRAND.md (fine — keep it only when a real value exists)")
         return
@@ -1626,7 +1654,11 @@ def check_ledger(rep, register_dir, dec, today):
     """Read live rows and a lightweight archive ID census beside STATUS.md.
     Absent live file: one SKIP line for the whole group."""
     path = os.path.join(register_dir, "LEDGER.md")
-    text, size = read_text(path)
+    try:
+        text, size = read_text(path)
+    except OSError as exc:
+        rep.add("FAIL", "ledger", "LEDGER.md unusable: %s" % exc)
+        return
     if text is None:
         rep.add("SKIP", "ledger", "no LEDGER.md (optional — install it when the findings list outgrows STATUS)")
         return
@@ -1900,7 +1932,13 @@ def check_ledger(rep, register_dir, dec, today):
         # archive row semantics, but it does catch a live/archive collision so
         # a replayed allocator cannot resurrect an old address.
         archive_path = os.path.join(register_dir, "LEDGER-ARCHIVE.md")
-        archive_text, _ = read_text(archive_path)
+        try:
+            archive_text, _ = read_text(archive_path)
+        except OSError as exc:
+            archive_text = None
+            archive_error = str(exc)
+        else:
+            archive_error = None
         archive_ids = set()
         archive_bad = []
         if archive_text is not None:
@@ -1924,7 +1962,9 @@ def check_ledger(rep, register_dir, dec, today):
             archive_problems.append("%d live id(s) also exist in LEDGER-ARCHIVE.md (%s) — numeric aliases share an address; archive ids remain reserved (verify reopen events manually)" % (len(collisions), listing(collisions, 6)))
         if archive_bad:
             archive_problems.append("%d malformed or oversized archive ID cell(s) (%s) — repair ID syntax before trusting the archive census" % (len(archive_bad), listing(archive_bad, 4)))
-        if archive_problems:
+        if archive_error is not None:
+            rep.add("FAIL", "ledger-archive-ids", "LEDGER-ARCHIVE.md unusable: %s" % archive_error)
+        elif archive_problems:
             rep.add("FAIL", "ledger-archive-ids", "; ".join(archive_problems))
         elif archive_text is not None:
             rep.add("PASS", "ledger-archive-ids", "%d archived ids checked, 0 live/archive collisions" % len(archive_ids))
@@ -2115,7 +2155,7 @@ def run(root, today, no_git, register=None, rep=None):
         print("docs-doctor %s — register at %s (relative to the project root), today %s%s"
               % (VERSION, rel_label(register_dir, root), today, note))
         print()
-    dec = scan_decisions(register_dir)
+    dec = scan_decisions(register_dir, rep)
     check_wiring(rep, root, rel_label(register_dir, root))
     check_readme_footer(rep, register_dir)
     newest, install, cited = check_changelog(rep, register_dir, today)

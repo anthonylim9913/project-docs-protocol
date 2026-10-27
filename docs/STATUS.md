@@ -1,12 +1,12 @@
 # STATUS
 
-*Last updated: 2026-10-24*
+*Last updated: 2026-10-27*
 
 ## Current phase
 
 **v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` is on `main` (pull request #1 merged as `89ed3aa`), untagged.**
 
-The JSON mode gives dashboards one object per run with the text report's checks, summary, exit code, a `schema` version and the exit-3 `error` (D-0023, D-0024); text output is unchanged apart from the version number. No tag is made for 1.6.0. The LG-0051 migration fix is on draft pull request #3 with the independent review's five findings addressed (D-0026). Unreferenced old commits still open on GitHub by ID until GitHub Support purges them.
+The local review branch is in progress and remains unpushed. Doctor now fails on present-but-unusable optional files; the focused Doctor suites pass 88 methods. Cross-project comparison and the remaining ordered fixes precede the final Close, which will reconcile the owner-verified merge and purge. No tag or remote write is authorized.
 
 ## In flight
 
@@ -14,7 +14,7 @@ The JSON mode gives dashboards one object per run with the text report's checks,
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Decide on merging the LG-0051 fix (draft PR #3, `fix/lg-0051-htmlparser-feed`), then close LG-0051 | owner | — | Review findings fixed 2026-10-24: faithful gh-153030 test, RCDATA choice pinned (D-0026); suites pass on 3.11.17 and 3.13.17 |
+| Complete the ordered local review repairs and final Close | reviewer, then owner | — | Doctor file handling repaired; migration, Architect, documentation and final verification follow |
 
 ## Blocked
 

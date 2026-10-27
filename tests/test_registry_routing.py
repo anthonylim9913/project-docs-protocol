@@ -4,6 +4,7 @@ Hand-authored rows and the shipped personalized template are consumed by the
 real CLI. Instruction-use behavior is separately observed in fresh contexts.
 """
 import hashlib
+import struct
 from pathlib import Path
 import subprocess
 import sys
@@ -22,11 +23,11 @@ class RegistryRoutingTests(unittest.TestCase):
         target=self.root/'skills/example-skill';target.mkdir(parents=True)
         content=b'---\nname: example-skill\ndescription: Use when this disposable fixture is explicitly requested.\n---\n'
         (target/'SKILL.md').write_bytes(content)
-        self.digest=hashlib.sha256(b'SKILL.md\0'+content+b'\0').hexdigest()
+        self.digest=hashlib.sha256(b'project-docs-protocol skill-tree v2\n'+struct.pack('>Q',8)+b'SKILL.md'+struct.pack('>Q',len(content))+content).hexdigest()
         (self.root/'docs').mkdir();self.path=self.root/'docs/SKILL-REGISTRY.md'
         self.fields=['example-skill','explicit fixture request','staged','Bootstrap, Close',
                      'fixture records','fixture report','independent review','optional',
-                     'skills/example-skill','1.0.0','sha256:'+self.digest,'continue core and report unavailable fixture']
+                     'skills/example-skill','1.0.0','sha256v2:'+self.digest,'continue core and report unavailable fixture']
         self.write(self.fields);self.check(0,'PASS skill-registry')
 
     def write(self,fields):

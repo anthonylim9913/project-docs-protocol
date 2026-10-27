@@ -4,21 +4,26 @@
 
 ## Current phase
 
-**v0.4.1 public (latest tag); Doctor 1.6.0 with `--json` is on `main` (pull request #1 merged as `89ed3aa`), untagged.**
+**v0.4.1 remains the latest public tag. Doctor 1.6.0 and the PR #3 migration repair are on main, untagged.**
 
-The local review branch is in progress and remains unpushed. Doctor, migration and Architect repairs have targeted regressions; checker documentation matches measured behavior, and every research test module now has a complete direct entry point. The old/new Doctor comparison covers 5,789 qualifying registers with zero differing check lines. Final verification precedes the final Close, which will reconcile the owner-verified merge and purge. No tag or remote write is authorized.
+PR #3 merged on 2026-10-25 (b9ac127, 66c11c3); LG-0051 is CLOSED in the archive after independent native Python 3.14.7 verification. The owner confirms the completed purge of all 30 old GitHub commit IDs. The local review branch is unpushed and awaiting the owner; pull request #2 (LG-0044) is still an open draft. No release or remote write is authorized.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 live rows as of 2026-10-24, no P0/P1 (LG-0044, LG-0048, LG-0049 and LG-0050 open; LG-0051 verifying).
+`LEDGER.md` is authoritative: 5 OPEN live rows as of 2026-10-27, no P0/P1. LG-0044 and LG-0052 are P2; LG-0048, LG-0049 and LG-0050 are P3.
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Complete final verification and Close | reviewer, then owner | — | Both companion identities require independent review before owner recording |
+| Review the local repairs and changed companions | owner and independent reviewer | — | Both companion identities are intentionally stale; retain their core fallbacks until review and owner recording |
+| Choose a versioned, unambiguous Content-ID transition (LG-0052) | owner | — | Different trees can share the current framed digest; refreshing identities does not fix this |
 
 ## Blocked
 
-*No items.*
+0 BLOCKED ledger rows as of 2026-10-27 — `LEDGER.md`.
+
+| Item | Blocked by | Unblocks when |
+|---|---|---|
+| Use the changed companions | Independent reviewer gates and owner recording | Both gates pass and the owner records the reviewed identities |
 
 ## Deferred
 
@@ -30,10 +35,13 @@ The local review branch is in progress and remains unpushed. Doctor, migration a
 
 ## Next
 
-1. Close the acceptance-harness gaps (LG-0044) and give Doctor a pointer to the registry validator (LG-0048).
-2. Fix the re-review's deferred notes (LG-0049), with a re-review of any companion touched.
-3. GitHub Support confirms the purge, including the follow-up commit.
+1. Owner reviews the local, unpushed branch and arranges independent companion re-review.
+2. Plan the LG-0052 identity-format transition and independent verification.
+3. Repair and independently re-review LG-0044; neither candidate closes its gate unchanged.
+4. Add the registry-validator pointer (LG-0048) with compatibility checks, and settle LG-0049's supplied-passage record form.
 
 ## Open questions (owner)
 
 1. **A usage error exits 2, the FAIL code (LG-0050): move it to 3, a change to the exit-code contract?** — proposed: exit 3, with a DECISIONS entry extending D-0013 — since 2026-10-23 — postponed by owner 2026-10-23, revisit when a consumer needs usage errors told apart by exit code
+2. **Which versioned Content-ID encoding and legacy transition should replace ambiguous framing (LG-0052)?** — proposed: review an injective versioned format with explicit legacy handling before adoption — since 2026-10-27
+3. **Refresh the changed companion identities after review?** — proposed: independently re-review both companions before the owner records either identity — since 2026-10-27

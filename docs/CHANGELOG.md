@@ -1,3 +1,47 @@
+## 2026-10-27 — Close rounds one and two of the local independent review
+
+An independent review was filed outside the repository. Round one repaired
+registry filesystem fail-open paths (42eddc8), incomplete research test
+entry points and unsupported permission fixtures (7ee00ca), and research
+readers accepting invalid roots as optional absence (226b0f4). Round two
+repairs unusable Doctor inputs, incomplete migration reservation enumeration,
+Architect root and explicit-packet selection, checker documentation drift,
+and the five remaining research direct entry points. Regression-first controls
+reproduce the old failures; the exit-code contracts remain unchanged.
+
+Pull request #3 merged into main on 2026-10-25 as b9ac127 and 66c11c3; earlier
+draft descriptions below are historical. Round one's native Python 3.14.7
+control runs 31 current migration-semantics methods against the pre-fix
+89ed3aa script: 25 failures, zero errors; the repair passes all 31. Its source
+verification passes root 350, research 122 (three unavailable special-bit
+subtests skipped), and Architect 113; registry 17 is already included in root.
+The independent closing condition is met: LG-0051 becomes CLOSED and its
+exact terminal row moves to the archive. The owner confirms the completed
+GitHub purge of all 30 old commit IDs. These external states are owner-verified
+facts, not new remote queries by this review.
+
+The final suite inventory is 597 methods: root 356, research 123 and
+Architect 118. The 17 registry methods are a root subset, not an extra suite
+population. Final-commit execution evidence is retained in the external
+review. The read-only main-versus-new Doctor comparison covers all 5,789
+qualifying register roots under the checked projects with zero differing
+check lines; the filesystem inventory has no enumeration errors.
+
+LG-0044 remains OPEN and pull request #2 remains an open draft: neither
+read-only candidate closes the unreadable-normative-input gap. LG-0048 still
+needs a registry-validator pointer; the Doctor input repair does not supply
+it. LG-0049's excluded-link and nested .git gaps are fixed, but the supplied
+unfetched-passage record form remains open. LG-0050 retains its owner-postponed
+usage exit 2. New deferred LG-0052 records non-injective Content-ID framing
+and requires a reviewed, versioned encoding and explicit legacy transition.
+
+Both modified companions intentionally have stale registry identities under
+D-0021. Independent reviewer gates and owner recording remain outstanding;
+no companion identity is replaced. The clarified privacy gate checks added
+lines rather than unchanged baseline vocabulary. This Close and all repairs
+are local and unpushed on the review branch, awaiting the owner. No tag,
+remote write or release is authorized.
+
 ## 2026-10-27 — Complete the remaining research direct test entry points
 
 Confirmed that direct execution of five research test modules exited zero

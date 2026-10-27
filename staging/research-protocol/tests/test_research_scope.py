@@ -1,4 +1,5 @@
 """Which folder the companion owns: the writer's explicit root and Doctor's signature."""
+import ast
 import hashlib
 import os
 from pathlib import Path
@@ -162,10 +163,6 @@ class ResearchDoctorCompanionTests(unittest.TestCase):
         self.failed('FAIL symlinked research path: python')
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
 class ResearchIndexSignatureTests(unittest.TestCase):
     """The index reader shares Doctor's signature test, so it never reads an
     unrelated research/ folder as the companion's."""
@@ -218,7 +215,22 @@ class SignatureFailsClosedTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertNotIn('SKIP', result.stdout)
 
+
     def test_index_reader_rejects_an_unreadable_record_folder(self):
         result = run(fixtures.ROOT / 'scripts/research-index.py', self.root)
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertNotIn('SKIP', result.stdout)
+
+
+class DirectExecutionTests(unittest.TestCase):
+    def test_main_guard_follows_all_test_classes(self):
+        nodes=ast.parse(Path(__file__).read_text()).body
+        classes=[node.lineno for node in nodes if isinstance(node,ast.ClassDef)]
+        guards=[node.lineno for node in nodes if isinstance(node,ast.If)
+                and '__main__' in ast.dump(node.test)]
+        self.assertEqual(len(guards),1)
+        self.assertGreater(guards[0],max(classes))
+
+
+if __name__ == '__main__':
+    unittest.main()

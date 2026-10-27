@@ -23,6 +23,20 @@ class ResearchReviewRepairTests(unittest.TestCase):
     target=boundaries.ResearchBoundaryTests.target
     write=boundaries.ResearchBoundaryTests.write
 
+    def set_mode_or_skip(self,target,mode):
+        try: target.chmod(mode)
+        except (OSError,NotImplementedError):
+            self.skipTest('filesystem cannot establish requested mode '+oct(mode))
+        if stat.S_IMODE(target.stat().st_mode)!=mode:
+            self.skipTest('filesystem cannot establish requested mode '+oct(mode))
+
+    def test_unsupported_permission_fixture_skips(self):
+        target=self.target();target.chmod(0o640)
+        for behavior in ({'return_value':None},{'side_effect':PermissionError('unsupported mode')}):
+            with self.subTest(behavior=behavior),patch.object(Path,'chmod',**behavior):
+                with self.assertRaisesRegex(unittest.SkipTest,'cannot establish requested mode'):
+                    self.set_mode_or_skip(target,0o2640)
+
     def test_newline_target_generated_sidecars_are_reserved(self):
         ordinary=self.target().with_name('.ordinary.md');ordinary.write_text('original');self.accepted(self.write(ordinary))
         target=self.target().with_name('.ordinary\nrecord.md');target.write_text('original');self.accepted(self.write(target))
@@ -40,7 +54,7 @@ class ResearchReviewRepairTests(unittest.TestCase):
         target=self.target();target.chmod(0o640);self.accepted(self.write());self.assertEqual(stat.S_IMODE(target.stat().st_mode),0o640)
         for mode in (0o2640,0o4640,0o6640):
             with self.subTest(mode=oct(mode)):
-                target.chmod(mode);self.assertEqual(stat.S_IMODE(target.stat().st_mode),mode,'fixture cannot establish requested mode')
+                self.set_mode_or_skip(target,mode)
                 self.accepted(self.write());self.assertEqual(stat.S_IMODE(target.stat().st_mode),mode)
 
     def test_failed_mode_setting_or_verification_preserves_target(self):

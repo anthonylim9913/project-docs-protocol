@@ -14,4 +14,14 @@ checked independently from the project root with
 `python3 scripts/skill-registry.py .`. It is an inventory only; this file does
 not install or activate a skill.
 
+The validator now requires length-framed `sha256v2:` identities for active and
+staged rows. Legacy `sha256:` encoding was ambiguous; SHA-256 itself is not
+weakened. Retired IDs remain historical and are not compared. There is no
+WARN tier or automatic migration, and failures print no replacement digest.
+`--digest` produces unreviewed v2 values only. Regular-file paths and bytes are
+bound, not permissions or empty folders. The two unchanged reviewed companion
+trees await D-0028's independent actual-file comparison against v0.5.0 and
+independent v2 computation before owner recording; the current legacy rows
+therefore deliberately FAIL. Versions stay 0.2.2.
+
 Only the primary session writes this register. Parallel implementation lanes own disjoint source/test files and return findings to that writer; they do not allocate IDs or edit these registers. No other project register owns this repository work.

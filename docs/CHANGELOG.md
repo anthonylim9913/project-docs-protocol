@@ -1,3 +1,20 @@
+## 2026-10-28 — LG-0052: implement the breaking v2 registry encoding (D-0028)
+
+Implemented domain-separated, length-framed `sha256v2:` Content-IDs over regular
+files sorted by strict UTF-8 POSIX path bytes; the legacy `_tree_digest` stays
+unchanged. Active and staged legacy IDs now FAIL without a replacement digest;
+retired IDs are not compared. Digest mode remains explicitly unreviewed.
+Standalone `struct.pack('>Q', ...)` oracle tests cover the known-answer vector,
+legacy framing forgery, seeded 2,000-tree comparison, path order, invalid names,
+legacy lifecycle handling and the existing routing controls. Baseline tests
+failed at `a2cc31d` before implementation; the root suite runs 375 tests
+successfully with one filesystem-dependent filename skip, and Doctor exits 0. Updated the
+scoped documentation without recording identities or changing companion bytes.
+LG-0052 moves to VERIFYING: the two legacy registry rows intentionally FAIL
+pending independent actual-file comparison, independent identity computation
+and owner recording under D-0028. STATUS and README test counts await integration.
+Lane evidence is filed outside the checkout as `WAVE-A-lg0052-REPORT.md`.
+
 ## 2026-10-28 — brief: the owner answers the plan for the open ledger rows
 
 - The owner confirms v0.5.0 at `97db924` and approves recording the amended answers centrally before implementation; implementation lanes cite D-0028–D-0032 rather than allocating parallel decisions.

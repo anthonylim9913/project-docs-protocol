@@ -25,9 +25,13 @@ class ArchitectAbsenceTests(unittest.TestCase):
         self.assertIn("FAIL architect:", result.stdout)
         self.assertNotIn("SKIP", result.stdout)
         self.assertNotIn("Traceback", result.stderr)
+        return result
 
     def test_missing_project_root_fails(self):
-        self.assert_failure(self.root / "missing")
+        target = self.root / "missing/project"
+        result = self.assert_failure(target)
+        self.assertIn("project root must exist", result.stdout)
+        self.assertIn(str(target), result.stdout)
 
     def test_file_project_root_fails(self):
         target = self.root / "file"
@@ -42,7 +46,9 @@ class ArchitectAbsenceTests(unittest.TestCase):
     def test_explicit_missing_packet_fails_even_when_it_names_the_default(self):
         for packet in ("custom/packet", "docs/architect"):
             with self.subTest(packet=packet):
-                self.assert_failure(self.root, "--packet-dir", packet)
+                result = self.assert_failure(self.root, "--packet-dir", packet)
+                self.assertIn("explicit packet directory must exist", result.stdout)
+                self.assertIn(packet, result.stdout)
 
     def test_default_absence_skips_with_or_without_docs_directory(self):
         for docs_present in (False, True):

@@ -618,11 +618,14 @@ def validate(root,packet_dir=None,example=False):
     explicit=packet_dir is not None
     if packet_dir is None:packet_dir='docs/architect'
     project=Project(root);parts=path_parts(packet_dir)
-    with project.directory([]):pass
+    try:
+        with project.directory([]):pass
+    except FileNotFoundError:
+        raise Invalid('project root must exist: '+str(root)) from None
     try:
         with project.directory(parts):pass
     except FileNotFoundError:
-        if explicit:raise
+        if explicit:raise Invalid('explicit packet directory must exist: '+packet_dir) from None
         with project.directory([]):pass
         return 'SKIP architect: packet absent'
     return validate_project(project,packet_dir,example)

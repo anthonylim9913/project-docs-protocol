@@ -1,3 +1,13 @@
+## 2026-10-27 — Name missing Architect selections in failure messages
+
+Replaced raw missing-component errors with the requested project root or
+packet directory. Explicit packet selection now says that the directory must
+exist; omitted default absence remains SKIP. Strengthened the five-method
+absence suite to assert the actionable messages and full requested paths;
+the new assertions fail before the change and pass afterward. Exit codes
+and project-relative packet-path rules are unchanged. The companion digest
+is unreviewed and is not recorded in the registry.
+
 ## 2026-10-27 — Emit one Doctor failure for unreadable DECISIONS
 
 An unreadable regular DECISIONS file produced both its specific unusable-file

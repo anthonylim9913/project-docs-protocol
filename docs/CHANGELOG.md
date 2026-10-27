@@ -1,3 +1,13 @@
+## 2026-10-28 — v0.5.0: the independently reviewed fail-closed repairs, Doctor 1.7.0, and both companion identities recorded at 0.2.2
+
+The owner approved releasing the local review branch on 2026-10-28 and answered the open question on the changed companions: record both identities now that their changes have been independently reviewed. Since v0.4.1 this release carries Doctor 1.6.0's `--json` mode (D-0023, D-0024), the LG-0051 migration repair (D-0026), and the review's repairs: the registry validator, both research readers, Doctor, migration and the Architect checker now fail on present-but-unusable inputs and invalid roots instead of passing or skipping them, and every research test module runs from its direct entry point.
+
+**Doctor is 1.7.0.** D-0024 moves Doctor's version with every check change, and the FAIL conditions for an unusable `LEDGER.md`, `LEDGER-ARCHIVE.md`, `BRAND.md` or instructions file are one. A read-only comparison of the previous and the new Doctor over every qualifying register available to the reviewers found no differing check line; the version appears only in the report header and the JSON `version` field.
+
+**What D-0027 costs.** Migration refuses a directory link anywhere in the register's walk, build and test trees included. In the reviewers' read-only corpus that refused four roots the previous `main` previewed, each a build-output or pytest temporary-directory link; no executable file link and no dependency tree is refused.
+
+**Companion identities recorded.** Both companions changed in this release and both changes were independently reviewed (the review was filed outside the repository). The owner records the reviewed identities in `docs/SKILL-REGISTRY.md` at 0.2.2: `research-protocol` `sha256:35e2f0a8a153ed6e6480e909839dbb1db32af1202c94a86f6a18e6eeaa46a9dc` and `architect-protocol` `sha256:499ecdcb3e5a87637b87b60336522faecaf65ad21ca733d4aa29f5614b425889`. The registry validates again. Tagged `v0.5.0`.
+
 ## 2026-10-27 — Close round three of the local independent review
 
 An independent review was filed outside the repository. Its follow-up found

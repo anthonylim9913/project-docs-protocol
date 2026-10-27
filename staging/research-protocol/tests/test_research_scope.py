@@ -222,6 +222,33 @@ class SignatureFailsClosedTests(unittest.TestCase):
         self.assertNotIn('SKIP', result.stdout)
 
 
+class ResearchRootPresenceTests(unittest.TestCase):
+    def test_invalid_project_roots_are_not_optional_absence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base=Path(directory); regular=base/'file'; regular.write_text('not a project')
+            for root in (base/'missing',regular):
+                for script in (DOCTOR,fixtures.ROOT/'scripts/research-index.py'):
+                    with self.subTest(root=root.name,script=script.name):
+                        result=run(script,root)
+                        self.assertEqual(result.returncode,1,result.stdout+result.stderr)
+                        self.assertNotIn('SKIP',result.stdout)
+                        self.assertNotIn('Traceback',result.stderr)
+
+    def test_unreadable_project_is_not_optional_absence(self):
+        if hasattr(os,'geteuid') and os.geteuid()==0:
+            self.skipTest('permission bits do not bind the superuser')
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)/'project'; root.mkdir(); root.chmod(0)
+            try:
+                for script in (DOCTOR,fixtures.ROOT/'scripts/research-index.py'):
+                    with self.subTest(script=script.name):
+                        result=run(script,root)
+                        self.assertEqual(result.returncode,1,result.stdout+result.stderr)
+                        self.assertNotIn('SKIP',result.stdout)
+                        self.assertNotIn('Traceback',result.stderr)
+            finally: root.chmod(0o755)
+
+
 class DirectExecutionTests(unittest.TestCase):
     def test_main_guard_follows_all_test_classes(self):
         nodes=ast.parse(Path(__file__).read_text()).body

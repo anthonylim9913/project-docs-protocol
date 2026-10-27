@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-from research_paths import SafeTree, not_companion
+from research_paths import SafeTree, not_companion, research_root
 from research_records import ID_RE, record_id
 
 
@@ -19,11 +19,11 @@ def main(argv=None):
     if a.id is not None and not ID_RE.fullmatch(a.id):
         print('REJECT: requested id must be a supported four-digit stable ID', file=sys.stderr)
         return 1
-    base = a.root / 'research'
-    if not base.exists() and not base.is_symlink():
-        print('SKIP research: directory absent')
-        return 0
     try:
+        base = research_root(a.root)
+        if base is None:
+            print('SKIP research: directory absent')
+            return 0
         # Same signature test as Doctor: an ordinary research/ folder is not ours.
         if base.is_dir() and not base.is_symlink():
             reason = not_companion(base)

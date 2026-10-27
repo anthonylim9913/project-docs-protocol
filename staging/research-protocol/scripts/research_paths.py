@@ -15,6 +15,18 @@ class UnsafePath(ValueError):
     pass
 
 
+def research_root(root):
+    root=Path(root)
+    if not root.is_dir():
+        raise UnsafePath('project root is not a directory')
+    base=root/'research'
+    try:
+        base.lstat()
+    except FileNotFoundError:
+        return None
+    return base
+
+
 def reserved_sidecar(name):
     """Helper metadata is reserved over the entire accepted filename."""
     return re.fullmatch(r'\..+\.(?:lock|tmp(?:\..+)?)', name, re.DOTALL) is not None

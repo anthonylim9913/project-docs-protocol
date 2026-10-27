@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import re
 import stat
-from research_paths import INDEX_ID_RE, RECORD_FOLDERS, SafeTree, not_companion, open_checked, parts
+from research_paths import INDEX_ID_RE, RECORD_FOLDERS, SafeTree, not_companion, open_checked, parts, research_root
 from research_records import ID_RE, heading_tokens, record_id
 
 TOKEN_RE = re.compile(r'\b(?:SRC|NOTE|RQ|SYN)-[A-Za-z0-9_-]+\b')
@@ -143,11 +143,11 @@ def main(argv=None):
         'sources/SRC-0001.md). Exit 1 on any FAIL.'))
     p.add_argument('root', type=Path, help='project root to judge; only its research/ folder is inspected')
     args = p.parse_args(argv)
-    base = args.root / 'research'
-    if not base.exists() and not base.is_symlink():
-        print('SKIP research: directory absent')
-        return 0
     try:
+        base = research_root(args.root)
+        if base is None:
+            print('SKIP research: directory absent')
+            return 0
         # A linked research/ is refused below without being followed.
         if base.is_dir() and not base.is_symlink():
             reason = not_companion(base)

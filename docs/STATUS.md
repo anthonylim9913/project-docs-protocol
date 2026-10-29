@@ -1,12 +1,14 @@
 # STATUS
 
-*Last updated: 2026-10-28*
+*Last updated: 2026-10-29*
 
 ## Current phase
 
 **v0.5.0 is the latest public tag: the independently reviewed fail-closed repairs, Doctor 1.7.0, and both companion identities recorded at 0.2.2.**
 
 Pull request #2 (LG-0044) is still an open draft; neither candidate branch closes its gate unchanged. The owner has a plan for the five open ledger rows.
+
+`.github/workflows/tests.yml` runs the suites, Doctor and the registry validator on pushes to `main` and on pull requests.
 
 ## In flight
 

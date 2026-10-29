@@ -1,6 +1,6 @@
 # STATUS
 
-*Last updated: 2026-10-28*
+*Last updated: 2026-10-29*
 
 ## Current phase
 
@@ -8,9 +8,11 @@
 
 Pull request #2 (LG-0044) is still an open draft; neither candidate branch closes its gate unchanged. The owner has a plan for the five open ledger rows.
 
+A draft branch, `fix/doctor-symlink-and-residue`, moves Doctor to 1.8.0 (D-0036): `wiring-path` compares a symlinked `docs/` by its selected label (LG-0056), and template residue is caught in STATUS and the docs README title (LG-0057, D-0037). Both rows are VERIFYING and await an independent review.
+
 ## In flight
 
-`LEDGER.md` is authoritative: 5 OPEN live rows as of 2026-10-28, no P0/P1. LG-0044 and LG-0052 are P2; LG-0048, LG-0049 and LG-0050 are P3.
+`LEDGER.md` is authoritative: 5 OPEN and 2 VERIFYING live rows as of 2026-10-29, no P0/P1. LG-0044 and LG-0052 are P2; LG-0048, LG-0049, LG-0050, LG-0056 and LG-0057 are P3.
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|

@@ -1,5 +1,7 @@
 # project-docs-protocol
 
+[![tests](https://github.com/anthonylim9913/project-docs-protocol/actions/workflows/tests.yml/badge.svg)](https://github.com/anthonylim9913/project-docs-protocol/actions/workflows/tests.yml)
+
 **A continuity system for AI-assisted projects.** Any AI model, in any app, on any machine, picks up a project exactly where the last session left off — what is in progress, what was decided and why, what is blocked, what comes next.
 
 Every AI session starts cold. Built-in memory belongs to one tool and one account, so it doesn't follow the project to another model, another app, another machine or another person. The result is a project re-explained at the start of every session, or worse, guessed. This system keeps the project's state inside the project, and is built to keep it accurate through long-running work: model switches, interrupted runs and handoffs.
@@ -45,7 +47,7 @@ Four mechanisms work together.
 
 **Integrity by design.** The write order is the safety mechanism: the history is written before the dashboard, so an interrupted session can lose a STATUS update but never the record of what happened. History registers only grow, so they can't be silently rewritten. STATUS has a size ceiling, because a growing dashboard is history leaking into it. Decisions name the alternatives they rejected, so a later session builds on them instead of re-arguing them.
 
-**Automated checks.** Doctor is a read-only health check with up to 39 checks, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
+**Automated checks.** Doctor is a read-only health check with up to 43 checks, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
 
 ## Extensions, adopted when a project needs them
 
@@ -73,7 +75,7 @@ Everything measured so far was run in Claude Code and Codex. Nothing in the syst
 
 ## Install
 
-**With nothing installed.** Copy `README.md`, `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` from `templates/` into your project's `docs/` folder, fill in STATUS, and add the instruction block from *Step 2* of `SKILL.md` to `AGENTS.md` (and `CLAUDE.md` if you use Claude Code). That is a complete installation.
+**With nothing installed.** Copy `README.md`, `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` from `templates/` into your project's `docs/` folder, fill in STATUS, replace the template's placeholder CHANGELOG entry with the first dated entry (*Step 4* of `SKILL.md`), and add the instruction block from *Step 2* of `SKILL.md` to `AGENTS.md` (and `CLAUDE.md` if you use Claude Code). That is a complete installation; if Python is available, run `python3 scripts/docs-doctor.py "<project-root>"` to confirm it.
 
 **As a skill**, for Claude Code and Codex, which then run Install, Close, Doctor and Brief for you:
 
@@ -111,7 +113,7 @@ The JSON says no more than the text report does: a structural PASS is still not 
 - **`templates/`** — starter files for every register and extension.
 - **`scripts/`** — Doctor, the reviewed ledger migration, and the skill-registry validator.
 - **`staging/`** — the research and Architect companions.
-- **`tests/`** — the test suites: `python3 -B -m unittest discover -v`.
+- **`tests/`** — the test suites. From the repository root, the core suite is `python3 -B -m unittest discover -v`; each companion has its own: `cd staging/research-protocol && python3 -B -m unittest discover -s tests -v`, and the same in `staging/architect-protocol`.
 - **`docs/`** — this project's own registers. It runs the system it ships, so its STATUS, CHANGELOG, DECISIONS and LEDGER are a working example.
 
 ## Status

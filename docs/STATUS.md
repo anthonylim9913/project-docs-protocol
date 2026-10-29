@@ -8,7 +8,7 @@
 
 Pull request #2 (LG-0044) is still an open draft; neither candidate branch closes its gate unchanged. The owner has a plan for the five open ledger rows.
 
-A draft branch `chore/ci-and-readme-accuracy` adds a tests workflow and README corrections; it awaits independent review and is not merged.
+`.github/workflows/tests.yml` runs the suites, Doctor and the registry validator on pushes to `main` and on pull requests.
 
 ## In flight
 

@@ -47,7 +47,7 @@ Four mechanisms work together.
 
 **Integrity by design.** The write order is the safety mechanism: the history is written before the dashboard, so an interrupted session can lose a STATUS update but never the record of what happened. History registers are append-only by rule; Doctor does not verify byte history, so a committed rewrite of a past entry is not caught by it. STATUS has a size ceiling, because a growing dashboard is history leaking into it. Decisions name the alternatives they rejected, so a later session builds on them instead of re-arguing them.
 
-**Automated checks.** Doctor is a read-only health check with up to 43 checks, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
+**Automated checks.** Doctor is a read-only health check with up to 43 named check types in a full register report, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. An absent or unusable ledger substitutes a single aggregate `ledger` result for its detailed checks. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
 
 ## Extensions, adopted when a project needs them
 
@@ -67,7 +67,7 @@ Plain text was a deliberate choice: it is the one format every model can read an
 ## Verified, not asserted
 
 - **Audited across 25 projects** before going public. In the 7-row churn table, the three roots with close instructions (one carrying the block verbatim, two hand-written) rewrote STATUS (churn 0.67–0.83); the four others, two without instructions and two with project-authored "top line" instructions, accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
-- **603 automated test methods**: 362 core, 123 research and 118 Architect; the 17 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Permission-specific cases skip when the filesystem cannot establish their fixtures.
+- **640 automated test methods**: 399 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
 - **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
 - **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
 
@@ -75,7 +75,7 @@ Everything measured so far was run in Claude Code and Codex. Nothing in the syst
 
 ## Install
 
-**With nothing installed.** Copy `README.md`, `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` from `templates/` into your project's `docs/` folder, fill in STATUS, replace the template's placeholder CHANGELOG entry with the first dated entry (*Step 4* of `SKILL.md`), and add the instruction block from *Step 2* of `SKILL.md` to `AGENTS.md` (and `CLAUDE.md` if you use Claude Code). That is a complete installation; if Python is available, run `python3 scripts/docs-doctor.py "<project-root>"` from a checkout of this repository to confirm it.
+**With nothing installed.** Copy `README.md`, `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` from `templates/` into your project's `docs/` folder, fill in STATUS, replace the template's placeholder CHANGELOG entry with the first dated entry (*Step 4* of `SKILL.md`), and add the instruction block from *Step 2* of `SKILL.md` to `AGENTS.md`, the default for every app. If an app loads a different instructions file (such as `CLAUDE.md` or `GEMINI.md`), point it at `AGENTS.md` or copy the block into that file as well; keep the block in `AGENTS.md` so Doctor can check it. Doctor counts only `CLAUDE.md` and `AGENTS.md` as wiring. That is a complete installation; if Python is available, run `python3 scripts/docs-doctor.py "<project-root>"` from a checkout of this repository to confirm it.
 
 **As a skill**, for Claude Code and Codex, which then run Install, Close, Doctor and Brief for you:
 

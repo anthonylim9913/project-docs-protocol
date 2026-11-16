@@ -1,3 +1,46 @@
+## 2026-11-16 — assemble the unreleased v0.6.0 candidate and repair Doctor review findings
+
+Merged the five requested local refs in order with no fast-forwards: reviewed
+CI/README accuracy, Doctor symlink/residue repairs, owner decisions
+D-0028–D-0032, LG-0050 documentation, and LG-0052's sha256v2 transition. Core
+passed after each merge: 362, 374, 374, 374 and 387 methods respectively (the
+last run skipped one filesystem-dependent filename case). Register conflicts
+retain both histories, ascending decision/ledger IDs and newest-first dates;
+LG-0050 stays closed in the archive rather than resurrecting its obsolete row.
+The workflow already falls under the manifest's `.github/` scope: no acceptance
+test, manifest policy, or gate was weakened or changed.
+
+Failing-first Doctor regressions reproduce an external `docs/` symlink silently
+passing and explicit external selection failing instead of warning. Resolved
+external registers now WARN that the repository will not carry them, while
+internal selected-label PASS and wrong-path FAIL controls remain (D-0040,
+correction to D-0037). Four failing-first alternate-instructions cases now name
+the root Markdown file carrying the heading and say to add the block to
+`AGENTS.md`; only `CLAUDE.md` and `AGENTS.md` count as wiring. Invisible headings,
+nested files and sentence-only alternate files do not gain authority. README
+and Install Step 2 make `AGENTS.md` the default for every app (D-0041). The 126
+focused Doctor/selection methods pass. This completes the unreleased Doctor
+1.8.0 change; no further version, schema or exit-code change is made.
+
+The owner authorizes recording both unchanged, reviewed 0.2.2 companion trees'
+sha256v2 identities after LG-0052 verification. Compared their Git bytes to
+v0.5.0 and computed the final-tree identities with `skill-registry.py --digest`:
+research `sha256v2:6f92603a518f98d3c03839d422185db3427d21ea44e7ac6f0e3300c7b0dd6b9d`,
+Architect `sha256v2:9231d4e62ef7240385b292865d87c2b514ad8f2c239e917956ce213372c8e09b`.
+Both registry documents now distinguish excluded `__pycache__` components from
+stray `.pyc` files, which are hashed. README records 640 discovered methods:
+399 core (including 30 registry), 123 research and 118 Architect. Its maximum
+is 43 full-report check types: count distinct literal `Report.add` check IDs
+in Doctor's AST, excluding the alternative aggregate `ledger` result. The
+JSON example matches Doctor 1.8.0.
+
+Opened P2 LG-0058 and LG-0059 from the owner's measured delegation review and
+git-coverage follow-up, without implementing either. LG-0056 and LG-0057 remain
+VERIFYING for an independent reviewer; LG-0052 also retains its review gate.
+LG-0044 stage 1, LG-0058 and LG-0059 are on separate local branches. v0.5.0
+remains the latest public tag; this candidate awaits independent review and
+the owner's release gate. No push, tag or publication is authorized here.
+
 ## 2026-10-29 — correct four more README statements and make STATUS true after the tests workflow merges
 
 On `chore/ci-and-readme-accuracy` after an independent reproduction against v0.5.0. README "Verified, not asserted" now states `docs/EVIDENCE.md` section 4 as written: its table has 7 rows; one high-churn root carried the block verbatim and two used hand-written instructions; the low-churn group is two roots without instructions and two with project-authored "top line" instructions. "Integrity by design" no longer says history registers cannot be silently rewritten: append-only is a rule, and Doctor does not verify byte history (SKILL.md "What Doctor does not check"). The Codex install line creates `~/.codex/skills` first, and the manual-install Doctor command says it runs from a checkout of this repository. STATUS no longer says the branch awaits review and is not merged; it names the tests workflow as present on `main`. No version bump, no new ledger row or decision.

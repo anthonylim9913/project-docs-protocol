@@ -542,8 +542,12 @@ def selected_label(root, register_dir, explicit=None):
 
     Selection resolves symlinks, so a `docs/` symlinked to `realdocs/` is
     found at `realdocs/`; the wiring block says `docs/`, which is where a
-    session looks. Falls back to the resolved label when no candidate maps.
+    session looks. Falls back to the resolved label when no candidate maps
+    or the resolved register leaves the project.
     """
+    resolved = os.path.realpath(register_dir)
+    if os.path.commonpath([root, resolved]) != root:
+        return rel_label(resolved, root)
     if explicit is not None:
         candidates = [explicit if os.path.isabs(explicit) else os.path.join(root, explicit)]
     else:
@@ -685,20 +689,44 @@ def run_git(root, args, timeout=30):
 
 # --- checks -------------------------------------------------------------
 
+def misplaced_wiring_hint(root):
+    try:
+        names = sorted(os.listdir(root))
+    except OSError:
+        return ""
+    misplaced = []
+    for name in names:
+        if name in INSTRUCTION_FILES or not name.endswith(".md"):
+            continue
+        try:
+            text, _ = read_text(os.path.join(root, name))
+        except OSError:
+            continue
+        if text is not None and any(WIRING_HEADING_RE.match(line)
+                                    for line in unfenced_lines(split_lines(text))
+                                    if not BLOCKQUOTE_RE.match(line)):
+            misplaced.append(name)
+    if not misplaced:
+        return ""
+    return ("; 'Project docs protocol' heading found in %s — add the block to AGENTS.md; "
+            "only CLAUDE.md and AGENTS.md count as wiring" % ", ".join(misplaced))
+
+
 def check_wiring(rep, root, register_label):
     present = {}
     for name in INSTRUCTION_FILES:
         try:
             text, _ = read_text(os.path.join(root, name))
         except OSError as exc:
-            rep.add("FAIL", "wiring-block", "%s unusable: %s" % (name, exc))
+            rep.add("FAIL", "wiring-block", "%s unusable: %s%s" % (name, exc, misplaced_wiring_hint(root)))
             continue
         if text is None:
             continue
         present[name] = text
     if not present:
         rep.add("FAIL", "wiring-block",
-                "no CLAUDE.md or AGENTS.md at the project root — nothing loads the protocol each session (Install step 2)")
+                "no CLAUDE.md or AGENTS.md at the project root — nothing loads the protocol each session (Install step 2)"
+                + misplaced_wiring_hint(root))
         rep.add("SKIP", "wiring-clauses", "no wiring block to compare")
         rep.add("SKIP", "wiring-path", "no wiring block to compare")
         return
@@ -735,7 +763,7 @@ def check_wiring(rep, root, register_label):
             rep.add("FAIL", "wiring-block",
                     "0 of %d instructions files (%s) carry the 'Project docs protocol' block or any close-order instruction "
                     "naming CHANGELOG then STATUS on a visible, unquoted line — the register is not wired"
-                    % (len(present), files))
+                    % (len(present), files) + misplaced_wiring_hint(root))
             rep.add("SKIP", "wiring-clauses", "no wiring block to compare")
         rep.add("SKIP", "wiring-path", "no wiring block to compare")
         return
@@ -774,7 +802,12 @@ def check_wiring(rep, root, register_label):
         declared = normalise_docs_path(m.group(1))
         if declared != actual:
             mismatched.append((name, declared))
-    if mismatched:
+    if actual == ".." or actual.startswith("../"):
+        rep.add("WARN", "wiring-path",
+                "register lives outside the project at %s — the repository will not carry it; "
+                "keep the register inside the project if it should travel with the repository"
+                % docs_path_label(actual))
+    elif mismatched:
         parts = ["%s says docs in %s" % (n, docs_path_label(d)) for n, d in mismatched]
         rep.add("FAIL", "wiring-path",
                 "block says docs in %s, register found at %s — %s; a session following the block reads or writes a register "

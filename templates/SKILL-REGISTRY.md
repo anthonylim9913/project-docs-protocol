@@ -24,8 +24,9 @@ SHA-256 hashes the domain tag `b"project-docs-protocol skill-tree v2\n"`, then
 each regular file sorted by its strict UTF-8 POSIX relative path bytes: an
 8-byte big-endian path length, the path bytes, an 8-byte big-endian content
 length and the content bytes. Permissions and empty folders are not covered;
-NFC and NFD names remain distinct paths. Exclude Python
-caches, the target root's `.git` and desktop metadata (`.DS_Store`, `Thumbs.db`).
+NFC and NFD names remain distinct paths. Any path with a `__pycache__`
+component is excluded; stray `.pyc` files elsewhere are hashed. Also exclude
+the target root's `.git` and desktop metadata (`.DS_Store`, `Thumbs.db`).
 Nested `.git` contents are bound. Refuse links even when their names are excluded,
 and fail if an included directory cannot be read rather than hashing a partial tree.
 Compute it on the files exactly as committed: a checkout that converts line

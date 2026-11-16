@@ -1,0 +1,43 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Core suite
+        run: python3 -B -m unittest discover -v
+      - name: Regression runner
+        run: |
+          if [ -f tests/run_regression.py ]; then python3 -B tests/run_regression.py; fi
+      - name: Research companion suite
+        working-directory: staging/research-protocol
+        run: python3 -B -m unittest discover -s tests -v
+      - name: Architect companion suite
+        working-directory: staging/architect-protocol
+        run: python3 -B -m unittest discover -s tests -v
+      - name: Docs Doctor
+        # Exit 0 passes and 1 (WARN only, advisory under D-0013) is accepted;
+        # 2 (FAIL) and 3 (could not run) fail the job.
+        run: python3 -B scripts/docs-doctor.py . || [ $? -eq 1 ]
+      - name: Skill registry
+        run: python3 -B scripts/skill-registry.py .
+      - name: Whitespace
+        run: git diff --check

@@ -35,3 +35,30 @@ Doctor checks CLOSED evidence structure, not truth or the semantic identity of a
 The [observed installation and next session](fixtures/install-observation/README.md) use two fresh contexts, retained prompts and snapshots. This is one bounded exercise; ordering is agent-reported and final bytes are independently checked. The [Markdown oracle](fixtures/markdown-oracle/README.md) and [hardening evidence](fixtures/hardening-2026-09-11/README.md) retain targeted red/green checks and independent probes, separate from the standard-library suite.
 
 The frozen hardening inventory lives in `fixtures/hardening-2026-09-12/acceptance-cases.json`; `run_acceptance.py` executes its four real CLI cases, while `validate_acceptance.py` and `test_acceptance_gates.py` enforce declared case identities, behavioral assertions, child exits, and runtime hashes. The baseline comparator uses the corrected `edccbc2` source and includes `test_migrate_opaque.py`; its promoted baseline failures/errors are matched by identity rather than by a nonzero exit alone. Retained canonical control and mutant packets live under `fixtures/hardening-2026-09-12/final/acceptance-*.json`.
+
+## Default-bound input census (D-0029, stage 1)
+
+`input_manifest.py` binds every tracked or present file by default, including new
+root files, new directories and `.github/workflows/tests.yml`. Its only exclusions
+are the live registers `docs/STATUS.md`, `docs/CHANGELOG.md`, `docs/DECISIONS.md`,
+`docs/LEDGER.md` and `docs/LEDGER-ARCHIVE.md`, the review documents
+`docs/HARDENING-REVIEW.md` and `docs/LESSONS-REVIEW.md`, `.git/` directories,
+`tests/.tmp/` and files named `.DS_Store`. CHANGELOG and DECISIONS retain their
+history-preservation checks; exclusion from the frozen manifest is not permission
+to rewrite their history. Bytecode and import hooks are refused, not skipped.
+
+The census walks with a raising error handler, pruning only `.git` and
+`tests/.tmp`. Untracked inputs are the in-scope walk minus `git ls-tree -r HEAD`,
+not Git's potentially incomplete untracked walk. Any Git failure or stderr output
+refuses generation, including an exit-zero warning. Stray inputs are named in
+the refusal; unreadable directories report `cannot enumerate: <path>` and the CLI
+retains exit 2. `test_input_census.py` covers real permission denial (skipped only
+when the executing user can still read mode-zero paths), excluded scratch
+directories and injected Git failures/warnings. `test_input_manifest_cli.py`
+covers default binding, deletions, omissions, edits and the exact exclusion list.
+`acceptance_support.py` computes expected scope independently from committed paths
+and a literal restatement of these exclusions, never the generator's scope code.
+
+This is a scope repair pending independent review, not closure of LG-0044.
+In-tree validation still cannot establish independent approval of its own run;
+the trusted external judge, harness record and pin are stage-2 work under D-0029.

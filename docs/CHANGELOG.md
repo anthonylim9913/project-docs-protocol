@@ -1,3 +1,38 @@
+## 2026-11-16 — LG-0044 stage 1: default binding and a fail-closed input census (D-0029)
+
+Merged the local `release/v0.6.0` candidate at `078684d`, whose subject starts
+`v0.6.0-candidate:`, before porting the alternate design's scope code and
+default-binding tests only. Every file is now bound unless D-0029 explicitly
+excludes it; new normative documents, root files, directories and the tests
+workflow are covered without extending an allowlist. The exact exclusions are
+the five live registers, the two named review documents, `.git/`, `tests/.tmp/`
+and `.DS_Store` by name. Bytecode and import hooks are refused rather than omitted.
+CHANGELOG and DECISIONS history-preservation checks are unchanged.
+
+The census uses `os.walk` with an error handler that raises `cannot enumerate:
+<path>`, prunes only the excluded directories, and computes untracked inputs as
+the in-scope walk minus `git ls-tree -r HEAD`. Every manifest Git operation
+captures both streams and refuses any nonzero exit or stderr output. Stray
+inputs are named, and the CLI's existing refusal exit remains 2. The independent
+expected manifest in `tests/acceptance_support.py` now uses committed paths and
+literal exclusions rather than the old allowlist; it does not import scope code.
+
+Tests ran red before the implementation: 46 focused tests produced 32 failures
+and 3 errors, including the previously omitted unreadable untracked
+`normative/RULES.md` and unchecked Git warnings. The final root proof ran 417
+tests, OK (1 skip); research ran 123, OK (3 skips); Architect ran 118, OK.
+The focused census rerun passed all 5 tests without skips. The existing
+committed-blob mutation control required its guard's exact source text, which
+was preserved rather than changing or weakening that test. The new census
+fixtures disable automatic Git housekeeping during initial commits to avoid
+detached cleanup races; the real CLI permission-denial checks remain intact.
+
+LG-0044 stays OPEN: the scope gap and unreadable-file case are fixed pending
+independent review. The self-approval gap waits for stage 2; no external judge,
+harness record, pin or digest code was ported. No new IDs or owner decisions.
+Only LG-0044's live row is updated after this entry; STATUS and README counts
+are left for the integrator, as directed by the lane brief.
+
 ## 2026-11-16 — assemble the unreleased v0.6.0 candidate and repair Doctor review findings
 
 Merged the five requested local refs in order with no fast-forwards: reviewed

@@ -219,6 +219,144 @@ class InputManifestCliTests(unittest.TestCase):
         self.assertIn('output must be a regular unlinked file',p.stderr)
 
 
+    def add_document(self, name='docs/NEW-RULES.md'):
+        (self.root/name).write_text('# New normative rule\n')
+        commit(self.root)
+        return name
+
+    def test_new_normative_document_is_bound_by_default(self):
+        name = self.add_document()
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn(name, json.loads(out.read_text())['files'])
+
+    def test_new_normative_document_missing_from_old_hashes_is_rejected(self):
+        self.add_document()
+        self.reject('runtime hash manifest scope')
+
+    def test_new_normative_document_one_byte_change(self):
+        name = self.add_document()
+        self.packet, self.hashes = generate(self.root, self.directory)
+        self.assertIn(name, json.loads(self.hashes.read_text()))
+        self.assertEqual(validate(self.root, self.directory, self.packet, self.hashes).returncode, 0)
+        target = self.root/name
+        target.write_bytes(target.read_bytes() + b'x')
+        self.reject('runtime input hash mismatch')
+
+    def test_new_normative_document_omitted_from_both_hash_sets(self):
+        name = self.add_document()
+        self.packet, self.hashes = generate(self.root, self.directory)
+        self.packet['runtime_hashes'].pop(name)
+        self.hashes.write_text(json.dumps(self.packet['runtime_hashes']))
+        self.reject('runtime hash manifest scope')
+
+    def test_new_normative_document_deletion(self):
+        name = self.add_document()
+        (self.root/name).unlink()
+        self.reject('required input missing')
+
+    def test_new_untracked_document_is_not_ignored(self):
+        (self.root/'docs/UNTRACKED-RULES.md').write_text('# rule\n')
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 2)
+        self.assertIn('behavior inputs must be clean', p.stderr)
+
+    def test_new_root_file_and_new_directory_are_bound(self):
+        (self.root/'extras').mkdir()
+        (self.root/'extras/RULES.md').write_text('# rule\n')
+        (self.root/'CONTRIBUTING.md').write_text('# rule\n')
+        commit(self.root)
+        out = self.directory/'input.json'
+        self.assertEqual(invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out).returncode, 0)
+        files = json.loads(out.read_text())['files']
+        self.assertLessEqual({'extras/RULES.md', 'CONTRIBUTING.md'}, set(files))
+
+    def test_exclusions_are_exactly_the_reviewed_list(self):
+        from tests import input_manifest
+        self.assertEqual(set(input_manifest.EXCLUDED), {
+            'docs/STATUS.md', 'docs/CHANGELOG.md', 'docs/DECISIONS.md', 'docs/LEDGER.md',
+            'docs/LEDGER-ARCHIVE.md', 'docs/HARDENING-REVIEW.md', 'docs/LESSONS-REVIEW.md'})
+        self.assertEqual(input_manifest.EXCLUDED_DIRECTORIES, ('.git/', 'tests/.tmp/'))
+        self.assertEqual(input_manifest.SKIPPED_BASENAMES, frozenset({'.DS_Store'}))
+        for name in input_manifest.EXCLUDED:
+            self.assertTrue((self.root/name).is_file(), 'stale exclusion: ' + name)
+
+    def test_every_tracked_file_is_bound_or_explicitly_excluded(self):
+        from tests import input_manifest
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=self.root, text=True).split('\0')) - {''}
+        bound = set(json.loads(out.read_text())['files'])
+        self.assertEqual(bound, tracked - set(input_manifest.EXCLUDED))
+
+
+    def test_ignored_ds_store_is_skipped_by_name(self):
+        self.assertIn('.DS_Store', (self.root/'.gitignore').read_text().split())
+        for name in ('.DS_Store', 'docs/.DS_Store', 'tests/.DS_Store'):
+            (self.root/name).write_bytes(b'\0\0\0\1Bud1')
+        out = self.directory/'input.json'
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', out)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertFalse([n for n in json.loads(out.read_text())['files'] if n.endswith('.DS_Store')])
+        self.packet, self.hashes = generate(self.root, self.directory)
+        result = validate(self.root, self.directory, self.packet, self.hashes)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_ds_store_rule_does_not_skip_other_ignored_files(self):
+        (self.root/'.DS_Store').write_bytes(b'\0')
+        (self.root/'scripts/.DS_Store.py').write_text('# importable\n')
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', self.directory/'input.json')
+        self.assertEqual(p.returncode, 2)
+        self.assertIn('must be clean before manifest generation: scripts/.DS_Store.py', p.stderr)
+        self.assertNotIn(': .DS_Store', p.stderr)
+
+
+    def test_bytecode_and_import_hooks_are_refused_committed_or_not(self):
+        import py_compile, sys
+        names = ['scripts/__pycache__/register_paths.%s.pyc' % sys.implementation.cache_tag,
+                 'scripts/helper.pyc', 'scripts/helper.pyo', 'scripts/_speedups.so', 'scripts/_speedups.pyd',
+                 'scripts/hook.pth']
+        for name in names:
+            for committed in (False, True):
+                with self.subTest(name=name, committed=committed):
+                    path = self.root/name
+                    path.parent.mkdir(exist_ok=True)
+                    if name.endswith('.pyc'):
+                        py_compile.compile(str(self.root/'scripts/register_paths.py'), cfile=str(path))
+                    else:
+                        path.write_text('import os\n')
+                    if committed:
+                        subprocess.run(['git', 'add', '-f', name], cwd=self.root, check=True)
+                        commit(self.root)
+                    p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', self.directory/'input.json')
+                    self.assertEqual(p.returncode, 2, p.stdout)
+                    self.assertIn('bytecode or import hook in the reviewed tree (remove it): ' + name, p.stderr)
+                    self.reject('bytecode or import hook in the reviewed tree (remove it): ' + name)
+                    path.unlink()
+                    if committed:
+                        subprocess.run(['git', 'rm', '-q', '--cached', '--ignore-unmatch', name], cwd=self.root, check=True)
+                        commit(self.root)
+
+    def test_committed_bytecode_changes_behavior_the_manifest_would_not_see(self):
+        import py_compile, sys
+        evil = self.directory/'register_paths.py'
+        evil.write_text((self.root/'scripts/register_paths.py').read_text() + '\nraise SystemExit("replaced by bytecode")\n')
+        name = 'scripts/__pycache__/register_paths.%s.pyc' % sys.implementation.cache_tag
+        (self.root/name).parent.mkdir()
+        py_compile.compile(str(evil), cfile=str(self.root/name), invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH)
+        subprocess.run(['git', 'add', '-f', name], cwd=self.root, check=True)
+        commit(self.root)
+        doctor = invoke(self.root, 'scripts/docs-doctor.py', '.', '--no-git')
+        self.assertIn('replaced by bytecode', doctor.stderr)
+        p = invoke(self.root, 'tests/input_manifest.py', self.root, '--out', self.directory/'input.json')
+        self.assertEqual(p.returncode, 2)
+        self.assertIn(name, p.stderr)
+
+
+
 if __name__ == '__main__':
     unittest.main()
 

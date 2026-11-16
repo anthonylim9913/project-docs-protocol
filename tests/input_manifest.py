@@ -157,6 +157,8 @@ def main():
             p.error('behavior inputs must be clean before manifest generation: ' + ', '.join(dirty))
         values = hashes(root)
         subject_commit = git(root, 'rev-parse', 'HEAD', text=True).strip()
+        if not re.fullmatch(r'(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})', subject_commit):
+            raise ValueError('git rev-parse HEAD returned invalid commit identity')
     except (ValueError, OSError, subprocess.CalledProcessError) as error:
         p.error(str(error))
     result = {'schema': 1, 'kind': 'behavior-inputs', 'subject_commit': subject_commit,

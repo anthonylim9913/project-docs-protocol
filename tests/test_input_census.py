@@ -89,6 +89,56 @@ class InputCensusTests(unittest.TestCase):
                     self.assertIn('git', errors.getvalue())
                     self.assertFalse(self.out.exists())
 
+    def test_invalid_successful_head_output_is_refused_before_any_write(self):
+        real_run = subprocess.run
+        invalid_outputs = ('', '\n', ' \t\n', 'a' * 39, 'a' * 41,
+                           'a' * 63, 'a' * 65, 'g' * 40, 'HEAD\n',
+                           'a' * 40 + '\n' + 'b' * 40)
+        for index, output in enumerate(invalid_outputs):
+            for existing in (False, True):
+                with self.subTest(output=output, existing=existing):
+                    target = self.directory / ('output-' + str(index) + '-' + str(existing)) / 'manifest.json'
+                    sentinel = b'previous manifest\n'
+                    if existing:
+                        target.parent.mkdir()
+                        target.write_bytes(sentinel)
+                    seen = []
+
+                    def run(command, **kwargs):
+                        if 'rev-parse' in command:
+                            seen.append(command)
+                            return subprocess.CompletedProcess(command, 0, stdout=output, stderr='')
+                        return real_run(command, **kwargs)
+
+                    errors = io.StringIO()
+                    with patch.object(input_manifest.subprocess, 'run', side_effect=run), \
+                            patch.object(sys, 'argv', ['input_manifest.py', str(self.root), '--out', str(target)]), \
+                            contextlib.redirect_stderr(errors):
+                        with self.assertRaises(SystemExit) as raised:
+                            input_manifest.main()
+                    self.assertEqual(raised.exception.code, 2)
+                    self.assertTrue(seen)
+                    self.assertIn('invalid commit identity', errors.getvalue())
+                    if existing:
+                        self.assertEqual(target.read_bytes(), sentinel)
+                        self.assertEqual(list(target.parent.iterdir()), [target])
+                    else:
+                        self.assertFalse(target.parent.exists())
+
+    def test_full_hex_head_output_is_accepted(self):
+        real_run = subprocess.run
+        for identity in ('a1' * 20, 'B2' * 32):
+            with self.subTest(identity=identity):
+                def run(command, **kwargs):
+                    if 'rev-parse' in command:
+                        return subprocess.CompletedProcess(command, 0, stdout=identity + '\n', stderr='')
+                    return real_run(command, **kwargs)
+
+                with patch.object(input_manifest.subprocess, 'run', side_effect=run), \
+                        patch.object(sys, 'argv', ['input_manifest.py', str(self.root), '--out', str(self.out)]):
+                    input_manifest.main()
+                self.assertEqual(json.loads(self.out.read_text())['subject_commit'], identity)
+
     def test_nested_git_directory_is_pruned_but_other_hidden_inputs_are_not(self):
         nested = self.root / 'extras/.git'
         nested.mkdir(parents=True)

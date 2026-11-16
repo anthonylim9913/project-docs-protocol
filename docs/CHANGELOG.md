@@ -1,3 +1,13 @@
+## 2026-11-16 — LG-0044 ruling follow-up: refuse an invalid HEAD identity
+
+The owner reports independent acceptance of the census behavior and one remaining
+fail-open path. Manifest generation now requires a full 40- or 64-digit hexadecimal
+HEAD identity before creating output directories or writing any manifest bytes;
+empty or malformed successful Git output is refused with the existing exit 2.
+Patched-subprocess regressions ran red in all 20 invalid-output cases, then passed;
+all 7 census tests pass, including existing-output preservation and valid identities.
+LG-0044 stays OPEN for the stage-2 self-approval gap under D-0029.
+
 ## 2026-11-16 — LG-0044 stage 1: default binding and a fail-closed input census (D-0029)
 
 Merged the local `release/v0.6.0` candidate at `078684d`, whose subject starts

@@ -11,6 +11,10 @@ The candidate integrates CI/README accuracy, Doctor 1.8.0, D-0028–D-0032,
 LG-0050 documentation and LG-0052's sha256v2 encoding. Both companions remain
 0.2.2 with owner-approved transferred identities. No tag or push is made.
 
+The prior candidate's independent review found stale identity descriptions
+and an ineffective CI whitespace range. This revision corrects both; the
+candidate still awaits independent re-review and owner release approval.
+
 ## In flight
 
 `LEDGER.md` is authoritative: 6 OPEN and 3 VERIFYING live rows; no P0/P1.
@@ -40,7 +44,7 @@ LG-0050 is closed in the archive under D-0032.
 
 ## Next
 
-1. Run all final proof commands against the assembled candidate.
+1. Keep all final proof commands green on the candidate sent for re-review.
 2. Independently review this branch; retain the VERIFYING rows until review.
 3. Obtain the owner's release gate before any publication or tag.
 

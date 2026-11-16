@@ -1,3 +1,30 @@
+## 2026-11-16 — correct the candidate review's identity claims and committed-range whitespace gate
+
+Independent review of `078684d` found two follow-ups. The live LG-0052
+evidence and docs README still described deliberately failing legacy companion
+identities, although both registry rows already carried matching, owner-approved
+sha256v2 identities and validation passed. Corrected both current-state
+descriptions; LG-0052 remains VERIFYING for independent transition review.
+Neither companion tree, version nor recorded identity changes.
+
+The CI whitespace step compared only the clean checkout's working tree. It now
+compares the pull request's base SHA to HEAD, or the pushed-before SHA to HEAD
+for a push; an initial push with a zero before-SHA compares the empty tree.
+Three failing-first regression methods execute the actual workflow shell step
+against clean committed fixtures: committed whitespace in an earlier commit of
+either event's range fails, an older defect outside the range is not rechecked,
+and an initial push checks the complete initial tree. All three methods pass
+after the fix. Existing full-history checkout settings and every other CI gate
+remain unchanged; the existing manifest scope includes both changed workflow
+and new test file, without a manifest or acceptance-gate edit.
+
+README's derived total is now 643 discovered methods: 402 core, 123 research
+and 118 Architect (the 30 registry methods remain included in core). No new
+decision or ledger ID is allocated, no past CHANGELOG entry is edited, and
+LG-0056/LG-0057 remain VERIFYING. This is still an unreleased v0.6.0 candidate
+awaiting independent re-review and the owner's release gate; v0.5.0 remains
+the latest public tag. No push, tag or publication is made.
+
 ## 2026-11-16 — assemble the unreleased v0.6.0 candidate and repair Doctor review findings
 
 Merged the five requested local refs in order with no fast-forwards: reviewed

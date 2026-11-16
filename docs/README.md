@@ -20,8 +20,9 @@ weakened. Retired IDs remain historical and are not compared. There is no
 WARN tier or automatic migration, and failures print no replacement digest.
 `--digest` produces unreviewed v2 values only. Regular-file paths and bytes are
 bound, not permissions or empty folders. The two unchanged reviewed companion
-trees await D-0028's independent actual-file comparison against v0.5.0 and
-independent v2 computation before owner recording; the current legacy rows
-therefore deliberately FAIL. Versions stay 0.2.2.
+trees now carry matching, owner-approved `sha256v2:` identities under D-0028,
+and the repository's registry check PASSes. Versions stay 0.2.2. LG-0052
+remains VERIFYING for independent review of the transition, not pending
+identity recording.
 
 Only the primary session writes this register. Parallel implementation lanes own disjoint source/test files and return findings to that writer; they do not allocate IDs or edit these registers. No other project register owns this repository work.

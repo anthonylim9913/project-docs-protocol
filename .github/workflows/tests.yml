@@ -40,4 +40,16 @@ jobs:
       - name: Skill registry
         run: python3 -B scripts/skill-registry.py .
       - name: Whitespace
-        run: git diff --check
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            base="$PR_BASE_SHA"
+          else
+            base="$PUSH_BEFORE_SHA"
+          fi
+          if [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="$(git hash-object -t tree /dev/null)"
+          fi
+          git diff --check "$base" HEAD

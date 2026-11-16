@@ -14,7 +14,7 @@ The unreleased integration branch includes Doctor 1.8.0 (D-0036): `wiring-path` 
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 OPEN and 2 VERIFYING live rows as of 2026-10-29, no P0/P1. LG-0044, LG-0052 and LG-0053 are P2; LG-0048, LG-0049, LG-0056 and LG-0057 are P3. LG-0050 is closed in the archive: usage errors keep exit 2 and the documentation now distinguishes them from reported FAILs (D-0032).
+`LEDGER.md` is authoritative: 4 OPEN and 3 VERIFYING live rows as of 2026-10-29, no P0/P1. LG-0044, LG-0052 and LG-0053 are P2; LG-0048, LG-0049, LG-0056 and LG-0057 are P3. LG-0050 is closed in the archive: usage errors keep exit 2 and the documentation now distinguishes them from reported FAILs (D-0032). LG-0052's v2 encoding is implemented and awaits its review and identity-recording gate; the registry's legacy identities are not release-ready.
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|

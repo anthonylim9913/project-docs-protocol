@@ -7,6 +7,7 @@ from pathlib import Path
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,63}$")
 VERSION_RE = re.compile(r"^v?[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$")
 CONTENT_ID_RE = re.compile(r"sha256:[0-9a-f]{64}")
+CONTENT_ID_V2_RE = re.compile(r"sha256v2:[0-9a-f]{64}")
 STATUSES = {"active", "staged", "retired"}
 REQUIRED = {"required", "optional"}
 IGNORED_PARTS = {"__pycache__"}
@@ -61,6 +62,26 @@ def _tree_digest(path: Path) -> str:
         digest.update(str(rel).encode()); digest.update(b"\0"); digest.update(child.read_bytes()); digest.update(b"\0")
     return digest.hexdigest()
 
+def _tree_digest_v2(path: Path) -> str:
+    digest=hashlib.sha256(b"project-docs-protocol skill-tree v2\n")
+    def files(directory):
+        for child in directory.iterdir():
+            rel=child.relative_to(path)
+            info=child.lstat()
+            if stat.S_ISLNK(info.st_mode): raise ValueError(f"symlinked registry target: {rel}")
+            if IGNORED_PARTS.intersection(rel.parts) or rel.name in IGNORED_NAMES or rel == Path('.git'): continue
+            if stat.S_ISDIR(info.st_mode): yield from files(child)
+            elif stat.S_ISREG(info.st_mode):
+                try: name=rel.as_posix().encode('utf-8','strict')
+                except UnicodeEncodeError: raise ValueError(f"registry path is not strict UTF-8: {rel.as_posix()!r}") from None
+                yield name,child
+            else: raise ValueError(f"registry target must be a regular file: {rel}")
+    for name,child in sorted(files(path),key=lambda entry: entry[0]):
+        content=child.read_bytes()
+        digest.update(len(name).to_bytes(8,'big')); digest.update(name)
+        digest.update(len(content).to_bytes(8,'big')); digest.update(content)
+    return digest.hexdigest()
+
 def validate(path: Path, project_root: Path | None = None) -> list[str]:
     if path.is_symlink(): return ["registry must not be a symlink"]
     try: text=path.read_text(encoding="utf-8")
@@ -83,7 +104,10 @@ def validate(path: Path, project_root: Path | None = None) -> list[str]:
         if not location or target_path.is_absolute() or ".." in target_path.parts:
             errors.append(f"line {number}: location must be relative and stay in the project"); continue
         if not VERSION_RE.fullmatch(version): errors.append(f"line {number}: invalid semantic version {version!r}")
-        if not CONTENT_ID_RE.fullmatch(content_id): errors.append(f"line {number}: content-id must be sha256:<64 lowercase hex>")
+        if CONTENT_ID_RE.fullmatch(content_id) and lifecycle in {"active", "staged"}:
+            errors.append(f"line {number}: legacy content-id: {name} uses the ambiguous sha256: encoding; unavailable until its reviewer gate re-passes and the owner records a sha256v2: digest")
+        elif not CONTENT_ID_V2_RE.fullmatch(content_id) and not (lifecycle == "retired" and CONTENT_ID_RE.fullmatch(content_id)):
+            errors.append(f"line {number}: content-id must be sha256v2:<64 lowercase hex>")
         if lifecycle not in STATUSES: errors.append(f"line {number}: lifecycle must be active, staged, or retired")
         if root is None: continue
         target=project_root / target_path
@@ -94,10 +118,7 @@ def validate(path: Path, project_root: Path | None = None) -> list[str]:
             if lifecycle in {"active", "staged"} and not target.exists(): errors.append(f"line {number}: {lifecycle} skill path does not exist")
             if lifecycle in {"active", "staged"} and target.exists() and not target.is_dir(): errors.append(f"line {number}: skill location must be a directory")
             if target.exists() and target.is_dir():
-                actual="sha256:"+_tree_digest(target)
-                # Never print the current digest: pasting it into the row would
-                # record an unreviewed tree as reviewed.
-                if CONTENT_ID_RE.fullmatch(content_id) and content_id != actual:
+                if lifecycle in {"active", "staged"} and CONTENT_ID_V2_RE.fullmatch(content_id) and content_id != "sha256v2:"+_tree_digest_v2(target):
                     errors.append(f"line {number}: stale content-id: {name} changed since review; unavailable until its "
                                   "reviewer gate re-passes and the owner records the newly reviewed digest")
                 skill=target/"SKILL.md"
@@ -125,9 +146,9 @@ def main(argv=None) -> int:
         target=Path(args.digest) if Path(args.digest).is_absolute() else args.root/args.digest
         if not target.is_dir() or target.is_symlink():
             print(f"FAIL skill-registry: digest location is not a real directory: {args.digest}"); return 1
-        try: value=_tree_digest(target)
+        try: value=_tree_digest_v2(target)
         except (OSError,RuntimeError,ValueError) as exc: print(f"FAIL skill-registry: {exc}"); return 1
-        print(f"DIGEST {args.digest}: sha256:{value} (unreviewed: record it only after the reviewer gate passes)"); return 0
+        print(f"DIGEST {args.digest}: sha256v2:{value} (unreviewed: record it only after the reviewer gate passes)"); return 0
     try: path=_registry_path(args.root,args.registry,args.register_dir)
     except (OSError,RuntimeError,ValueError) as exc: print(f"FAIL skill-registry: {exc}"); return 1
     if path is None:

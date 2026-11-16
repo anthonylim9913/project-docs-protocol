@@ -4,9 +4,9 @@
 
 ## Current phase
 
-**v0.5.0 is the latest public tag: the independently reviewed fail-closed repairs, Doctor 1.7.0, and both companion identities recorded at 0.2.2.**
+**v0.5.0 public; the open-items plan approved; wave A is next.**
 
-Pull request #2 (LG-0044) is still an open draft; neither candidate branch closes its gate unchanged. The owner has a plan for the five open ledger rows.
+The amended decisions D-0028–D-0032 govern implementation on this unreleased integration branch. Pull request #2 remains an open draft; LG-0044's unbound-input and self-judging gaps both remain OPEN until the staged repairs and independent review satisfy D-0029.
 
 `.github/workflows/tests.yml` runs the suites, Doctor and the registry validator on pushes to `main` and on pull requests.
 
@@ -14,11 +14,11 @@ The unreleased integration branch includes Doctor 1.8.0 (D-0036): `wiring-path` 
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 OPEN and 2 VERIFYING live rows as of 2026-10-29, no P0/P1. LG-0044 and LG-0052 are P2; LG-0048, LG-0049, LG-0050, LG-0056 and LG-0057 are P3.
+`LEDGER.md` is authoritative: 6 OPEN and 2 VERIFYING live rows as of 2026-10-29, no P0/P1. LG-0044, LG-0052 and LG-0053 are P2; LG-0048, LG-0049, LG-0050, LG-0056 and LG-0057 are P3.
 
 | Item | Owner | Target | Notes |
 |---|---|---|---|
-| Choose a versioned, unambiguous Content-ID transition (LG-0052) | owner | — | Different trees can share the current framed digest; refreshing identities does not fix this |
+| Prepare wave A implementation | implementation lanes | v0.6.0 | Follow D-0028, D-0029 and D-0032; preserve independent review and owner identity-recording gates |
 
 ## Blocked
 
@@ -34,11 +34,10 @@ The unreleased integration branch includes Doctor 1.8.0 (D-0036): `wiring-path` 
 
 ## Next
 
-1. Repair LG-0044 on a candidate whose inventory fails closed, rebased onto v0.5.0, and independently re-review it.
-2. Settle LG-0052's identity format before LG-0048 adds a registry pointer to Doctor.
-3. Settle LG-0049's supplied-passage record form, with a research companion re-review.
+1. Wave A (v0.6.0): LG-0050 docs, LG-0052, LG-0044 stage 1. If stage 1 slips, ship without it and keep both LG-0044 gaps explicitly OPEN.
+2. Wave B (v0.6.1): LG-0044 stage 2, LG-0049, LG-0053.
+3. Wave C (v0.7.0): LG-0048.
 
 ## Open questions (owner)
 
-1. **A usage error exits 2, the FAIL code (LG-0050): move it to 3, a change to the exit-code contract?** — proposed: exit 3, with a DECISIONS entry extending D-0013 — since 2026-10-23 — postponed by owner 2026-10-23, revisit when a consumer needs usage errors told apart by exit code
-2. **Which versioned Content-ID encoding and legacy transition should replace ambiguous framing (LG-0052)?** — proposed: review an injective versioned format with explicit legacy handling before adoption — since 2026-10-27
+*No items.*

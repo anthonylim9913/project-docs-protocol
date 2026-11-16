@@ -19,8 +19,20 @@ the test creates.
 `scripts/docs-doctor.py` at `6c96571` (v0.4.1, Doctor 1.5.0), before `--json`
 existed, on Python 3.14.4, with the arguments recorded per case. The manifest
 records that script's SHA-256, each case's exit code, stdout digest and exact
-stderr. The text-mode test compares stdout byte for byte; the only allowed
-difference is the version number on the header line, so a version bump does
-not force a recapture. Recapture only when a change is meant to alter text
-output, say so in that change's CHANGELOG entry, and record the commit the new
-baseline came from.
+stderr. The text-mode test verifies each captured stdout digest before comparing
+stdout byte for byte, with exactly these expected-output transformations:
+
+- Replace only the header's Doctor version with the current version.
+- Replace the exact three-clause `wiring-clauses` PASS text with the four-clause
+  text adding `delegation`, because the project fixtures carry the current block.
+- After `git-status-churn`, insert the `git-unrecorded-commits` SKIP line with
+  `git checks disabled (--no-git)`, matching the recorded arguments.
+- For register cases only, increase total checks and skipped checks by one;
+  leave every other summary count, diagnostic, exit code and stderr unchanged.
+
+These are explicit expected deltas from the immutable Doctor 1.5.0 capture,
+not output copied from the running Doctor. Exact comparison still detects any
+other change; independent delegation and temporary-Git-repository regressions
+exercise the new behavior. No recapture is needed for these approved deltas.
+For any other intentional text-output change, recapture, say so in that change's
+CHANGELOG entry, and record the commit the new baseline came from.

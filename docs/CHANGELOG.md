@@ -1,3 +1,29 @@
+## 2026-11-16 — delegated lane repairs review findings in wiring fixtures and Close guidance
+
+Delegated follow-up on `feat/delegation-recording` addresses the independent
+review's four findings for LG-0058/LG-0059. All current carried blocks now match
+Install Step 2, apart from documented project paths, optional registry and ledger
+adoption bullets, and wrapper indentation. The JSON projects retain uninterrupted
+Precedence bullets; hardening positive controls retain their original list
+wrappers. A new identity regression failed on all five affected fixtures before
+repair and now passes across nine carriers. Frozen negative fixtures and their
+manifest hashes, historical stdout captures and their digests remain unchanged;
+no dependent pinned hash changed and no gate was weakened or removed.
+
+The JSON fixture README now authorizes precisely the version, fourth-clause,
+advisory SKIP and summary-count transformations from the preserved capture,
+explaining the independent expected-output source. Close explicitly excepts
+delegated alternatives from the user-considered-alternative test. LG-0059's
+closing condition names the newest CHANGELOG commit, matching D-0043 and
+CHANGELOG-first Close; implementation and exit codes are unchanged. D-0042 and
+D-0043 remain the decisions; no new IDs. Both rows remain VERIFYING for reviewer
+acceptance. Directly observed proofs: `python3 -B -m unittest discover -q` —
+409 tests OK (one skip); research protocol discover — 123 OK (three skips);
+Architect protocol discover — 118 OK. Doctor reports 41 checks: 34 pass,
+0 warn, 0 fail, 7 info, 0 skipped, exit 0; skill-registry PASS;
+`git diff --check` clean. Focused delegation/JSON: 10 OK. No release or
+publication is authorized; independent acceptance of these repairs is pending.
+
 ## 2026-11-16 — delegated lane adds the register contract and uncovered-commits advisory
 
 Delegated work on `feat/delegation-recording` implements LG-0058/LG-0059:

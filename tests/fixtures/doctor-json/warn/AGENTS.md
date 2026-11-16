@@ -9,6 +9,11 @@ This project uses the project-docs-protocol (docs in `docs/`).
   list, and the current-state sections only) and the last 3–5 entries of
   `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're
   about to work on; then read live `LEDGER.md` rows if installed.
+- **Delegation.** Only the session owning the work writes registers. A delegated
+  agent (subagent, workflow agent, lane) writes none unless its brief says so;
+  it returns changes (files, commits, branch), each choice between real
+  alternatives, open questions and evidence. The owner records these at its
+  next Close and marks the work as delegated.
 - **After each meaningful unit of work** (spec drafted, decision made, blocker
   resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,
   then rewrite STATUS. Brief records reserved DECISIONS entries between
@@ -21,7 +26,6 @@ This project uses the project-docs-protocol (docs in `docs/`).
 - CHANGELOG and DECISIONS are append-only: never edit past entries; append
   corrections or supersessions instead.
 - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS
-- **Delegation.** Only the owner writes registers; delegated agents return reports.
   (skip LEDGER when absent),
   STATUS rewritten, registers append-only — are the protocol's and are not
   overridden by project convention. Paths, id formats and entry shapes are

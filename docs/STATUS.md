@@ -5,10 +5,12 @@
 ## Current phase
 
 **v0.5.0 is still the latest public tag. The unreleased v0.6.0 candidate and
-Doctor 1.9.0 delegation lane await independent review and the owner's release gate.**
+Doctor 1.9.0 delegation follow-up await reviewer acceptance and the owner's release gate.**
 
 The delegation contract and uncovered-commits advisory are local candidates,
-not releases. Both companions remain at their owner-approved 0.2.2 identities.
+not releases. All four documentation/fixture review findings are repaired;
+root 409, research 123 and Architect 118 tests pass, Doctor exits 0 and registry
+passes. Reviewer acceptance remains pending. Both companions retain 0.2.2.
 
 ## In flight
 
@@ -17,7 +19,7 @@ LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 need independent review.
 
 | Item | Owner | Branch | End action |
 |---|---|---|---|
-| LG-0058/LG-0059 review | independent reviewer | feat/delegation-recording | Review developer evidence, then close or return findings |
+| LG-0058/LG-0059 review | independent reviewer | feat/delegation-recording | Accept the four repairs, then close or return findings |
 | Candidate release review | reviewer, then owner | release/v0.6.0 | Review VERIFYING rows and obtain publication approval |
 
 ## Blocked
@@ -37,7 +39,7 @@ LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 need independent review.
 
 ## Next
 
-1. Independently review LG-0058/LG-0059 on the delegation branch.
+1. Obtain reviewer acceptance for the LG-0058/LG-0059 follow-up repairs.
 2. Assemble and review the candidate; retain VERIFYING rows until that review.
 3. Obtain the owner's release gate before publication or tags.
 

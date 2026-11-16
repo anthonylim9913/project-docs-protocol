@@ -21,6 +21,7 @@ This project uses the project-docs-protocol (docs in `docs/`).
 - CHANGELOG and DECISIONS are append-only: never edit past entries; append
   corrections or supersessions instead.
 - **Precedence.** The three properties above — CHANGELOG before LEDGER before STATUS
+- **Delegation.** Only the owner writes registers; delegated agents return reports.
   (skip LEDGER when absent),
   STATUS rewritten, registers append-only — are the protocol's and are not
   overridden by project convention. Paths, id formats and entry shapes are

@@ -40,6 +40,14 @@ Reread the changed dashboard and any referenced current report once before hando
 
 ### Short recovery and evidence examples
 
+Delegated agents return changes (files, commits, branch), real choices, open
+questions and evidence; only the owner writes registers unless the brief assigns
+that duty. Fold reports into the next Close as delegated work, including rejected
+alternatives in DECISIONS. Running lanes/background tasks need STATUS In-flight
+rows with branches and end actions. Worktree lanes may leave CHANGELOG, DECISIONS
+or LEDGER `*-ENTRIES-OWED.md` fragments; the direct writer lands them oldest-first
+in Close order and alone allocates IDs.
+
 - **Inherited evidence:** “Attempt 6 unit tests PASS — directly observed for revision C. Images in report 4 belong to attempt 4; after checking the relevant changes, they remain historical context. Current independent native observation: NOT RUN; reviewer resumes on host unlock.” This preserves both a developer pass and a blocked independent check.
 - **Withdrawn completion:** preserve the old “Attempt 4 GREEN” log entry. Append “Correction to attempt 4 GREEN: reviewer withdrew acceptance; report 4 remains historical evidence.” Rewrite current STATUS to show the blocker and next actor; do not relabel old captures as current.
 - **Interrupted Close or unchanged blocker:** if the newest log already records submission, finish missing ledger/dashboard writes once without another submission entry. Repeated observations of the same lock keep the same blocker, actor and unlock trigger. An observed unlock gets one new log entry before the dashboard changes; elapsed time alone clears nothing.

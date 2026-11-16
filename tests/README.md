@@ -26,6 +26,17 @@ Both discover the same `test_*.py` suite and return a nonzero exit on failure. T
 
 `scenarios.json` is an index linking the eleven original scenario names to executable test methods. Several names share one mixed-answer test; the index is not counted as an additional passing test or as eleven independent agent executions.
 
+Delegation currency and git-unrecorded-commits regressions use the current block
+and disposable Git repositories. The hardening Doctor examples and their pinned
+hashes include the new clause so the existing visibility mutant still has to
+produce a clean positive, not merely a stale-block warning. The acceptance
+validator's exhaustive check inventory adds the new SKIP; no expected case or
+gate is removed. Doctor JSON tests retain the captured 1.5.0 bytes and checksums,
+then derive exact current text expectations for the fourth clause and additional
+git SKIP/count. Historical installation captures remain observations, not current
+installation templates. Markdown visibility gains a separately recorded oracle
+snapshot, leaving earlier observations untouched.
+
 Lifecycle examples are **authored artifact replays**. There is no automatic Install/Brief/Close writer in this skill. The installation tests apply explicit fixture edits to templates; writing those files is not evidence that an arbitrary agent chooses those edits, that archive recovery is automatically idempotent, or that authorization can be inferred from prose. The four [independent skill-use observations](fixtures/forward/README.md) are recorded separately from the deterministic suite. See [lifecycle evidence](fixtures/lifecycle/README.md) for the per-example boundaries. A subsequent Install → Bootstrap → Close observation must retain its separate contexts, prompts and before/after artifacts, and is not counted as an automated test or a general compliance rate.
 
 Scratch projects under `tests/.tmp/` are nested inside this repository's own installed register. Doctor therefore reports the expected `nested-register` advisory; an otherwise-healthy nested fixture exits 1 and must have no other warning/failure. Fresh-install fixtures run outside that ancestry and assert exit 0 directly, as does the repository's own Doctor check. The retained six-document `FreshInstallTests` cases exercise extra scaffold and a pending brand-value warning; `MinimalInstallTests` separately proves D-0017's four-document contract. Recovery after an intervening Close can produce a `decisions-order` advisory. A deliberate reopen still triggers the conservative `ledger-archive-ids` collision check; its row/event identity needs manual verification. Tests assert these diagnostics rather than suppressing them.

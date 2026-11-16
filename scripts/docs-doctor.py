@@ -51,7 +51,7 @@ import stat
 import subprocess
 import sys
 
-VERSION = "1.8.0"
+VERSION = "1.9.0"
 # Version of the --json document's shape; bumped only when a key is added, removed or redefined.
 JSON_SCHEMA = 1
 STRUCTURAL_LIMITS = (
@@ -77,6 +77,7 @@ PAST_TENSE_WARN = 3            # lines; heuristic, see check
 DORMANT_DAYS_WARN = 30         # days since the newest CHANGELOG entry
 HEADING_CONFORMANCE_PASS = 0.95
 CHURN_MIN_COMMITS = 10         # commits touching STATUS before churn is judged
+UNRECORDED_COMMITS_WARN = 3
 CHURN_RATIO_WARN = 0.2         # deleted/added; rewritten files sit near 0.7-0.8
 ID_MAX_DIGITS = 6              # a decision number wider than this is malformed
                                # (a date, a typo) and never enters the span
@@ -142,12 +143,13 @@ FOOTER_PHRASE_RE = re.compile(r"Installed via the `?project-docs-protocol`? skil
 FOOTER_NEGATION_RE = re.compile(r"not installed|was not|never installed|wasn't|isn't|is not|\bnever\b|\bnot\b|\bno\b", re.IGNORECASE)
 LINE_PREFIX_RE = re.compile(r"^[\s*_>]+")
 
-# The three clauses the current Step-2 wiring block carries. A block that
+# The clauses the current Step-2 wiring block carries. A block that
 # lacks one was copied from an older SKILL.md and should be re-synced.
 WIRING_CLAUSES = (
     ("rewritten-not-appended", re.compile(r"rewritten,?\s+not\s+appended", re.IGNORECASE)),
     ("bounded-read", re.compile(r"under\s+~?\s*60\s+lines|in\s+full\s+if\s+it\s+is\s+under", re.IGNORECASE)),
     ("precedence", re.compile(r"\*\*\s*Precedence\s*\.?\s*\*\*|^\s*-\s*Precedence\b", re.IGNORECASE | re.MULTILINE)),
+    ("delegation", re.compile(r"\*\*\s*Delegation\s*\.?\s*\*\*|^\s*-\s*Delegation\b", re.IGNORECASE | re.MULTILINE)),
 )
 # The block is present when its heading (level 2 or 3) or its opening
 # sentence is present on a visible, unquoted line. A bare mention of the
@@ -772,7 +774,7 @@ def check_wiring(rep, root, register_label):
     rep.add("PASS", "wiring-block",
             "present in %d of %d instructions files: %s%s" % (len(wired), len(present), ", ".join(wired), note))
 
-    # Clause currency: every wired file should carry all three current
+    # Clause currency: every wired file should carry all current
     # clauses inside the block's span; clauses elsewhere in the file do not count.
     stale = {}
     for name in wired:
@@ -782,13 +784,14 @@ def check_wiring(rep, root, register_label):
     if stale:
         parts = ["%s lacks %s" % (n, "+".join(m)) for n, m in sorted(stale.items())]
         rep.add("WARN", "wiring-clauses",
-                "%d of 3 current clauses missing inside the block — %s; block predates the current SKILL.md, or its clauses "
+                "%d of %d current clauses missing inside the block — %s; block predates the current SKILL.md, or its clauses "
                 "sit outside it; re-sync it"
-                % (max(len(m) for m in stale.values()), "; ".join(parts)))
+                % (max(len(m) for m in stale.values()), len(WIRING_CLAUSES), "; ".join(parts)))
     else:
         rep.add("PASS", "wiring-clauses",
-                "3 of 3 current clauses present inside the block (rewritten-not-appended, bounded-read, precedence) in %s"
-                % ", ".join(wired))
+                "%d of %d current clauses present inside the block (%s) in %s"
+                % (len(WIRING_CLAUSES), len(WIRING_CLAUSES),
+                   ", ".join(label for label, _ in WIRING_CLAUSES), ", ".join(wired)))
 
     # Docs path: the block's "(docs in `X/`)" must name where the register was found.
     actual = normalise_docs_path(register_label)
@@ -2141,13 +2144,16 @@ def check_ledger(rep, register_dir, dec, today):
 def check_git(rep, root, register_dir, no_git):
     if no_git:
         rep.add("SKIP", "git-status-churn", "git checks disabled (--no-git)")
+        rep.add("SKIP", "git-unrecorded-commits", "git checks disabled (--no-git)")
         return
     if not shutil.which("git"):
         rep.add("SKIP", "git-status-churn", "git not installed — churn cannot be measured (STATUS size and session-stack checks cover the same failure)")
+        rep.add("SKIP", "git-unrecorded-commits", "git not installed")
         return
     top = run_git(root, ["rev-parse", "--show-toplevel"])
     if top is None:
         rep.add("SKIP", "git-status-churn", "not inside a git repository — churn cannot be measured (STATUS size and session-stack checks cover the same failure)")
+        rep.add("SKIP", "git-unrecorded-commits", "not inside a git repository")
         return
     top = top.strip()
     try:
@@ -2160,6 +2166,7 @@ def check_git(rep, root, register_dir, no_git):
                 % (rel_root.count(os.sep) + 1))
     else:
         rep.add("INFO", "git-repository", "project root is the repository root")
+    check_unrecorded_commits(rep, root, register_dir, top)
     status_rel = os.path.relpath(os.path.join(register_dir, "STATUS.md"), root)
     out = run_git(root, ["log", "--numstat", "--format=%H", "--", status_rel])
     if not out:
@@ -2188,6 +2195,35 @@ def check_git(rep, root, register_dir, no_git):
         rep.add("PASS", "git-status-churn",
                 "deleted/added = %d/%d = %.2f over %d commits (warn <%.1f) — STATUS is being rewritten"
                 % (deleted, added, ratio, commits, CHURN_RATIO_WARN))
+
+
+def check_unrecorded_commits(rep, root, register_dir, top):
+    register_names = REGISTER + ("LEDGER.md", "LEDGER-ARCHIVE.md")
+    register_paths = {
+        os.path.relpath(os.path.join(register_dir, name), top).replace(os.sep, "/")
+        for name in register_names
+    }
+    changelog = os.path.relpath(os.path.join(register_dir, "CHANGELOG.md"), root)
+    anchor = run_git(root, ["--literal-pathspecs", "log", "-1", "--format=%H", "HEAD", "--", changelog])
+    if not anchor:
+        rep.add("SKIP", "git-unrecorded-commits", "CHANGELOG.md has no reachable commit, or git history is unavailable")
+        return
+    commits = run_git(root, ["rev-list", "HEAD", "^" + anchor.strip()])
+    if commits is None:
+        rep.add("SKIP", "git-unrecorded-commits", "git history could not be read")
+        return
+    count = 0
+    for commit in commits.splitlines():
+        paths = run_git(root, ["diff-tree", "--root", "-m", "--no-commit-id",
+                               "--name-only", "-z", "--no-renames", "-r", commit])
+        if paths is None:
+            rep.add("SKIP", "git-unrecorded-commits", "git commit paths could not be read")
+            return
+        if not register_paths.intersection(paths.split("\0")):
+            count += 1
+    rep.add("WARN" if count > UNRECORDED_COMMITS_WARN else "INFO", "git-unrecorded-commits",
+            "%d commits reachable from HEAD since the newest CHANGELOG.md commit touch no register file (warn >%d) — advisory only; not proof of missing entries"
+            % (count, UNRECORDED_COMMITS_WARN))
 
 
 # --- main ---------------------------------------------------------------

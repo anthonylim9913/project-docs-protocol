@@ -63,7 +63,8 @@ def markdown_cases():
                          "    This project uses the project-docs-protocol (docs in `docs/`).\n"
                          "    - **Session start:** read STATUS in full if it is under ~60 lines.\n"
                          "    - STATUS is rewritten, not appended.\n"
-                         "    - **Precedence.** Append CHANGELOG first, edit LEDGER, then rewrite STATUS.\n")
+                         "    - **Precedence.** Append CHANGELOG first, edit LEDGER, then rewrite STATUS.\n"
+                         "    - **Delegation.** Only the owner writes registers.\n")
     add("same-line-nested-visible-authentic", visible_same_line, True)
     # A mixed list marker transition ends the preceding bullet container;
     # the five-column fenced block is therefore a quoted example.
@@ -73,7 +74,8 @@ def markdown_cases():
                     "     This project uses the project-docs-protocol (docs in `docs/`).\n"
                     "     - Read STATUS in full if it is under ~60 lines.\n"
                     "     - STATUS is rewritten, not appended.\n"
-                    "     - **Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS.\n")
+                    "     - **Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS.\n"
+                    "     - **Delegation.** Only the owner writes registers.\n")
     add("mixed-list-transition-active-positive", mixed_active, True)
     # An empty item is terminated by the blank line; the following six-column
     # fenced block is top-level indented code and must stay hidden.
@@ -83,7 +85,8 @@ def markdown_cases():
                          "      This project uses the project-docs-protocol (docs in `docs/`).\n"
                          "      - Read STATUS in full if it is under ~60 lines.\n"
                          "      - STATUS is rewritten, not appended.\n"
-                         "      - **Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS.\n")
+                         "      - **Precedence.** CHANGELOG first, edit LEDGER, then rewrite STATUS.\n"
+                         "      - **Delegation.** Only the owner writes registers.\n")
     add("empty-item-blank-active-positive", empty_item_active, True)
     add("lazy-top-level-paragraph", "These are active instructions:\n" + indented("\n".join(tight), 4), True)
     add("lazy-nested-paragraph", "- Outer section\n    - These are active instructions:\n" +
@@ -157,16 +160,17 @@ class DoctorMarkdownTests(unittest.TestCase):
         fixture = ROOT / "tests/fixtures/markdown-oracle"
         saved = json.loads((fixture / "observations.json").read_text())
         routing = json.loads((fixture / "observations-routing-20260922.json").read_text())
-        # The routing bullet left the Install block (D-0020), so the current
-        # inputs are again exactly the text observations.json was recorded on.
-        # The 2026-09-22 recording stays as history with the same expectations.
         self.assertEqual([(c['name'], c['live']) for c in routing['cases']],
                          [(c['name'], c['live']) for c in saved['cases']])
         expected = [{key: case[key] for key in ("name", "source", "live")} for case in markdown_cases()]
+        current = json.loads((fixture / "observations-delegation-20261116.json").read_text())
+        self.assertEqual([(c['name'], c['live']) for c in current['cases']],
+                         [(c['name'], c['live']) for c in saved['cases']])
         self.assertEqual([{key: case[key] for key in ("name", "source", "live")}
-                          for case in saved["cases"]], expected)
+                          for case in current["cases"]], expected)
         self.assertEqual(saved["parser"], "markdown-it-py 4.0.0; commonmark preset")
-        for case in saved["cases"]:
+        self.assertEqual(current["parser"], "markdown-it-py 4.2.0; commonmark preset")
+        for case in saved["cases"] + current["cases"]:
             self.assertEqual(case["oracle_live"], case["live"], case["name"])
 
 

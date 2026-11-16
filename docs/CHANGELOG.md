@@ -1,3 +1,41 @@
+## 2026-11-16 — delegated lane adds the register contract and uncovered-commits advisory
+
+Delegated work on `feat/delegation-recording` implements LG-0058/LG-0059:
+the always-loaded wiring names the owning writer and mandatory return report;
+Bootstrap omits delegated user confirmation; Close folds reports and rejected
+alternatives into the registers, tracks running branches/end actions, and lets
+worktree lanes leave CHANGELOG, DECISIONS and LEDGER owed fragments for the
+direct writer to land oldest-first and allocate IDs. D-0042 records the choice.
+
+Doctor 1.9.0 adds delegation to current wiring clauses: older blocks WARN for
+re-sync, never FAIL. `git-unrecorded-commits` counts HEAD commits outside the
+newest CHANGELOG commit's ancestry that touch no selected register file;
+INFO at 0–3, WARN above the named threshold 3, unavailable git/history SKIP,
+never FAIL. D-0043 records the threshold and ancestry tradeoffs; JSON schema
+and exit codes stay unchanged. The owner replaces the mistaken lower-ID
+reservations with the next two ascending IDs and authorizes editing only this
+lane's uncommitted drafts; all pre-lane register bytes remain intact.
+
+Regression-first controls reproduce both gaps. Directly observed developer
+proofs: root 408 methods OK (one skip), research 123 OK (three skips), Architect
+118 OK; focused git/delegation 14, Markdown/JSON/mutant/manifest 17, and summary
+corruption/guard 2 pass. The first full run's two failures exposed a hardcoded
+summary mutation; it now changes the actual summary and asserts one mutation.
+Current fixture hashes and the exhaustive acceptance inventory include the new
+clause/check without removing a case or gate. Earlier oracle snapshots and
+Doctor 1.5.0 captures remain unchanged; a new independently parsed, locally
+recorded markdown-it-py 4.2.0 snapshot agrees with all 29 unchanged visibility
+expectations. Normal suites and runtime remain Python standard-library only.
+
+LG-0058/LG-0059 move to VERIFYING, not CLOSED: an independent reviewer must
+confirm the contract and advisory. No release, tag, push, companion identity
+change or new ledger row is authorized. Final post-Close suite runs confirm the
+same 408/123/118 results and skips; Doctor reports 41 checks with zero warnings
+or failures (exit 0), the registry validator PASSes, and diff checks are clean.
+A disposable baseline-install probe has only the expected wiring-clause WARN,
+zero FAILs, and exits 0 after wiring refresh. Pre-lane CHANGELOG/DECISIONS bytes
+and ledger IDs are preserved; staged additions pass the local privacy check.
+
 ## 2026-11-16 — assemble the unreleased v0.6.0 candidate and repair Doctor review findings
 
 Merged the five requested local refs in order with no fast-forwards: reviewed

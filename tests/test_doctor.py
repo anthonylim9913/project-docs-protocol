@@ -30,6 +30,7 @@ This project uses the project-docs-protocol (docs in `docs/`).
 - Read STATUS in full if it is under ~60 lines.
 - STATUS is rewritten, not appended.
 - **Precedence.** Append CHANGELOG first, edit LEDGER, then rewrite STATUS.
+- **Delegation.** Only the owner writes registers; delegated agents return reports.
 """
 
 
@@ -631,6 +632,70 @@ class DoctorGitTests(unittest.TestCase):
         self.assertIn("no commits", text)
         self.assertEqual(self.check_line(self.doctor(), "git-repository")[1],
                          "project root is the repository root")
+
+    def test_unrecorded_commits_threshold_and_close_reset(self):
+        self.commit("install")
+        for count in range(5):
+            level, text = self.check_line(self.doctor(), "git-unrecorded-commits")
+            self.assertEqual(level, "INFO" if count <= 3 else "WARN", text)
+            self.assertIn("%d commits" % count, text)
+            (self.project / "work.txt").write_text(str(count), encoding="utf-8")
+            self.commit("work %d" % count)
+        with (self.project / "docs/CHANGELOG.md").open("a") as handle:
+            handle.write("\nRecorded work.\n")
+        self.commit("close")
+        self.assertIn("0 commits", self.check_line(self.doctor(), "git-unrecorded-commits")[1])
+
+    def test_unrecorded_commits_exclude_every_register_but_not_mixed_work(self):
+        self.commit("install")
+        for name in ("STATUS.md", "DECISIONS.md", "LEDGER.md", "LEDGER-ARCHIVE.md"):
+            with (self.project / "docs" / name).open("a") as handle:
+                handle.write("\nRegister update.\n")
+            (self.project / "work.txt").write_text(name, encoding="utf-8")
+            self.commit("register and work")
+        self.assertIn("0 commits", self.check_line(self.doctor(), "git-unrecorded-commits")[1])
+        (self.project / "CHANGELOG.md").write_text("not the selected register", encoding="utf-8")
+        self.commit("unrelated namesake")
+        self.assertIn("1 commits", self.check_line(self.doctor(), "git-unrecorded-commits")[1])
+
+    def test_unrecorded_commits_without_baseline_skip(self):
+        self.assertEqual(self.check_line(self.doctor(), "git-unrecorded-commits")[0], "SKIP")
+        (self.project / "docs/CHANGELOG.md").unlink()
+        self.git("add", "-A")
+        self.git("commit", "-m", "no changelog history")
+        (self.project / "docs/CHANGELOG.md").write_text("# CHANGELOG\n", encoding="utf-8")
+        self.assertEqual(self.check_line(self.doctor(), "git-unrecorded-commits")[0], "SKIP")
+
+    def test_unrecorded_commits_nested_project_and_root_register(self):
+        below = self.project / "app"
+        below.mkdir()
+        seed_register(below)
+        self.commit("install nested")
+        (self.project / "work.txt").write_text("work", encoding="utf-8")
+        self.commit("repository work")
+        self.assertIn("1 commits", self.check_line(self.doctor(root=below), "git-unrecorded-commits")[1])
+        for name in ("STATUS.md", "CHANGELOG.md", "DECISIONS.md"):
+            shutil.move(str(self.project / "docs" / name), str(self.project / name))
+        (self.project / "AGENTS.md").write_text(install_wiring_block("."), encoding="utf-8")
+        self.commit("root register")
+        self.assertIn("0 commits", self.check_line(self.doctor(), "git-unrecorded-commits")[1])
+
+    def test_unrecorded_commits_include_merged_side_history_not_old_ancestors(self):
+        (self.project / "old.txt").write_text("old work", encoding="utf-8")
+        self.git("add", "old.txt")
+        self.git("commit", "-m", "before registers")
+        self.commit("install")
+        main_branch = self.git("branch", "--show-current").strip()
+        self.git("checkout", "-b", "fixture-side")
+        (self.project / "side.txt").write_text("side work", encoding="utf-8")
+        self.commit("side work")
+        self.git("checkout", main_branch)
+        (self.project / "main.txt").write_text("main work", encoding="utf-8")
+        self.commit("main work")
+        self.git("merge", "--no-ff", "fixture-side", "-m", "join")
+        level, text = self.check_line(self.doctor(), "git-unrecorded-commits")
+        self.assertEqual(level, "INFO", text)
+        self.assertIn("3 commits", text)
 
     def test_too_few_commits_is_informational(self):
         self.commit("install")

@@ -51,7 +51,7 @@ import stat
 import subprocess
 import sys
 
-VERSION = "1.7.0"
+VERSION = "1.8.0"
 # Version of the --json document's shape; bumped only when a key is added, removed or redefined.
 JSON_SCHEMA = 1
 STRUCTURAL_LIMITS = (
@@ -129,9 +129,12 @@ PLACEHOLDER_RE = re.compile(r"<decision in one line>|\[POPULATE|<path>|<one[- ]l
 # any list item whose bold text opens with a bracket ("1. **[one-line question]**").
 STATUS_PLACEHOLDER_RE = re.compile(
     r"\[one-line question|\[option label\]|\[The ordered queue|\[Section name|\[Item\b"
+    r"|\[Phase name|\[One paragraph|\[Or a table"
     r"|^\s*(?:[-*+]|\d+[.)])\s+\*\*\["
 )
 INSTALL_ENTRY_RE = re.compile(r"initiali[sz]ed\b.*\bdocumentation system", re.IGNORECASE)
+# The docs README title the template ships, still unfilled.
+README_TITLE_PLACEHOLDER_RE = re.compile(r"^#\s.*\[PROJECT NAME\]")
 # The README install footer, judged on a visible line with any leading
 # emphasis or quote marker removed; it must open the line.
 FOOTER_LINE_RE = re.compile(r"^Installed via the `?project-docs-protocol`? skill")
@@ -534,6 +537,25 @@ def rel_label(register_dir, root):
     return "./" if rel == "." else rel + "/"
 
 
+def selected_label(root, register_dir, explicit=None):
+    """The register's path as it was selected, not as the filesystem resolves it.
+
+    Selection resolves symlinks, so a `docs/` symlinked to `realdocs/` is
+    found at `realdocs/`; the wiring block says `docs/`, which is where a
+    session looks. Falls back to the resolved label when no candidate maps.
+    """
+    if explicit is not None:
+        candidates = [explicit if os.path.isabs(explicit) else os.path.join(root, explicit)]
+    else:
+        candidates = [os.path.join(root, "docs"), root]
+    for candidate in candidates:
+        if same_path(candidate, register_dir):
+            rel = os.path.relpath(os.path.normpath(candidate), root)
+            if not rel.startswith(".."):
+                return "./" if rel == "." else rel + "/"
+    return rel_label(register_dir, root)
+
+
 def same_path(a, b):
     return os.path.realpath(a) == os.path.realpath(b)
 
@@ -777,9 +799,11 @@ def check_readme_footer(rep, register_dir):
     if text is None:
         rep.add("WARN", "readme-footer", "no README.md in the register directory — the map file is missing")
         return
-    footer = negated = inline = mention = 0
+    footer = negated = inline = mention = title_residue = 0
     for line in unfenced_lines(split_lines(text)):
         bare = LINE_PREFIX_RE.sub("", line)
+        if README_TITLE_PLACEHOLDER_RE.match(line):
+            title_residue += 1
         if FOOTER_LINE_RE.match(bare):
             # A declaration is valid only when the whole visible line remains
             # affirmative. Suffixes such as “; this was not installed” revoke
@@ -798,7 +822,11 @@ def check_readme_footer(rep, register_dir):
             continue
         if WIRING_MENTION_RE.search(bare):
             mention += 1
-    if footer:
+    if title_residue:
+        rep.add("WARN", "readme-footer",
+                "README.md title is still the template placeholder ([PROJECT NAME]) — fill it at the next Close%s"
+                % ("" if footer else "; the install footer is also absent or not declared"))
+    elif footer:
         rep.add("PASS", "readme-footer", "install footer present in README.md on its own line")
     elif negated:
         rep.add("WARN", "readme-footer",
@@ -2158,7 +2186,7 @@ def run(root, today, no_git, register=None, rep=None):
               % (VERSION, rel_label(register_dir, root), today, note))
         print()
     dec = scan_decisions(register_dir, rep)
-    check_wiring(rep, root, rel_label(register_dir, root))
+    check_wiring(rep, root, selected_label(root, register_dir, register))
     check_readme_footer(rep, register_dir)
     newest, install, cited = check_changelog(rep, register_dir, today)
     check_changelog_decision_refs(rep, cited, dec)

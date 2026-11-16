@@ -715,7 +715,13 @@ class FreshInstallTests(unittest.TestCase):
                   .replace("[One paragraph on what this phase is producing and its scope "
                            "boundaries. Keep to 2–4 sentences, present tense.]",
                            "Shaping the first release. Scope stops at the ingest path."))
+        # ...and the Blocked alternative and the README title (SKILL.md Step 1).
+        status = re.sub(r"(\*No items\.\*) \[Or a table:[^\n]*\]", r"\1", status)
         self.assertNotIn("[Phase name", status)
+        self.assertNotIn("[Or a table", status)
+        readme = (self.docs / "README.md").read_text(encoding="utf-8")
+        (self.docs / "README.md").write_text(
+            readme.replace("[PROJECT NAME]", "Fixture"), encoding="utf-8")
         (self.docs / "STATUS.md").write_text(status, encoding="utf-8")
         changelog = (self.docs / "CHANGELOG.md").read_text(encoding="utf-8")
         head, _, _ = changelog.partition("Installed the project-docs-protocol at")

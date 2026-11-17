@@ -40,7 +40,9 @@ class DelegationTests(unittest.TestCase):
                      "evidence", "next Close", "delegated"):
             self.assertIn(text, block)
         with self.subTest(surface="delegation gate"):
-            self.assertIn("writes no register unless its delegation brief explicitly assigns that duty",
+            self.assertIn("writes the register files (STATUS, CHANGELOG, DECISIONS, and LEDGER if installed)",
+                          " ".join(block.split()))
+            self.assertIn("writes none of them unless its delegation brief explicitly assigns that duty",
                           " ".join(block.split()))
         with self.subTest(surface="delegated Close"):
             opening = (ROOT / "SKILL.md").read_text().split("## Mode 3", 1)[1].split("###", 1)[0]
@@ -86,7 +88,9 @@ class DelegationTests(unittest.TestCase):
 
     def test_git_read_errors_skip_without_partial_count_or_failure(self):
         doctor = load_doctor()
-        for results in ((None,), ("a" * 40, None), ("a" * 40, "b" * 40, None)):
+        for results in ((None,), ("a" * 40, None), ("a" * 40, "b" * 40, None),
+                        ("a" * 40, "\0invalid\0"),
+                        ("a" * 40, "\0" + "b" * 40 + "\0\nwork.txt\0\0invalid\0")):
             with self.subTest(results=results):
                 report = doctor.Report(echo=False)
                 with patch.object(doctor, "run_git", side_effect=results):

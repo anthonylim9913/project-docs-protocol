@@ -51,7 +51,7 @@ import stat
 import subprocess
 import sys
 
-VERSION = "1.9.0"
+VERSION = "1.9.1"
 # Version of the --json document's shape; bumped only when a key is added, removed or redefined.
 JSON_SCHEMA = 1
 STRUCTURAL_LIMITS = (
@@ -2208,19 +2208,27 @@ def check_unrecorded_commits(rep, root, register_dir, top):
     if not anchor:
         rep.add("SKIP", "git-unrecorded-commits", "CHANGELOG.md has no reachable commit, or git history is unavailable")
         return
-    commits = run_git(root, ["rev-list", "HEAD", "^" + anchor.strip()])
-    if commits is None:
+    history = run_git(root, ["-c", "log.diffMerges=separate", "log", "--root", "-m", "--always", "--no-renames",
+                             "--format=%x00%H", "--name-only", "-z", "HEAD", "^" + anchor.strip()])
+    if history is None:
         rep.add("SKIP", "git-unrecorded-commits", "git history could not be read")
         return
-    count = 0
-    for commit in commits.splitlines():
-        paths = run_git(root, ["diff-tree", "--root", "-m", "--no-commit-id",
-                               "--name-only", "-z", "--no-renames", "-r", commit])
-        if paths is None:
+    if history and not (history.startswith("\0") and history.endswith("\0")):
+        rep.add("SKIP", "git-unrecorded-commits", "git commit paths could not be read")
+        return
+    touched_register = {}
+    for record in history.split("\0\0"):
+        if not record:
+            continue
+        commit, _separator, paths = record.lstrip("\0").partition("\0")
+        if not re.fullmatch(r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})", commit):
             rep.add("SKIP", "git-unrecorded-commits", "git commit paths could not be read")
             return
-        if not register_paths.intersection(paths.split("\0")):
-            count += 1
+        if paths.startswith("\n"):
+            paths = paths[1:]
+        touched_register[commit] = (touched_register.get(commit, False)
+                                    or bool(register_paths.intersection(paths.split("\0"))))
+    count = sum(not touched for touched in touched_register.values())
     rep.add("WARN" if count > UNRECORDED_COMMITS_WARN else "INFO", "git-unrecorded-commits",
             "%d commits reachable from HEAD since the newest CHANGELOG.md commit touch no register file (warn >%d) — advisory only; not proof of missing entries"
             % (count, UNRECORDED_COMMITS_WARN))

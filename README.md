@@ -67,7 +67,7 @@ Plain text was a deliberate choice: it is the one format every model can read an
 ## Verified, not asserted
 
 - **Audited across 25 projects** before going public. In the 7-row churn table, the three roots with close instructions (one carrying the block verbatim, two hand-written) rewrote STATUS (churn 0.67–0.83); the four others, two without instructions and two with project-authored "top line" instructions, accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
-- **673 automated test methods**: 432 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
+- **675 automated test methods**: 434 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
 - **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
 - **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
 
@@ -93,7 +93,7 @@ Then, in any project, ask for "set up project docs". The skill recognises a proj
 `python3 scripts/docs-doctor.py "<project-root>" --json` runs the same checks as the text report and prints them as exactly one JSON object on stdout, on one line (wrapped here for reading):
 
 ```json
-{"tool": "docs-doctor", "schema": 1, "version": "1.9.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
+{"tool": "docs-doctor", "schema": 1, "version": "1.9.1", "root": "/abs/project", "register_dir": "/abs/project/docs",
  "today": "2026-10-23",
  "checks": [{"id": "wiring-block", "level": "PASS", "message": "present in 1 of 1 instructions files: AGENTS.md"}],
  "summary": {"pass": 1, "warn": 0, "fail": 0, "info": 0, "skip": 0},

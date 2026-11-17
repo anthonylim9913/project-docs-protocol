@@ -85,8 +85,9 @@ This project uses the project-docs-protocol (docs in `<docs-path>/`).
   list, and the current-state sections only) and the last 3–5 entries of
   `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're
   about to work on; then read live `LEDGER.md` rows if installed.
-- **Delegation.** Only the session owning the work writes registers. A delegated
-  agent (subagent, workflow agent, lane) writes no register unless its delegation
+- **Delegation.** Only the session owning the work writes the register files
+  (STATUS, CHANGELOG, DECISIONS, and LEDGER if installed). A delegated agent
+  (subagent, workflow agent, lane) writes none of them unless its delegation
   brief explicitly assigns that duty. It returns changes (files, commits, branch),
   each choice between real alternatives, open questions and evidence. The owning
   session records these at its next Close and marks the work as delegated.
@@ -312,7 +313,7 @@ One line per check: level, check name, measured value with its unit, and the thr
 | `decisions-tags` | `+tags` ending a DECISIONS title that the ledger's `Tags:` line does not declare: FAIL (absent file: the group's single `ledger` SKIP line). | A decision tagged with a token the ledger does not know is grouped with nothing. Declare the intended vocabulary in the ledger or append a correction explaining the historical tag. Never edit a historical decision title to silence this check; remove tokens only from unused template examples. |
 | `git-repository` | INFO: whether the project root is the repository root, or nested inside a larger repository. | Nested roots share one index with everything above them — relevant to the one-writer rule. |
 | `git-status-churn` | With git only: deleted/added lines over commits touching STATUS. WARN below 0.2 over 10 or more commits; INFO under 10 commits; SKIP without git. | Churn near 0.7–0.8 is a file being rewritten; near 0.1 is a file being appended to. The dated audit associated rewrite instructions with higher churn, including compatible hand-written instructions; it did not establish a causal effect of the exact block. Fix the wiring first. |
-| `git-unrecorded-commits` | Commits reachable from HEAD but not from its newest CHANGELOG.md commit, touching none of the selected register's STATUS, CHANGELOG, DECISIONS, LEDGER or LEDGER-ARCHIVE files. INFO at 0–3, WARN above `UNRECORDED_COMMITS_WARN = 3`; never FAIL. SKIP with `--no-git`, without git/repository/CHANGELOG history, or on git read errors. | An ancestry-based prompt to Close, not semantic coverage proof: mixed register/code commits are excluded, merge commits touching a register against any parent are excluded, and timestamps are not compared. All repository commits count, even outside a nested project; shallow history limits the observation. |
+| `git-unrecorded-commits` | Commits reachable from HEAD but not from its newest CHANGELOG.md commit, touching none of the selected register's STATUS, CHANGELOG, DECISIONS, LEDGER or LEDGER-ARCHIVE files. One Git query reads the anchor and one reads the whole range, not one per commit. INFO at 0–3, WARN above `UNRECORDED_COMMITS_WARN = 3`; never FAIL. SKIP with `--no-git`, without git/repository/CHANGELOG history, or on git read errors. | An ancestry-based prompt to Close, not semantic coverage proof: mixed register/code commits are excluded, merge commits touching a register against any parent are excluded, and timestamps are not compared. All repository commits count, even outside a nested project; shallow history limits the observation. |
 
 ### Acting on it
 

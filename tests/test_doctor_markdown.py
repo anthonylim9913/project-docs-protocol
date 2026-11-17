@@ -165,17 +165,21 @@ class DoctorMarkdownTests(unittest.TestCase):
                          [(c['name'], c['live']) for c in saved['cases']])
         expected = [{key: case[key] for key in ("name", "source", "live")} for case in markdown_cases()]
         delegation = json.loads((fixture / "observations-delegation-20261116.json").read_text())
-        current = json.loads((fixture / "observations-delegation-explicit-20261117.json").read_text())
+        explicit = json.loads((fixture / "observations-delegation-explicit-20261117.json").read_text())
+        current = json.loads((fixture / "observations-register-files-20261117.json").read_text())
         self.assertEqual([(c['name'], c['live']) for c in delegation['cases']],
                          [(c['name'], c['live']) for c in saved['cases']])
         self.assertEqual([(c['name'], c['live']) for c in current['cases']],
                          [(c['name'], c['live']) for c in saved['cases']])
+        self.assertEqual([(case['name'], case['live']) for case in explicit['cases']],
+                         [(case['name'], case['live']) for case in saved['cases']])
         self.assertEqual([{key: case[key] for key in ("name", "source", "live")}
                           for case in current["cases"]], expected)
         self.assertEqual(saved["parser"], "markdown-it-py 4.0.0; commonmark preset")
         self.assertEqual(delegation["parser"], "markdown-it-py 4.2.0; commonmark preset")
+        self.assertEqual(explicit["parser"], "markdown-it-py 4.0.0; commonmark preset")
         self.assertEqual(current["parser"], "markdown-it-py 4.0.0; commonmark preset")
-        for case in saved["cases"] + delegation["cases"] + current["cases"]:
+        for case in saved["cases"] + delegation["cases"] + explicit["cases"] + current["cases"]:
             self.assertEqual(case["oracle_live"], case["live"], case["name"])
 
 

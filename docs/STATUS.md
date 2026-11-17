@@ -7,15 +7,16 @@
 **v0.6.0 is the latest public tag. This branch remains an unreleased
 v0.7.0 candidate awaiting the owner's release gate.**
 
-The independent reviewer approved five closures on `8059cdc` (2026-11-17);
-the orchestrating session relayed that approval to this lane. Its clean-clone
-proofs were 432 core / 123 research / 118 Architect OK, Doctor exit 0 and
-registry PASS. No owner approval of those closures or release is claimed.
-The pre-publication wording follow-up makes delegation duties explicit and
-corrects approval provenance without changing Doctor behavior or version.
-The lane's default-temp proofs pass: 432 core / 123 research / 118 Architect,
-Doctor exit 0, registry PASS and git diff --check clean. This follow-up has
-not received a new independent review.
+The independent reviewer approved five closures on `8059cdc` (2026-11-17),
+with clean-clone proofs 432/123/118 OK, Doctor exit 0 and registry PASS. The
+orchestrating session relayed that approval; no owner approval is claimed.
+The pre-publication follow-ups correct approval provenance and explicitly
+name the delegated register files. Doctor 1.9.1 batches uncovered-commit
+history into one range query after its unchanged CHANGELOG anchor query;
+levels, exact counts, exclusions and exit-code contracts are unchanged.
+D-0044 records batching over a cap; README totals 675 methods (434/123/118).
+Default-temp proofs pass: suites 434/123/118 OK; Doctor exit 0, registry PASS,
+git diff --check clean. These follow-ups have no new independent review.
 Both companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
 No tag, push or publication is authorized here.
 

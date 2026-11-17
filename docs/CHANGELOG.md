@@ -1,3 +1,73 @@
+## 2026-11-17 — name delegated register files and batch Doctor's uncovered-commit history
+
+Delegated lane `v070-integrate` applies the second pre-publication ruling
+after `e26a1ac`. The Install Step 2 delegation bullet explicitly names the
+register files STATUS, CHANGELOG, DECISIONS and LEDGER if installed: only the
+owning session writes them; a delegated agent writes none of them unless
+its delegation brief explicitly assigns that duty. Every current carried
+block, shared CLI control and active Markdown wrapper uses the same complete
+bullet, preserving the required return report and owning-session Close.
+Historical wiring observations remain historical.
+
+Doctor's git-unrecorded-commits no longer launches a diff-tree subprocess
+for every commit. D-0044 chooses one range-wide, NUL-delimited Git log after
+the existing CHANGELOG anchor query, retaining exact counts rather than
+introducing a cap or a lower-bound message. Commit identities group separate
+merge-parent diffs; touching a selected register against any parent excludes
+the merge. A command-local log.diffMerges=separate setting prevents user
+first-parent configuration from changing that rule. Empty commits still
+count, and malformed or unreadable history SKIPs without partial counts.
+The number of Git subprocesses is fixed at two; the range's output and
+parsing still scale with history, within the existing Git-command timeout.
+
+D-0043's newest reachable CHANGELOG ancestry anchor, repository-wide scope,
+register exclusions, INFO at 0–3, WARN above 3, SKIP without git/history or
+on read errors, and never-FAIL advisory contract are unchanged. No check or
+gate is removed. Under D-0024, Doctor moves from 1.9.0 to 1.9.1 because its
+check implementation changes, even though its exact-count message and levels
+stay the same. The patch version marks a performance correction, not a new
+check; JSON schema stays 1. README's JSON example is updated; the inventory
+remains up to 44 named checks.
+
+Regression first: the strengthened named-file delegation assertion and a
+2,000-commit temporary-repository regression both failed before the fixes;
+the old loop attempted a third Git subprocess. The large-range regression
+now counts all 2,000 empty commits with one anchor and one range query,
+asserting call count rather than a flaky elapsed-time threshold. A second
+new method checks a merge whose register change appears only against its
+second parent, including first-parent Git configuration; that subcase also
+failed before the command-local override. Existing tests retain threshold,
+Close reset, layouts, register exclusions, merged history and SKIP coverage.
+The old substring assertion changes only to require the explicitly named
+files and the stronger "none of them" gate; no existing test is weakened.
+
+The dependent fixture and current-oracle checks failed before regeneration.
+Only the two changed current hardening input hashes are refreshed. New
+observations-register-files-20261117.json independently records all 29
+authored wrappers with markdown-it-py 4.0.0 CommonMark: zero expectation
+disagreements, unchanged case names and visibility expectations. No existing
+snapshot or historical CLI capture is overwritten. Focused delegation,
+Git, Markdown, manifest and JSON tests: 28 OK. Two added methods bring the
+discovered totals to 434 core, 123 research and 118 Architect, 675 overall
+including the 30 registry methods already in core; README is synchronized.
+
+Close order is this new CHANGELOG entry, unchanged ledger rows, then STATUS
+rewritten; the optional D-0044 implementation choice is appended afterward.
+No new ledger ID or exclusion is used. LG-0044 remains OPEN for stage 2 and
+LG-0060 stays OPEN without a fix. The five previously approved closures and
+their independent-review evidence remain unchanged. The non-UTF-8 filename
+case and three permission-mode subcases remain unverified on this filesystem.
+Both companion trees and their recorded 0.2.2 identities are unchanged.
+v0.6.0 remains the latest public tag; this is an unreleased v0.7.0 candidate
+awaiting the owner's release gate, not a newly independently reviewed release.
+All six proofs pass with the default temporary directory: core 434 tests OK
+(1 skip), research 123 OK (3 skips), Architect 118 OK; Doctor 41 checks,
+34 PASS and 7 INFO, no WARN/FAIL, exit 0; registry PASS; git diff --check
+clean. A separate temporary-history parity check matches the original
+diff-tree count on empty commits, hash-like names, newline/tab filenames
+and all selected register exclusions. These are lane proofs, not a new
+independent review. No tag, push, fetch or publication is performed.
+
 ## 2026-11-17 — tighten delegated register duties and correct closure approval provenance
 
 Delegated lane `v070-integrate` applies the relayed pre-publication wording

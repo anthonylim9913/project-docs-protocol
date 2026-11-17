@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,8 +31,9 @@ This project uses the project-docs-protocol (docs in `docs/`).
 - Read STATUS in full if it is under ~60 lines.
 - STATUS is rewritten, not appended.
 - **Precedence.** Append CHANGELOG first, edit LEDGER, then rewrite STATUS.
-- **Delegation.** Only the session owning the work writes registers. A delegated
-  agent (subagent, workflow agent, lane) writes no register unless its delegation
+- **Delegation.** Only the session owning the work writes the register files
+  (STATUS, CHANGELOG, DECISIONS, and LEDGER if installed). A delegated agent
+  (subagent, workflow agent, lane) writes none of them unless its delegation
   brief explicitly assigns that duty. It returns changes (files, commits, branch),
   each choice between real alternatives, open questions and evidence. The owning
   session records these at its next Close and marks the work as delegated.
@@ -649,6 +651,55 @@ class DoctorGitTests(unittest.TestCase):
             handle.write("\nRecorded work.\n")
         self.commit("close")
         self.assertIn("0 commits", self.check_line(self.doctor(), "git-unrecorded-commits")[1])
+
+    def test_unrecorded_commits_large_range_uses_bounded_git_work(self):
+        self.commit("install")
+        branch = self.git("symbolic-ref", "HEAD").strip()
+        parent = self.git("rev-parse", "HEAD").strip()
+        commands = []
+        for number in range(1, 2001):
+            commands.append("commit %s\nmark :%d\n"
+                            "committer Doctor Fixture <doctor@example.invalid> 1794873600 +0000\n"
+                            "data 4\nwork\nfrom %s\n\n" % (branch, number, parent))
+            parent = ":%d" % number
+        imported = subprocess.run(["git", "-C", str(self.project), "fast-import", "--quiet"],
+                                  input="".join(commands), capture_output=True, text=True,
+                                  env=self.env, timeout=60)
+        self.assertEqual(imported.returncode, 0, imported.stderr)
+        doctor = load_doctor()
+        original_git = doctor.run_git
+        calls = []
+
+        def bounded_git(root, args):
+            calls.append(args)
+            self.assertLessEqual(len(calls), 2, "one anchor query and one range query, not per-commit Git")
+            return original_git(root, args)
+
+        report = doctor.Report(echo=False)
+        with patch.object(doctor, "run_git", side_effect=bounded_git):
+            doctor.check_unrecorded_commits(report, str(self.project),
+                                           str(self.project / "docs"), str(self.project))
+        self.assertEqual(report.lines[0][:2], ("WARN", "git-unrecorded-commits"))
+        self.assertIn("2000 commits", report.lines[0][2])
+        self.assertEqual(len(calls), 2)
+
+    def test_unrecorded_commits_merge_touching_register_against_any_parent_is_excluded(self):
+        self.commit("install")
+        main_branch = self.git("branch", "--show-current").strip()
+        self.git("checkout", "-b", "register-side")
+        (self.project / "work.txt").write_text("work", encoding="utf-8")
+        self.commit("side work")
+        self.git("checkout", main_branch)
+        with self.status_path().open("a") as handle:
+            handle.write("\nRegister update.\n")
+        self.commit("main register")
+        self.git("merge", "--no-ff", "register-side", "-m", "merge register")
+        for merge_mode in ("separate", "first-parent"):
+            with self.subTest(merge_mode=merge_mode):
+                self.git("config", "log.diffMerges", merge_mode)
+                level, text = self.check_line(self.doctor(), "git-unrecorded-commits")
+                self.assertEqual(level, "INFO", text)
+                self.assertIn("1 commits", text)
 
     def test_unrecorded_commits_exclude_every_register_but_not_mixed_work(self):
         self.commit("install")

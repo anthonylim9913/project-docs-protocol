@@ -126,3 +126,15 @@ expectations, not Doctor output. The suite checks the exact current source bytes
 against this new snapshot and still validates the earlier 4.2.0 delegation
 recording. All earlier snapshots and historical CLI captures stay byte-identical;
 the runtime suites remain standard-library only.
+
+## Named register files snapshot — 2026-11-17
+
+`observations-register-files-20261117.json` records the 29 current wrappers
+after the delegation bullet explicitly names STATUS, CHANGELOG, DECISIONS
+and optional LEDGER. The independently run markdown-it-py 4.0.0 CommonMark
+parser agrees with all retained visibility expectations. Case names and
+expectations are unchanged; only authored block text and its derived spans,
+tokens and hashes change. The current-source identity test uses this new
+snapshot and continues checking the earlier explicit-delegation snapshot's
+expectations. No existing oracle snapshot or historical CLI capture changes;
+normal tests remain standard-library only.

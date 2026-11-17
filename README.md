@@ -47,7 +47,7 @@ Four mechanisms work together.
 
 **Integrity by design.** The write order is the safety mechanism: the history is written before the dashboard, so an interrupted session can lose a STATUS update but never the record of what happened. History registers are append-only by rule; Doctor does not verify byte history, so a committed rewrite of a past entry is not caught by it. STATUS has a size ceiling, because a growing dashboard is history leaking into it. Decisions name the alternatives they rejected, so a later session builds on them instead of re-arguing them.
 
-**Automated checks.** Doctor is a read-only health check with up to 43 named check types in a full register report, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. An absent or unusable ledger substitutes a single aggregate `ledger` result for its detailed checks. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
+**Automated checks.** Doctor is a read-only health check with up to 44 named check types in a full register report, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. An absent or unusable ledger substitutes a single aggregate `ledger` result for its detailed checks. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
 
 ## Extensions, adopted when a project needs them
 
@@ -91,7 +91,7 @@ Then, in any project, ask for "set up project docs". The skill recognises a proj
 `python3 scripts/docs-doctor.py "<project-root>" --json` runs the same checks as the text report and prints them as exactly one JSON object on stdout, on one line (wrapped here for reading):
 
 ```json
-{"tool": "docs-doctor", "schema": 1, "version": "1.8.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
+{"tool": "docs-doctor", "schema": 1, "version": "1.9.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
  "today": "2026-10-23",
  "checks": [{"id": "wiring-block", "level": "PASS", "message": "present in 1 of 1 instructions files: AGENTS.md"}],
  "summary": {"pass": 1, "warn": 0, "fail": 0, "info": 0, "skip": 0},

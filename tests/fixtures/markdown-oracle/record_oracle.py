@@ -1,4 +1,4 @@
-"""Development-only snapshot writer; requires markdown-it-py==4.0.0.
+"""Development-only snapshot writer; requires markdown-it-py 4.0.0 or 4.2.0.
 
 Run from repository root using the ignored oracle venv described in README.
 The normal test suite reads the result and never imports this dependency.
@@ -23,8 +23,8 @@ def main():
     arguments.add_argument('--out', type=Path, default=SNAPSHOT)
     args = arguments.parse_args()
     version = importlib.metadata.version("markdown-it-py")
-    if version != "4.0.0":
-        raise SystemExit("Use markdown-it-py 4.0.0 for the retained oracle")
+    if version not in ("4.0.0", "4.2.0"):
+        raise SystemExit("Use markdown-it-py 4.0.0 or 4.2.0 for the retained oracle")
     parser = MarkdownIt("commonmark")
     frozen = json.loads(args.snapshot.read_text(encoding="utf-8"))
     observations = []

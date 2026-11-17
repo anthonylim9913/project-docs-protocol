@@ -84,6 +84,18 @@ first integration run's sole failure was exact source-text identity against the
 old snapshot; real CLI visibility expectations still passed. This is a fixture
 input change for the new wiring, not a change to Markdown support or outcomes.
 
+## Delegation snapshot — 2026-11-16
+
+`observations-delegation-20261116.json` records all 29 wrappers with the new
+delegation clause. The original and routing snapshots remain byte-identical.
+The authored case names and visibility expectations are unchanged; the locally
+available markdown-it-py 4.2.0 CommonMark parser independently agrees with all
+29. Only development recording needs that package; the suites remain stdlib.
+Use the recorder's `--snapshot` and `--out` options to avoid replacing history.
+The snapshot input is the current authored wrapper text with the original
+name/live expectations, not Doctor output. The recorder accepts both pinned
+parser versions and records the version actually used.
+
 ## Routing bullet removed — 2026-10-02
 
 The generic routing bullet left the Install block (D-0020); a project with a

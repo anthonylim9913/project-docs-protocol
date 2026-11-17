@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -284,7 +285,11 @@ class AcceptanceCliTests(unittest.TestCase):
     def test_wrong_doctor_summary_counts(self):
         def corrupt(p):
             stage=p['cases'][0]['stages'][0]
-            stage['stdout']=stage['stdout'].replace('23 checks: 14 pass', '23 checks: 13 pass')
+            stage['stdout'], count = re.subn(
+                r'^(\d+ checks: )(\d+)( pass,)',
+                lambda match: match[1] + str(int(match[2]) - 1) + match[3],
+                stage['stdout'], flags=re.M)
+            self.assertEqual(count, 1)
         self.rejected(corrupt, 'doctor summary')
 
     def test_indented_extra_doctor_check(self):

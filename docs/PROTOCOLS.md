@@ -17,3 +17,8 @@ read-only reviewer (`staging/architect-protocol/SCHEMA.md`).
 
 Core installations need only README, STATUS, CHANGELOG and DECISIONS plus agent
 wiring; no registry or companion is required.
+
+Delegation keeps one register writer: agents return their changes, real choices,
+questions and evidence to the owning session for its next Close. Worktree lanes
+may leave owed fragments; only the direct writer lands them and allocates IDs.
+See Mode 3, *Close after delegation*, for In-flight rows and landing order.

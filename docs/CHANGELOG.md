@@ -74,6 +74,51 @@ LG-0044 stage 1, LG-0058 and LG-0059 are on separate local branches. v0.5.0
 remains the latest public tag; this candidate awaits independent review and
 the owner's release gate. No push, tag or publication is authorized here.
 
+## 2026-11-16 — LG-0044 ruling follow-up: refuse an invalid HEAD identity
+
+The owner reports independent acceptance of the census behavior and one remaining
+fail-open path. Manifest generation now requires a full 40- or 64-digit hexadecimal
+HEAD identity before creating output directories or writing any manifest bytes;
+empty or malformed successful Git output is refused with the existing exit 2.
+Patched-subprocess regressions ran red in all 20 invalid-output cases, then passed;
+all 7 census tests pass, including existing-output preservation and valid identities.
+LG-0044 stays OPEN for the stage-2 self-approval gap under D-0029.
+
+## 2026-11-16 — LG-0044 stage 1: default binding and a fail-closed input census (D-0029)
+
+Merged the local `release/v0.6.0` candidate at `078684d`, whose subject starts
+`v0.6.0-candidate:`, before porting the alternate design's scope code and
+default-binding tests only. Every file is now bound unless D-0029 explicitly
+excludes it; new normative documents, root files, directories and the tests
+workflow are covered without extending an allowlist. The exact exclusions are
+the five live registers, the two named review documents, `.git/`, `tests/.tmp/`
+and `.DS_Store` by name. Bytecode and import hooks are refused rather than omitted.
+CHANGELOG and DECISIONS history-preservation checks are unchanged.
+
+The census uses `os.walk` with an error handler that raises `cannot enumerate:
+<path>`, prunes only the excluded directories, and computes untracked inputs as
+the in-scope walk minus `git ls-tree -r HEAD`. Every manifest Git operation
+captures both streams and refuses any nonzero exit or stderr output. Stray
+inputs are named, and the CLI's existing refusal exit remains 2. The independent
+expected manifest in `tests/acceptance_support.py` now uses committed paths and
+literal exclusions rather than the old allowlist; it does not import scope code.
+
+Tests ran red before the implementation: 46 focused tests produced 32 failures
+and 3 errors, including the previously omitted unreadable untracked
+`normative/RULES.md` and unchecked Git warnings. The final root proof ran 417
+tests, OK (1 skip); research ran 123, OK (3 skips); Architect ran 118, OK.
+The focused census rerun passed all 5 tests without skips. The existing
+committed-blob mutation control required its guard's exact source text, which
+was preserved rather than changing or weakening that test. The new census
+fixtures disable automatic Git housekeeping during initial commits to avoid
+detached cleanup races; the real CLI permission-denial checks remain intact.
+
+LG-0044 stays OPEN: the scope gap and unreadable-file case are fixed pending
+independent review. The self-approval gap waits for stage 2; no external judge,
+harness record, pin or digest code was ported. No new IDs or owner decisions.
+Only LG-0044's live row is updated after this entry; STATUS and README counts
+are left for the integrator, as directed by the lane brief.
+
 ## 2026-10-29 — correct four more README statements and make STATUS true after the tests workflow merges
 
 On `chore/ci-and-readme-accuracy` after an independent reproduction against v0.5.0. README "Verified, not asserted" now states `docs/EVIDENCE.md` section 4 as written: its table has 7 rows; one high-churn root carried the block verbatim and two used hand-written instructions; the low-churn group is two roots without instructions and two with project-authored "top line" instructions. "Integrity by design" no longer says history registers cannot be silently rewritten: append-only is a rule, and Doctor does not verify byte history (SKILL.md "What Doctor does not check"). The Codex install line creates `~/.codex/skills` first, and the manual-install Doctor command says it runs from a checkout of this repository. STATUS no longer says the branch awaits review and is not merged; it names the tests workflow as present on `main`. No version bump, no new ledger row or decision.

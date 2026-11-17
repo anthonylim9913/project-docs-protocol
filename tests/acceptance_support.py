@@ -39,10 +39,13 @@ def generate(root, directory):
     hashes = directory / 'hashes.json'
     # Scope comes from committed paths and this reviewed contract, never child output.
     paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', '-z', 'HEAD'], cwd=root, text=True).split('\0')
-    docs = {'docs/README.md', 'docs/MIGRATION.md', 'docs/PROTOCOLS.md', 'docs/SKILL-REGISTRY.md',
-            'docs/BRIEF-EXAMPLE.md', 'docs/EVIDENCE.md'}
-    expected = {p for p in paths if p.startswith(('scripts/', 'templates/', 'tests/', 'staging/', '.github/'))
-                or p in {'SKILL.md', 'AGENTS.md', 'CLAUDE.md', 'README.md', 'LICENSE'} | docs}
+    excluded = {'docs/STATUS.md', 'docs/CHANGELOG.md', 'docs/DECISIONS.md',
+                'docs/LEDGER.md', 'docs/LEDGER-ARCHIVE.md',
+                'docs/HARDENING-REVIEW.md', 'docs/LESSONS-REVIEW.md'}
+    expected = {name for name in paths if name and name not in excluded
+                and '.git' not in name.split('/')
+                and not name.startswith('tests/.tmp/')
+                and name.rsplit('/', 1)[-1] != '.DS_Store'}
     import hashlib
     hashes.write_text(json.dumps({name: hashlib.sha256((root / name).read_bytes()).hexdigest()
                                   for name in expected}))

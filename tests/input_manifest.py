@@ -13,8 +13,15 @@ import tempfile
 import re
 import subprocess
 
+EXCLUDED = frozenset({
+    'docs/STATUS.md', 'docs/CHANGELOG.md', 'docs/DECISIONS.md', 'docs/LEDGER.md',
+    'docs/LEDGER-ARCHIVE.md',
+    'docs/HARDENING-REVIEW.md', 'docs/LESSONS-REVIEW.md',
+})
+EXCLUDED_DIRECTORIES = ('.git/', 'tests/.tmp/')
+SKIPPED_BASENAMES = frozenset({'.DS_Store'})
+BYTECODE_SUFFIXES = ('.pyc', '.pyo', '.so', '.pyd', '.pth')
 ROOT_FILES = {'SKILL.md', 'AGENTS.md', 'CLAUDE.md', 'README.md', 'LICENSE'}
-DIRECTORIES = ('scripts/', 'templates/', 'tests/', 'staging/', '.github/')
 DOC_INPUTS = {'docs/README.md', 'docs/MIGRATION.md', 'docs/PROTOCOLS.md', 'docs/SKILL-REGISTRY.md',
               'docs/BRIEF-EXAMPLE.md', 'docs/EVIDENCE.md'}
 REQUIRED = ROOT_FILES | DOC_INPUTS | {
@@ -30,6 +37,17 @@ REQUIRED = ROOT_FILES | DOC_INPUTS | {
 } | {'templates/' + n for n in ('README.md', 'STATUS.md', 'CHANGELOG.md', 'DECISIONS.md', 'LEDGER.md')}
 
 
+def git(root, *arguments, **kwargs):
+    """Refuse failed or stderr-producing Git operations, including warnings."""
+    result = subprocess.run(['git', '-C', str(root), *arguments], capture_output=True, **kwargs)
+    if result.returncode or result.stderr:
+        diagnostic = result.stderr
+        if isinstance(diagnostic, bytes):
+            diagnostic = diagnostic.decode('utf-8', errors='replace')
+        raise ValueError('git ' + arguments[0] + ' failed (exit ' + str(result.returncode) + '): ' + diagnostic.strip())
+    return result.stdout
+
+
 def valid_path(value):
     return (isinstance(value, str) and bool(value) and not any(c in value for c in '\\:\n\r\0')
             and not PurePosixPath(value).is_absolute()
@@ -37,19 +55,37 @@ def valid_path(value):
 
 
 def in_scope(name):
-    if '__pycache__' in name.split('/') or name.endswith('.pyc') or name.startswith('tests/.tmp/'):
+    if not name or name.rsplit('/', 1)[-1] in SKIPPED_BASENAMES:
         return False
-    selected = name in ROOT_FILES | DOC_INPUTS or name.startswith(DIRECTORIES)
-    if selected and not valid_path(name):
+    if name in EXCLUDED or name == '.git' or name.startswith(EXCLUDED_DIRECTORIES):
+        return False
+    if '__pycache__' in name.split('/') or name.endswith(BYTECODE_SUFFIXES):
+        raise ValueError('bytecode or import hook in the reviewed tree (remove it): ' + name)
+    if not valid_path(name):
         raise ValueError('unsupported behavior input path: ' + repr(name))
-    return selected
+    return True
+
+
+def present_paths(root):
+    """Files and links on disk; linked directories are reported, never followed."""
+    found = []
+
+    def cannot_enumerate(error):
+        raise ValueError('cannot enumerate: ' + str(error.filename)) from error
+
+    for base, directories, files in os.walk(root, onerror=cannot_enumerate):
+        relative = Path(base).relative_to(root).as_posix()
+        prefix = '' if relative == '.' else relative + '/'
+        directories[:] = [d for d in directories if d != '.git'
+                          and not (prefix + d + '/').startswith(EXCLUDED_DIRECTORIES)]
+        found += [prefix + d for d in directories if (Path(base) / d).is_symlink()]
+        found += [prefix + f for f in files if f not in SKIPPED_BASENAMES]
+    return found
 
 
 def required_paths(root):
-    tracked = subprocess.check_output(['git', '-C', str(root), 'ls-tree', '-r', '--name-only', '-z', 'HEAD'], text=True).split('\0')
-    present = [p.relative_to(root).as_posix() for prefix in DIRECTORIES
-               for p in (root / prefix).rglob('*') if p.is_file() or p.is_symlink()]
-    paths = REQUIRED | {p for p in tracked + present if in_scope(p)}
+    tracked = git(root, 'ls-tree', '-r', '--name-only', '-z', 'HEAD', text=True).split('\0')
+    paths = REQUIRED | {p for p in tracked + present_paths(root) if in_scope(p)}
     for name in sorted(paths):
         path = root / name
         if not path.is_file() or any(p.is_symlink() for p in [path] + list(path.parents) if p != root and root in p.parents):
@@ -61,7 +97,7 @@ def committed_hashes(root, names):
     """Read immutable HEAD blob bytes; index flags cannot suppress this check."""
     names = sorted(names)
     requests = ''.join('HEAD:' + name + '\n' for name in names).encode('utf-8')
-    raw = subprocess.check_output(['git', '-C', str(root), 'cat-file', '--batch'], input=requests)
+    raw = git(root, 'cat-file', '--batch', input=requests)
     values = {}
     offset = 0
     for name in names:
@@ -80,14 +116,12 @@ def committed_hashes(root, names):
 
 
 def dirty_inputs(root):
-    """NUL-separated paths include both sides of renames and untracked files."""
-    modified = subprocess.check_output(['git', '-C', str(root), 'diff', '--name-only',
-                                        '--no-renames', '-z', 'HEAD'], text=True)
-    untracked = subprocess.check_output(['git', '-C', str(root), 'ls-files', '--others',
-                                        '-z'], text=True)
-    dirty = {p for p in (modified + untracked).split('\0') if in_scope(p)}
+    """Inventory untracked files independently of Git's optional directory walk."""
+    tracked = set(git(root, 'ls-tree', '-r', '--name-only', '-z', 'HEAD', text=True).split('\0'))
+    present = {name for name in present_paths(root) if in_scope(name)}
+    modified = git(root, 'diff', '--name-only', '--no-renames', '-z', 'HEAD', text=True)
+    dirty = {name for name in modified.split('\0') if in_scope(name)} | (present - tracked)
     current = hashes(root)
-    # Untracked paths already fail; avoid requesting a nonexistent HEAD blob.
     if not dirty:
         committed = committed_hashes(root, current)
         dirty.update(p for p in current if current[p] != committed[p])
@@ -118,13 +152,16 @@ def main():
             metadata = a.out.lstat()
             if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
                 p.error('output must be a regular unlinked file')
-        if dirty_inputs(root):
-            p.error('behavior inputs must be clean before manifest generation')
+        dirty = dirty_inputs(root)
+        if dirty:
+            p.error('behavior inputs must be clean before manifest generation: ' + ', '.join(dirty))
         values = hashes(root)
+        subject_commit = git(root, 'rev-parse', 'HEAD', text=True).strip()
+        if not re.fullmatch(r'(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})', subject_commit):
+            raise ValueError('git rev-parse HEAD returned invalid commit identity')
     except (ValueError, OSError, subprocess.CalledProcessError) as error:
         p.error(str(error))
-    result = {'schema': 1, 'kind': 'behavior-inputs', 'subject_commit': subprocess.check_output(
-        ['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip(),
+    result = {'schema': 1, 'kind': 'behavior-inputs', 'subject_commit': subject_commit,
         'files': values, 'tree_sha256': tree_hash(values)}
     a.out.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(prefix='.input-manifest-', dir=str(a.out.parent))

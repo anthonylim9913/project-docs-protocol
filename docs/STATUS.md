@@ -4,21 +4,13 @@
 
 ## Current phase
 
-**v0.6.0 is the latest public tag. This branch remains an unreleased
-v0.7.0 candidate awaiting the owner's release gate.**
+**v0.7.0 is the latest public tag: the delegation contract in the wiring
+block, Doctor 1.9.1, and LG-0044 stage 1.**
 
-The independent reviewer approved five closures on `8059cdc` (2026-11-17),
-with clean-clone proofs 432/123/118 OK, Doctor exit 0 and registry PASS. The
-orchestrating session relayed that approval; no owner approval is claimed.
-The pre-publication follow-ups correct approval provenance and explicitly
-name the delegated register files. Doctor 1.9.1 batches uncovered-commit
-history into one range query after its unchanged CHANGELOG anchor query;
-levels, exact counts, exclusions and exit-code contracts are unchanged.
-D-0044 records batching over a cap; README totals 675 methods (434/123/118).
-Default-temp proofs pass: suites 434/123/118 OK; Doctor exit 0, registry PASS,
-git diff --check clean. These follow-ups have no new independent review.
-Both companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
-No tag, push or publication is authorized here.
+An independent review of the candidate ran all three suites in a clean clone
+and approved five ledger closures; two pre-publication checks then tightened
+the delegation wording and bounded the unrecorded-commit check. Both
+companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
 
 Review limits: the non-UTF-8 filename case and three permission-mode subcases
 skip on this filesystem and were not independently verified.
@@ -27,11 +19,9 @@ skip on this filesystem and were not independently verified.
 
 `LEDGER.md` is authoritative: 5 OPEN and 0 VERIFYING live rows; no P0/P1.
 LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 are CLOSED in the archive
-with the independent observations and reviewer approval; 8 rows are archived.
+with the independent reviewer's observations; 8 rows are archived.
 
-| Item | Owner | Branch | End action |
-|---|---|---|---|
-| Release gate | owner | release/v0.7.0 | Approve release before publication or tags; no tag from this lane |
+*No items in flight.*
 
 ## Blocked
 
@@ -51,8 +41,10 @@ with the independent observations and reviewer approval; 8 rows are archived.
 
 ## Next
 
-1. Obtain the owner's release gate for the unreleased v0.7.0 candidate.
-2. Address LG-0044 stage 2, deferred waves and LG-0060 in separate scopes.
+1. LG-0044 stage 2: the self-approval gap (D-0029).
+2. LG-0060: make the test fixtures independent of where the temporary directory is.
+3. Waves B and C: LG-0049, LG-0053, then LG-0048.
+4. Decide whether the Doctor limits named in the v0.7.0 CHANGELOG entry become ledger rows.
 
 ## Open questions (owner)
 

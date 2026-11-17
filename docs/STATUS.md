@@ -4,25 +4,24 @@
 
 ## Current phase
 
-**v0.6.0 is the latest public tag: Doctor 1.8.0, `sha256v2:` registry
-identities, a tests workflow, and `AGENTS.md` as the documented default.**
+**v0.6.0 is the latest public tag. This branch is an unreleased v0.7.0
+candidate awaiting independent review and the owner's release gate.**
 
-Both companions remain 0.2.2 with recorded `sha256v2:` identities. The next
-candidate is being assembled from two local branches: LG-0044 stage 1 and the
-delegation contract with Doctor 1.9.0.
+`release/v0.7.0` integrates LG-0044 stage 1 and the delegation contract with
+Doctor 1.9.0, in that order. The merged core suite passes 432 tests (one skip).
+Both companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
+No tag, push or publication is authorized here.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 6 OPEN and 3 VERIFYING live rows; no P0/P1.
-LG-0052, LG-0056 and LG-0057 remain VERIFYING for independent review.
+`LEDGER.md` is authoritative: 5 OPEN and 5 VERIFYING live rows; no P0/P1.
+LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 remain VERIFYING.
 LG-0050 is closed in the archive under D-0032.
 
-| Item | Owner | Target | Notes |
+| Item | Owner | Branch | End action |
 |---|---|---|---|
-| LG-0044 stage 1 | separate local branch | next candidate | Census work is separate; both acceptance gaps remain OPEN under D-0029 |
-| LG-0058 delegation contract | separate local branch | next candidate | Built and judged once; the fix commit awaits re-review |
-| LG-0059 uncovered commits advisory | separate local branch | next candidate | Built with the delegation branch; same review state |
-| Closing review of LG-0052, LG-0056, LG-0057 | independent reviewer | next candidate | The v0.6.0 judge could not run on-disk tests in its sandbox |
+| Candidate and five VERIFYING rows | independent reviewer | release/v0.7.0 | Review the exact candidate and run on-disk proofs; close rows only on acceptance |
+| Release gate | owner | release/v0.7.0 | Approve release only after independent review; no tag from this lane |
 
 ## Blocked
 
@@ -32,17 +31,19 @@ LG-0050 is closed in the archive under D-0032.
 
 | Item | Deferred to | Reason |
 |---|---|---|
+| LG-0044 stage 2 | after candidate review | Stage 1 is integrated; the self-approval gap remains OPEN under D-0029 |
 | LG-0049 supplied-passage form and LG-0053 cache refusal | wave B | D-0030 and owner plan |
-| LG-0048 registry pointer | wave C | D-0031 |
+| LG-0048 registry pointer | wave C | D-0031; final-candidate registry gate still applies |
+| LG-0060 temporary-directory isolation | separate test repair | Default-temp proofs only; fixtures inherit a parent register when TMPDIR is inside a checkout |
 | Compaction procedure in Mode 3 | after a dry run | D-0005 remains current |
 | Full CommonMark/GFM conformance | separate scope | Doctor and migration implement bounded, tested syntax |
-| Re-syncing externally wired projects | their next Close | No check requires the change |
+| Re-syncing externally wired projects | their next Close | Missing current clauses WARN, never FAIL |
 
 ## Next
 
-1. Merge LG-0044 stage 1 and the delegation branch onto v0.6.0, and re-review the delegation fix commit.
-2. Close LG-0052, LG-0056 and LG-0057 with a reviewer that can run the on-disk tests.
-3. LG-0044 stage 2 (the self-approval gap), then waves B and C.
+1. Independently review the v0.7.0 candidate and all five VERIFYING rows.
+2. Obtain the owner's release gate before any publication or tag.
+3. Address LG-0044 stage 2, deferred waves and LG-0060 in separate scopes.
 
 ## Open questions (owner)
 

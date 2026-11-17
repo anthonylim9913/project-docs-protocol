@@ -1,3 +1,51 @@
+## 2026-11-17 — assemble the unreleased v0.7.0 candidate from stage 1 and delegation
+
+Delegated lane `v070-integrate` merges `fix/lg0044-stage1`, then
+`feat/delegation-recording`, with two no-fast-forward merge commits on
+`release/v0.7.0`. Core proofs after the respective merges: 422 tests OK
+(one skip), then 432 tests OK (one skip). The combined census covers every
+tracked file except the unchanged D-0029 exclusions, including the delegation
+fixtures, tests and separate Markdown oracle observations. No integration
+behavior change, new exclusion, weakened test or removed gate was needed.
+Every source CHANGELOG entry is retained verbatim; incoming entries follow
+descending date and, within a date, main then stage 1 then delegation, without
+reordering main's historical entries. DECISIONS retains its existing bytes
+and appends D-0042 and D-0043; ledger rows remain ordered by ID.
+
+README now advertises 673 discovered methods: 432 core, 123 research and
+118 Architect, with the 30 registry methods included in core. Counts come
+from standard-library unittest discovery and countTestCases(), not textual
+test-definition counts. Doctor has 45 literal named Report.add check IDs;
+the aggregate ledger result replaces its detailed checks, so a full report
+has up to 44. The JSON example uses the implemented Doctor version, 1.9.0.
+The final candidate commit is gated on all three suites, Doctor exit 0,
+registry PASS and a clean whitespace check; these author-run proofs do not
+replace independent review.
+
+The following historical reservation notice is not a decision citation:
+
+```text
+D-0038 and D-0039 are deliberately unused (reserved, then released to keep DECISIONS ascending).
+```
+
+Open LG-0060, P3 +tests, from the owner's supplied evidence: acceptance and
+manifest fixtures inherit a parent register when TMPDIR points inside a
+checkout, producing nested-register WARN and about a hundred failures for
+that reason alone. An independent reviewer reproduced this on a commit
+before stage 1. This lane records the limitation, not a fix or a fresh
+independent reproduction. The closing gate is hermetic fixtures wherever
+TMPDIR points, or an explicit refusal to run inside a register, with a test.
+
+Live rows reconcile from 6 OPEN / 3 VERIFYING on main to 4 OPEN / 5 VERIFYING
+after importing the delegation evidence (LG-0058 and LG-0059), then 5 OPEN /
+5 VERIFYING after adding LG-0060. LG-0052, LG-0056, LG-0057, LG-0058 and
+LG-0059 stay VERIFYING. LG-0044 stays OPEN for stage 2's self-approval gap;
+LG-0048, LG-0049 and LG-0053 remain deferred. No new decision is needed;
+LG-0060 is the only newly allocated ID. Both companions remain 0.2.2 with unchanged recorded
+sha256v2 identities. v0.6.0 remains the latest public tag; this is an
+unreleased v0.7.0 candidate awaiting independent review and the owner's
+release gate. No tag, push or publication is authorized or performed.
+
 ## 2026-11-17 — v0.6.0: Doctor 1.8.0, sha256v2 registry identities, a tests workflow, and the AGENTS.md default
 
 The owner approved releasing the reviewed candidate on 2026-11-17. Since v0.5.0 this release carries: a tests workflow on pushes and pull requests with README accuracy corrections; Doctor 1.8.0 (a symlinked `docs/` inside the project keeps its selected label, a register resolving outside the project WARNs under D-0040, template residue in STATUS and an unfilled README title WARN, and a wiring FAIL names another instructions file that carries the block under D-0041); the owner decisions D-0028 to D-0032; LG-0050's usage-error documentation; and LG-0052's length-framed `sha256v2:` Content-ID with both companion identities recorded at 0.2.2.

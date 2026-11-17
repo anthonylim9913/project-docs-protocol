@@ -1,3 +1,51 @@
+## 2026-11-17 — apply independent candidate review and close five verified findings
+
+Delegated lane `v070-integrate` applies the owner's review ruling for commit
+`8059cdc`. The supplied independent Codex review, in a separate session on
+2026-11-17, ran all three suites in a clean clone: core 432 OK, research
+123 OK and Architect 118 OK; Doctor exited 0 and the registry PASSed. It
+reproduced each closing condition in temporary projects and approved CLOSED
+for LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059:
+
+- LG-0052: both recorded sha256v2 identities equal `--digest` output; an
+  active legacy row is refused; two on-disk trees with equal legacy digests
+  have different v2 identities.
+- LG-0056: an internal `docs/` symlink passes `wiring-path` where v0.5.0
+  failed; an external target WARNs; a wrong path FAILs.
+- LG-0057: all six shipped STATUS placeholders WARN; this repository's own
+  STATUS passes; an unfilled README title WARNs.
+- LG-0058: the contract names the owning writer and delegated return report;
+  a block lacking only the delegation clause WARNs, not FAILs.
+- LG-0059: counts 0 through 3 give INFO, 4 gives WARN, `--no-git` gives SKIP,
+  detached HEAD and merges work, and only CHANGELOG resets the ancestry
+  anchor; the advisory never FAILs.
+
+Review limits: the non-UTF-8 filename case and three permission-mode subcases
+skip on this filesystem and were not independently verified. The supplied
+review and these observations are the independent evidence, not a claim
+that this lane independently reproduced them. The owner approves the five
+closures with those limits recorded. Each terminal row retains its prior
+evidence and adds the reviewed commit, check readings and closure ruling;
+archive copies are read back and checked cell-for-cell before the live
+predecessors are removed. Counts reconcile from 5 OPEN / 5 VERIFYING to
+5 OPEN / 0 VERIFYING; archive rows increase from 3 to 8.
+
+The review's documentation fix replaces SKILL.md's stale count of git
+diagnostics with count-free wording. No runtime behavior, version, test,
+gate, exclusion or exit-code contract changes; advertised test counts stay
+673 (432 core, 123 research, 118 Architect). The review's note about changed
+live rows between branches is not a defect: live rows are editable under
+the protocol, while CHANGELOG and DECISIONS history is byte-preserved.
+This new CHANGELOG entry precedes the ledger/archive transition and STATUS
+rewrite; no prior entry or owner decision is changed and no new ID is used.
+
+LG-0044 remains OPEN for stage 2, LG-0060 remains OPEN, and LG-0048, LG-0049
+and LG-0053 remain deferred. Both companions retain their recorded 0.2.2
+sha256v2 identities. v0.6.0 remains the latest public tag; this branch is
+still an unreleased v0.7.0 candidate awaiting the owner's release gate.
+All six author-run proof commands must pass again before the new candidate
+commit. No tag, push or publication is authorized or performed.
+
 ## 2026-11-17 — assemble the unreleased v0.7.0 candidate from stage 1 and delegation
 
 Delegated lane `v070-integrate` merges `fix/lg0044-stage1`, then

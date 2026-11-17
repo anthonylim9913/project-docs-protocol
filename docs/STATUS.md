@@ -4,24 +4,27 @@
 
 ## Current phase
 
-**v0.6.0 is the latest public tag. This branch is an unreleased v0.7.0
-candidate awaiting independent review and the owner's release gate.**
+**v0.6.0 is the latest public tag. This branch remains an unreleased
+v0.7.0 candidate awaiting the owner's release gate.**
 
-`release/v0.7.0` integrates LG-0044 stage 1 and the delegation contract with
-Doctor 1.9.0, in that order. The merged core suite passes 432 tests (one skip).
-Both companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
-No tag, push or publication is authorized here.
+Independent Codex review of `8059cdc` on 2026-11-17 passed clean-clone suites
+432 core / 123 research / 118 Architect, Doctor exit 0 and registry PASS.
+The owner approves five closures; the stale git-diagnostic count in SKILL.md
+is corrected without changing runtime behavior. Both companions remain 0.2.2
+with unchanged recorded `sha256v2:` identities. No tag or push is authorized.
+
+Review limits: the non-UTF-8 filename case and three permission-mode subcases
+skip on this filesystem and were not independently verified.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 OPEN and 5 VERIFYING live rows; no P0/P1.
-LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 remain VERIFYING.
-LG-0050 is closed in the archive under D-0032.
+`LEDGER.md` is authoritative: 5 OPEN and 0 VERIFYING live rows; no P0/P1.
+LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 are CLOSED in the archive
+with the independent observations and owner ruling; 8 rows are archived.
 
 | Item | Owner | Branch | End action |
 |---|---|---|---|
-| Candidate and five VERIFYING rows | independent reviewer | release/v0.7.0 | Review the exact candidate and run on-disk proofs; close rows only on acceptance |
-| Release gate | owner | release/v0.7.0 | Approve release only after independent review; no tag from this lane |
+| Release gate | owner | release/v0.7.0 | Approve release before publication or tags; no tag from this lane |
 
 ## Blocked
 
@@ -31,7 +34,7 @@ LG-0050 is closed in the archive under D-0032.
 
 | Item | Deferred to | Reason |
 |---|---|---|
-| LG-0044 stage 2 | after candidate review | Stage 1 is integrated; the self-approval gap remains OPEN under D-0029 |
+| LG-0044 stage 2 | separate follow-up | Stage 1 is integrated; the self-approval gap remains OPEN under D-0029 |
 | LG-0049 supplied-passage form and LG-0053 cache refusal | wave B | D-0030 and owner plan |
 | LG-0048 registry pointer | wave C | D-0031; final-candidate registry gate still applies |
 | LG-0060 temporary-directory isolation | separate test repair | Default-temp proofs only; fixtures inherit a parent register when TMPDIR is inside a checkout |
@@ -41,9 +44,8 @@ LG-0050 is closed in the archive under D-0032.
 
 ## Next
 
-1. Independently review the v0.7.0 candidate and all five VERIFYING rows.
-2. Obtain the owner's release gate before any publication or tag.
-3. Address LG-0044 stage 2, deferred waves and LG-0060 in separate scopes.
+1. Obtain the owner's release gate for the unreleased v0.7.0 candidate.
+2. Address LG-0044 stage 2, deferred waves and LG-0060 in separate scopes.
 
 ## Open questions (owner)
 

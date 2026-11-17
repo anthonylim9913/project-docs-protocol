@@ -243,7 +243,7 @@ Doctor is a read-only health check for a project that already carries the protoc
 
 ### How to run it
 
-The checker is `scripts/docs-doctor.py` in this skill's directory. Python 3.9 or newer, standard library only; git is optional and used only for the two git lines at the end.
+The checker is `scripts/docs-doctor.py` in this skill's directory. Python 3.9 or newer, standard library only; git is optional and used only for the git diagnostics at the end of the report.
 
 ```
 python3 <skill-dir>/scripts/docs-doctor.py "<project-root>"

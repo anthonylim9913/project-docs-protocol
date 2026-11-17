@@ -86,10 +86,10 @@ This project uses the project-docs-protocol (docs in `<docs-path>/`).
   `CHANGELOG.md`; skim `DECISIONS.md` for entries touching the area you're
   about to work on; then read live `LEDGER.md` rows if installed.
 - **Delegation.** Only the session owning the work writes registers. A delegated
-  agent (subagent, workflow agent, lane) writes none unless its brief says so;
-  it returns changes (files, commits, branch), each choice between real
-  alternatives, open questions and evidence. The owner records these at its
-  next Close and marks the work as delegated.
+  agent (subagent, workflow agent, lane) writes no register unless its delegation
+  brief explicitly assigns that duty. It returns changes (files, commits, branch),
+  each choice between real alternatives, open questions and evidence. The owning
+  session records these at its next Close and marks the work as delegated.
 - **After each meaningful unit of work** (spec drafted, decision made, blocker
   resolved, major refactor): write CHANGELOG first, edit LEDGER if installed,
   then rewrite STATUS. Brief records reserved DECISIONS entries between
@@ -186,6 +186,8 @@ Fixes for all of these are small close-ritual adjustments, not a redesign.
 ---
 
 ## Mode 3 — Close (log completed work)
+
+A delegated agent does not run Close unless its delegation brief explicitly assigns it; it returns its report instead.
 
 Run this **immediately after each meaningful unit of work completes** — not only at session end. Sessions rarely announce their final message, so a close deferred to "the end" often never happens; logging as you go is what makes the protocol survive interruption. Session-end phrases from the user trigger a final catch-all pass.
 

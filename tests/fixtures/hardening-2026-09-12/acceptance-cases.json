@@ -13,7 +13,7 @@
       "positive": "doctor-a1-positive",
       "scope": "supported",
       "assertion": "wiring-block=FAIL",
-      "fixture_sha256": "f96ed10f4ee765aafc27522ed3ee1a5e97e824b3b327d92d66be94d25b78f1b5"
+      "fixture_sha256": "8831e21b9ce59ae231def96b0aeafbd4650eaf95667fac070d371a86c282a457"
     },
     {
       "id": "doctor-a2",
@@ -25,7 +25,7 @@
       "positive": "doctor-a2-positive",
       "scope": "supported",
       "assertion": "wiring-block=FAIL",
-      "fixture_sha256": "de4a2b3e68f5ea3617972581f1e3ea4ac7fc803750ef7363f8296eaa15b10704"
+      "fixture_sha256": "2a098e3b9f1b6a1fd3f687497bbad0b5a85870db4a2c96b0cb476be967cc9a65"
     },
     {
       "id": "migration-split-cdata",

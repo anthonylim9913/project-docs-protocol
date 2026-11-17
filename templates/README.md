@@ -41,7 +41,8 @@ Reread the changed dashboard and any referenced current report once before hando
 ### Short recovery and evidence examples
 
 Delegated agents return changes (files, commits, branch), real choices, open
-questions and evidence; only the owner writes registers unless the brief assigns
+questions and evidence; only the session that owns the work writes the registers;
+a delegated agent writes none unless its delegation brief explicitly assigns
 that duty. Fold reports into the next Close as delegated work, including rejected
 alternatives in DECISIONS. Running lanes/background tasks need STATUS In-flight
 rows with branches and end actions. Worktree lanes may leave CHANGELOG, DECISIONS

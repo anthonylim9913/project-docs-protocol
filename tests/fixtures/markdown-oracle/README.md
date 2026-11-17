@@ -113,3 +113,16 @@ a new external result path:
   --snapshot tests/fixtures/markdown-oracle/observations.json \
   --out /absolute/external/oracle-observations.json
 ```
+
+## Explicit delegation duty snapshot — 2026-11-17
+
+`observations-delegation-explicit-20261117.json` records all 29 current wrappers
+with the explicit delegation-brief assignment gate and owning-session wording.
+The short active wrapper controls now carry the complete canonical delegation
+bullet too. Case names and visibility expectations are unchanged. The locally
+available pinned markdown-it-py 4.0.0 CommonMark parser independently agrees with
+all 29 expectations; the recorder used the authored inputs and retained name/live
+expectations, not Doctor output. The suite checks the exact current source bytes
+against this new snapshot and still validates the earlier 4.2.0 delegation
+recording. All earlier snapshots and historical CLI captures stay byte-identical;
+the runtime suites remain standard-library only.

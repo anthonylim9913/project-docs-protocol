@@ -75,7 +75,7 @@ Everything measured so far was run in Claude Code and Codex. Nothing in the syst
 
 ## Install
 
-**With nothing installed.** Copy `README.md`, `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` from `templates/` into your project's `docs/` folder, fill in STATUS, replace the template's placeholder CHANGELOG entry with the first dated entry (*Step 4* of `SKILL.md`), and add the instruction block from *Step 2* of `SKILL.md` to `AGENTS.md`, the default for every app. If an app loads a different instructions file (such as `CLAUDE.md` or `GEMINI.md`), point it at `AGENTS.md` or copy the block into that file as well; keep the block in `AGENTS.md` so Doctor can check it. Doctor counts only `CLAUDE.md` and `AGENTS.md` as wiring. That is a complete installation; if Python is available, run `python3 scripts/docs-doctor.py "<project-root>"` from a checkout of this repository to confirm it.
+**With nothing installed.** Copy `README.md`, `STATUS.md`, `CHANGELOG.md` and `DECISIONS.md` from `templates/` into your project's `docs/` folder, fill in STATUS, replace the template's placeholder CHANGELOG entry with the first dated entry (*Step 4* of `SKILL.md`), and add the instruction block from *Step 2* of `SKILL.md` to `AGENTS.md`, the default for every app; replace `<docs-path>` in the block with the real docs path. If an app loads a different instructions file (such as `CLAUDE.md` or `GEMINI.md`), point it at `AGENTS.md` or copy the block into that file as well; keep the block in `AGENTS.md` so Doctor can check it. Doctor counts only `CLAUDE.md` and `AGENTS.md` as wiring. That is a complete installation; if Python is available, run `python3 scripts/docs-doctor.py "<project-root>"` from a checkout of this repository to confirm it.
 
 **As a skill**, for Claude Code and Codex, which then run Install, Close, Doctor and Brief for you:
 
@@ -85,6 +85,8 @@ mkdir -p ~/.codex/skills && ln -s ~/.claude/skills/project-docs-protocol ~/.code
 ```
 
 Then, in any project, ask for "set up project docs". The skill recognises a project already using the system by its three registers plus either the instruction block or the install note in the docs README; the three filenames alone are not enough, because other conventions use them too.
+
+**After upgrading.** Doctor may exit 1 with advisory `wiring-clauses` WARNs asking you to re-sync the block, or `git-unrecorded-commits` WARNs, where it exited 0 before. These diagnostics never cause exit 2.
 
 ## Doctor output for dashboards
 

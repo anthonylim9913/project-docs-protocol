@@ -7,11 +7,17 @@
 **v0.6.0 is the latest public tag. This branch remains an unreleased
 v0.7.0 candidate awaiting the owner's release gate.**
 
-Independent Codex review of `8059cdc` on 2026-11-17 passed clean-clone suites
-432 core / 123 research / 118 Architect, Doctor exit 0 and registry PASS.
-The owner approves five closures; the stale git-diagnostic count in SKILL.md
-is corrected without changing runtime behavior. Both companions remain 0.2.2
-with unchanged recorded `sha256v2:` identities. No tag or push is authorized.
+The independent reviewer approved five closures on `8059cdc` (2026-11-17);
+the orchestrating session relayed that approval to this lane. Its clean-clone
+proofs were 432 core / 123 research / 118 Architect OK, Doctor exit 0 and
+registry PASS. No owner approval of those closures or release is claimed.
+The pre-publication wording follow-up makes delegation duties explicit and
+corrects approval provenance without changing Doctor behavior or version.
+The lane's default-temp proofs pass: 432 core / 123 research / 118 Architect,
+Doctor exit 0, registry PASS and git diff --check clean. This follow-up has
+not received a new independent review.
+Both companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
+No tag, push or publication is authorized here.
 
 Review limits: the non-UTF-8 filename case and three permission-mode subcases
 skip on this filesystem and were not independently verified.
@@ -20,7 +26,7 @@ skip on this filesystem and were not independently verified.
 
 `LEDGER.md` is authoritative: 5 OPEN and 0 VERIFYING live rows; no P0/P1.
 LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 are CLOSED in the archive
-with the independent observations and owner ruling; 8 rows are archived.
+with the independent observations and reviewer approval; 8 rows are archived.
 
 | Item | Owner | Branch | End action |
 |---|---|---|---|

@@ -30,7 +30,11 @@ This project uses the project-docs-protocol (docs in `docs/`).
 - Read STATUS in full if it is under ~60 lines.
 - STATUS is rewritten, not appended.
 - **Precedence.** Append CHANGELOG first, edit LEDGER, then rewrite STATUS.
-- **Delegation.** Only the owner writes registers; delegated agents return reports.
+- **Delegation.** Only the session owning the work writes registers. A delegated
+  agent (subagent, workflow agent, lane) writes no register unless its delegation
+  brief explicitly assigns that duty. It returns changes (files, commits, branch),
+  each choice between real alternatives, open questions and evidence. The owning
+  session records these at its next Close and marks the work as delegated.
 """
 
 

@@ -29,6 +29,9 @@ class DelegationTests(unittest.TestCase):
                 for filename in ("STATUS.md", "CHANGELOG.md", "DECISIONS.md", "LEDGER.md"):
                     text = text.replace("`docs/" + filename + "`", "`" + filename + "`")
                 self.assertEqual(text, canonical)
+        canonical_delegation = canonical[canonical.index("- **Delegation."):canonical.index("- **After each")]
+        self.assertEqual(WIRING[WIRING.index("- **Delegation."):].strip(),
+                         canonical_delegation.strip())
 
     def test_current_block_carries_delegation_report_contract(self):
         block = install_wiring_block("docs")
@@ -36,6 +39,29 @@ class DelegationTests(unittest.TestCase):
                      "files, commits, branch", "alternatives", "open questions",
                      "evidence", "next Close", "delegated"):
             self.assertIn(text, block)
+        with self.subTest(surface="delegation gate"):
+            self.assertIn("writes no register unless its delegation brief explicitly assigns that duty",
+                          " ".join(block.split()))
+        with self.subTest(surface="delegated Close"):
+            opening = (ROOT / "SKILL.md").read_text().split("## Mode 3", 1)[1].split("###", 1)[0]
+            self.assertIn("A delegated agent does not run Close unless its delegation brief explicitly assigns it; it returns its report instead.",
+                          " ".join(opening.split()))
+        with self.subTest(surface="template ownership"):
+            template = " ".join((ROOT / "templates/README.md").read_text().split())
+            self.assertIn("only the session that owns the work writes the registers; a delegated agent writes none unless its delegation brief explicitly assigns that duty.",
+                          template)
+        readme = (ROOT / "README.md").read_text()
+        with self.subTest(surface="manual install path"):
+            manual = readme.split("**With nothing installed.**", 1)[1].split("\n\n", 1)[0]
+            self.assertIn("replace `<docs-path>`", manual)
+            self.assertIn("real docs path", manual)
+        with self.subTest(surface="upgrade advisories"):
+            upgrade = readme.split("**After upgrading.**", 1)
+            self.assertEqual(len(upgrade), 2)
+            note = upgrade[1].split("\n\n", 1)[0]
+            for text in ("exit 1", "advisory", "wiring-clauses", "re-sync",
+                         "git-unrecorded-commits", "exited 0 before", "never cause exit 2"):
+                self.assertIn(text, note)
 
     def test_older_block_warns_without_failing(self):
         doctor = load_doctor()

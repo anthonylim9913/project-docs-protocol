@@ -1,3 +1,61 @@
+## 2026-11-17 — tighten delegated register duties and correct closure approval provenance
+
+Delegated lane `v070-integrate` applies the relayed pre-publication wording
+corrections after `2bae68a`. The canonical Install Step 2 delegation bullet
+now states that a delegated agent writes no register unless its delegation
+brief explicitly assigns that duty; it names the owning session as the
+report recipient and register writer. Root instructions, all current JSON
+and hardening fixture blocks, and abbreviated active test controls carry
+the identical complete bullet. The template README distinguishes the owning
+session from the human project owner and the delegation brief from the
+Brief ritual. Mode 3 explicitly says a delegated agent does not run Close
+unless its delegation brief assigns it, returning its report instead.
+
+README's manual install sentence now says to replace `<docs-path>` with the
+real docs path. Its upgrade note explains that advisory wiring-clauses
+re-sync and git-unrecorded-commits WARNs may change a prior exit 0 to exit 1,
+never exit 2 from those diagnostics. Doctor behavior, version 1.9.0, check
+inventory, exit-code contract and all existing exclusions are unchanged.
+
+Regression first: extending the existing delegation method produced five
+failing wording assertions before the edits. Current-block identity remains
+an exact comparison and additionally covers the shared CLI control's bullet.
+The changed hardening inputs first failed their pinned-hash check; only the
+two current Doctor fixture hashes are refreshed, not any historical capture.
+The old current-oracle check also failed against the new wording. A new
+`observations-delegation-explicit-20261117.json` independently records all
+29 authored wrappers with the locally available pinned markdown-it-py 4.0.0
+CommonMark parser: zero expectation disagreements, unchanged case names and
+visibility expectations. The old 4.2.0 delegation snapshot and every earlier
+snapshot remain byte-identical and checked; no recording is overwritten.
+Focused delegation, Markdown, manifest and JSON suites: 16 tests OK.
+The existing methods are strengthened, not removed or weakened; totals stay
+432 core, 123 research and 118 Architect (673 total, registry included).
+
+Correction to the preceding 2026-11-17 entry and unpublished closure evidence:
+the independent reviewer approved closing LG-0052, LG-0056, LG-0057, LG-0058
+and LG-0059 after reviewing `8059cdc`; the orchestrating session relayed
+that approval to this lane. The earlier references to an owner's review
+ruling or owner approval of these closures are inaccurate. Under the
+explicit pre-publication instruction, only the attribution wording in the
+five unpublished archive Evidence cells is corrected directly; their status,
+date, check readings, committed-work pointers and limitations do not change.
+No committed CHANGELOG entry is edited; this entry supersedes that provenance
+claim. Review limitations remain: the non-UTF-8 filename case and three
+permission-mode subcases were skipped and not independently verified.
+
+Close order is this new CHANGELOG entry, the authorized archive Evidence
+correction, then STATUS rewritten. Live rows are unchanged: 5 OPEN and
+0 VERIFYING, with 8 archived rows; LG-0044 stays OPEN for stage 2 and
+LG-0060 stays OPEN without a fix. DECISIONS and both recorded 0.2.2 companion
+identities are unchanged; no new ID is used. v0.6.0 remains the latest public
+tag; this is still an unreleased v0.7.0 candidate awaiting the owner's release
+gate. All six proof commands pass with the default temporary directory:
+core 432 tests OK (1 skip), research 123 OK (3 skips), Architect 118 OK;
+Doctor 41 checks, 34 PASS and 7 INFO, exit 0; registry PASS; git diff --check
+clean. These are lane proofs, not a new independent review of the wording.
+No tag, push or publication is performed.
+
 ## 2026-11-17 — apply independent candidate review and close five verified findings
 
 Delegated lane `v070-integrate` applies the owner's review ruling for commit

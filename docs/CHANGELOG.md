@@ -1,3 +1,9 @@
+## 2026-11-17 — v0.6.0: Doctor 1.8.0, sha256v2 registry identities, a tests workflow, and the AGENTS.md default
+
+The owner approved releasing the reviewed candidate on 2026-11-17. Since v0.5.0 this release carries: a tests workflow on pushes and pull requests with README accuracy corrections; Doctor 1.8.0 (a symlinked `docs/` inside the project keeps its selected label, a register resolving outside the project WARNs under D-0040, template residue in STATUS and an unfilled README title WARN, and a wiring FAIL names another instructions file that carries the block under D-0041); the owner decisions D-0028 to D-0032; LG-0050's usage-error documentation; and LG-0052's length-framed `sha256v2:` Content-ID with both companion identities recorded at 0.2.2.
+
+Review: an independent read-only session judged the candidate and found two defects, both corrected in the entry below; it confirmed no existing test or gate was removed or weakened, additions only in CHANGELOG and DECISIONS, and both recorded identities equal to a fresh digest. Its sandbox could not create temporary directories, so it did not run the suites; the orchestrating session ran them on the release commit (core 402, research 123, Architect 118, all OK) and reproduced the three Doctor cases, which is not independent. LG-0052, LG-0056 and LG-0057 therefore stay VERIFYING. LG-0058 and LG-0059 are OPEN in this release; their work and LG-0044 stage 1 sit on separate local branches for the next candidate.
+
 ## 2026-11-16 — correct the candidate review's identity claims and committed-range whitespace gate
 
 Independent review of `078684d` found two follow-ups. The live LG-0052

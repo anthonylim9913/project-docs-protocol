@@ -1,6 +1,6 @@
 # STATUS
 
-*Last updated: 2026-11-17*
+*Last updated: 2026-11-19*
 
 ## Current phase
 
@@ -11,6 +11,9 @@ An independent review of the candidate ran all three suites in a clean clone
 and approved five ledger closures; two pre-publication checks then tightened
 the delegation wording and bounded the unrecorded-commit check. Both
 companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
+
+After the tag, the tests workflow moved its Python 3.9 job to `ubuntu-24.04`
+and one test stopped assuming an in-tree bytecode cache (CHANGELOG 2026-11-19).
 
 Review limits: the non-UTF-8 filename case and three permission-mode subcases
 skip on this filesystem and were not independently verified.

@@ -67,7 +67,7 @@ Plain text was a deliberate choice: it is the one format every model can read an
 ## Verified, not asserted
 
 - **Audited across 25 projects** before going public. In the 7-row churn table, the three roots with close instructions (one carrying the block verbatim, two hand-written) rewrote STATUS (churn 0.67–0.83); the four others, two without instructions and two with project-authored "top line" instructions, accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
-- **738 automated test methods**: 497 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
+- **739 automated test methods**: 498 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
 - **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
 - **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
 
@@ -111,17 +111,28 @@ The JSON says no more than the text report does: a structural PASS is still not 
 
 ## Releasing
 
-Run `python3 -B scripts/release-check.py`: all three suites, Doctor, registry,
-current documented test counts, and unstaged/staged/committed whitespace.
-`--base REF` overrides the newest reachable tag; no tag produces INFO.
-Repeat `--python PATH` for interpreters. Doctor WARNs require
-`--allow-doctor-warn`. `--skip-suites` ends INCOMPLETE, exit 3.
-Unattributed numeric test counts receive notices; grammar is in the script.
+Before a release, run the release check from the repository root:
 
-The optional privacy scanner reads an external UTF-8 regex file (BOM allowed),
-one pattern per line, stripping trailing whitespace and ignoring blanks/`#` comments.
-Configure `--patterns PATH`, `LEAK_SCAN_PATTERNS` or `leakscan.patterns` Git config,
-in that order. Preserve existing hook checks; otherwise install:
+```sh
+python3 -B scripts/release-check.py
+```
+
+It runs the three test suites, Doctor, the skill-registry check and three whitespace checks (unstaged, staged, and committed since the newest tag, or since `--base REF`). It then compares the test counts stated in this README, in STATUS and in the newest CHANGELOG entry with the counts it measured. It exits 0 only when everything passes.
+
+- Add `--python PATH` once per interpreter to run the suites under each of them.
+- A Doctor WARN fails the check unless you pass `--allow-doctor-warn`.
+- A stated count it cannot tie to a suite is reported as "not checked". The accepted phrasings are listed in the script's docstring.
+- `--skip-suites` exists for testing the script. It ends with `INCOMPLETE` and exit 3, never a pass.
+
+The release check does not look for private text. That is the job of the optional privacy scan.
+
+### Optional privacy scan before each push
+
+`scripts/leak-scan.py` searches what you are about to publish for patterns you choose. No patterns ship with this repository.
+
+1. Write your patterns in a file **outside the repository**: one Python regular expression per line. Blank lines and lines starting with `#` are ignored, and trailing whitespace is removed.
+2. Tell the scanner where the file is, with `--patterns PATH`, the `LEAK_SCAN_PATTERNS` environment variable, or `git config leakscan.patterns PATH` (checked in that order).
+3. Install the hook. If you already have a pre-push hook, add the scanner call to it instead of replacing it.
 
 ```sh
 hook_path="$(git rev-parse --git-path hooks/pre-push)"
@@ -130,25 +141,21 @@ cp scripts/hooks/pre-push.sample "$hook_path"
 chmod +x "$hook_path"
 ```
 
-Adopters also copy `scripts/leak-scan.py`. The hook forwards remote arguments
-and ref updates. Manual `--range BASE..HEAD` scans that range; `--range HEAD`
-includes all history, including roots. Scans cover changed paths/blobs,
-intermediate commits, every merge parent, messages and author/committer
-names/emails. Hook mode adds published ref names and annotated tag messages
-and tagger identities. Matching paths are redacted; errors withhold private text.
+To use it in another project, copy `scripts/leak-scan.py` into that project's `scripts/` folder as well. To scan by hand, run `python3 -B scripts/leak-scan.py --range BASE..HEAD`, or `--range HEAD` for the whole history.
 
-New refs exclude only the destination remote's tracking history; manual use
-without a remote excludes nothing. A stale tracking ref for a server-deleted
-branch hides commits. Replace objects and lazy fetching are disabled;
-missing objects fail. No network operations occur.
+What it scans, for every commit in the range: the changed files' contents, their paths, the commit message, and the author and committer names and emails. As a hook it also scans the names of the refs being pushed and the message and tagger of each annotated tag.
 
-Regexes run per decoded line without a timeout. Blobs containing NUL in the
-first 8,000 bytes, including UTF-16, are skipped and counted. The external-file
-guard covers symlinks, case aliases and tracked-file hard links; untracked or
-metadata hard links and concurrent filesystem changes remain unchecked.
-Exit: 0 clean or explicitly unconfigured, 1 hits, 2 errors (including empty
-patterns or hook input); delete-only input is clean. The release gate omits this optional
-scan: scan the final commit separately.
+What it prints: the commit, the path and line, and the line number of the pattern in your file. It does not print the pattern or the matched text, and a path that itself matches is replaced by `[redacted]`.
+
+Exit codes: 0 clean (or no patterns file configured, with a notice), 1 hits, 2 could not scan. A patterns file with no patterns, an invalid pattern, a missing object and empty hook input all count as "could not scan".
+
+Limits:
+
+- For a new branch, commits already on the destination remote's tracking refs are skipped. A stale tracking ref for a branch deleted on the server therefore hides its commits; a manual scan without a remote skips nothing.
+- Files with a NUL byte in their first 8,000 bytes, which includes UTF-16 text, are skipped and counted.
+- A slow regular expression has no timeout.
+- The outside-the-repository rule catches symlinks, letter-case variants and hard links to tracked files, not hard links to untracked files.
+- If Python itself fails while starting the scanner, its own error message can include the repository's path. The hook checks that `python3` and the scanner are present and readable first.
 
 ## Files
 

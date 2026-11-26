@@ -7,4 +7,11 @@ repo_root=$(GIT_NO_LAZY_FETCH=1 git --no-replace-objects rev-parse --show-toplev
     printf '%s\n' 'ERROR leak-scan: could not locate repository' >&2
     exit 2
 }
-exec python3 -B "$repo_root/scripts/leak-scan.py" "$@"
+scanner="$repo_root/scripts/leak-scan.py"
+# Check first: the shell's and Python's own startup errors would print this
+# repository's path, which may itself be private.
+if ! command -v python3 >/dev/null 2>&1 || [ ! -r "$scanner" ]; then
+    printf '%s\n' 'ERROR leak-scan: scanner or python3 unavailable' >&2
+    exit 2
+fi
+exec python3 -B "$scanner" "$@"

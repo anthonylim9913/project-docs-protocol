@@ -1,3 +1,21 @@
+## 2026-11-26 — release tooling: the sample hook no longer prints the repository path on startup failures; README "Releasing" rewritten
+
+A second independent review of the repaired branch reproduced every earlier
+fix and found one remaining defect: when the scanner file was missing or
+unreadable, or `python3` was not on PATH, the sample pre-push hook let the
+shell's or Python's own error through, and that error names the repository
+path, which can itself be private. The hook now checks for `python3` and a
+readable scanner first and prints one fixed line with exit 2. A regression
+test covers the three cases; it failed before the change.
+
+The owning session made this change and rewrote README "Releasing" in plain
+wording with the scan's limits listed, including the one left open: an error
+raised by Python while it starts the scanner can still show the path.
+
+Measured on this tree: core 498 tests, research 123, Architect 118, 739 in
+total. Hosted CI has not run on any of the release-tooling work; the macOS
+jobs and the newer action versions are unverified until it does.
+
 ## 2026-11-26 — repair release tooling after two FIX FIRST reviews
 
 Delegated lane `r1-fix` repairs the unreleased release-tooling candidate.

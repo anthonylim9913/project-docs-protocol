@@ -188,6 +188,34 @@ class LeakScanTests(unittest.TestCase):
         self.assertIn('commit message line 1', result.stdout)
         self.assertNotIn('unused-remote', result.stdout + result.stderr)
 
+    def test_sample_hook_startup_failures_print_a_fixed_line_without_paths(self):
+        hook = str(ROOT / 'scripts/hooks/pre-push.sample')
+        line = 'refs/heads/new {} refs/heads/new {}\n'.format(self.commit('ordinary'), self.base)
+        fixed = 'ERROR leak-scan: scanner or python3 unavailable\n'
+
+        def run(env):
+            return subprocess.run(['sh', hook, 'example', 'unused-remote'], cwd=self.root, env=env,
+                                  text=True, capture_output=True, input=line)
+
+        missing = run(self.env)
+        self.assertEqual((missing.returncode, missing.stdout, missing.stderr), (2, '', fixed))
+        scripts = self.root / 'scripts'
+        scripts.mkdir()
+        shutil.copyfile(SCRIPT, scripts / SCRIPT.name)
+        tools = self.root.parent / 'tools-without-python'
+        tools.mkdir()
+        for name in ('git', 'sh'):
+            (tools / name).symlink_to(shutil.which(name))
+        no_python = run(dict(self.env, PATH=str(tools)))
+        self.assertEqual((no_python.returncode, no_python.stdout, no_python.stderr), (2, '', fixed))
+        if os.geteuid() != 0:
+            (scripts / SCRIPT.name).chmod(0)
+            try:
+                unreadable = run(self.env)
+            finally:
+                (scripts / SCRIPT.name).chmod(0o644)
+            self.assertEqual((unreadable.returncode, unreadable.stdout, unreadable.stderr), (2, '', fixed))
+
     def test_environment_and_git_config_fallback_and_cli_precedence(self):
         self.git('config', 'leakscan.patterns', str(self.patterns))
         self.assertEqual(self.scan('--range', self.base + '..HEAD', patterns=False).returncode, 0)

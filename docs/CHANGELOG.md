@@ -1,3 +1,13 @@
+## 2026-11-26 — release tooling merged to main after hosted CI passed on all four jobs
+
+The release-tooling branch ran in hosted CI as a pull request before merging.
+All four jobs passed: Python 3.9 and 3.13 on `ubuntu-24.04`, and the system
+interpreter and Python 3.14 on `macos-15`, with the `v7` majors of the
+checkout and setup-python actions. That settles the items earlier entries
+listed as unverified. The owner approved merging once CI was green; `main` was
+fast-forwarded, so the reviewed commits are unchanged. Not tagged: v0.7.0
+remains the latest release.
+
 ## 2026-11-26 — release tooling: the sample hook no longer prints the repository path on startup failures; README "Releasing" rewritten
 
 A second independent review of the repaired branch reproduced every earlier

@@ -24,6 +24,20 @@ BYTECODE_SUFFIXES = ('.pyc', '.pyo', '.so', '.pyd', '.pth')
 ROOT_FILES = {'SKILL.md', 'AGENTS.md', 'CLAUDE.md', 'README.md', 'LICENSE'}
 DOC_INPUTS = {'docs/README.md', 'docs/MIGRATION.md', 'docs/PROTOCOLS.md', 'docs/SKILL-REGISTRY.md',
               'docs/BRIEF-EXAMPLE.md', 'docs/EVIDENCE.md'}
+# Everything the verdict reads from the judging checkout: the code, the frozen cases and
+# contract, and the fixtures and template the expectations are computed from (D-0025). A test
+# audits the files the runner and validator open against this set. HARNESS_RECORD lists each
+# with its SHA-256 in `sha256sum` format; it is bound like any other input but not listed in itself.
+HARNESS_FILES = ('tests/validate_acceptance.py', 'tests/acceptance_gate.py', 'tests/acceptance_evidence.py',
+                 'tests/input_manifest.py', 'tests/run_acceptance.py',
+                 'tests/fixtures/hardening-2026-09-12/acceptance-cases.json') + tuple(
+    'tests/fixtures/hardening-2026-09-12/cases/' + n + '.md' for n in (
+        'doctor-a1', 'doctor-a1-positive', 'doctor-a2', 'doctor-a2-positive',
+        'migration-split-cdata', 'migration-split-pi')) + (
+    'tests/fixtures/acceptance-v2/contract.json', 'tests/fixtures/acceptance-v2/contiguous-cdata.md',
+    'tests/fixtures/acceptance-v2/contiguous-pi.md', 'tests/fixtures/migration-20/STATUS.md',
+    'templates/LEDGER.md')
+HARNESS_RECORD = 'tests/harness.sha256'
 REQUIRED = ROOT_FILES | DOC_INPUTS | {
     'scripts/docs-doctor.py', 'scripts/docs-migrate.py', 'scripts/register_paths.py',
     'scripts/skill-registry.py', 'tests/run_acceptance.py', 'tests/acceptance_gate.py',
@@ -140,11 +154,38 @@ def tree_hash(values):
     return hashlib.sha256((''.join(k + ':' + values[k] + '\n' for k in sorted(values))).encode()).hexdigest()
 
 
+def harness_record(root):
+    """The text of HARNESS_RECORD for `root`: `sha256sum` lines, sorted by path.
+
+    validate_acceptance.py checks it (it does not import this module to do so); a reviewer
+    checks it with `sha256sum -c tests/harness.sha256` and pins `sha256sum tests/harness.sha256`.
+    """
+    return ''.join(hashlib.sha256((root / name).read_bytes()).hexdigest() + '  ' + name + '\n'
+                   for name in sorted(HARNESS_FILES))
+
+
+def harness_digest(root):
+    """SHA-256 of the record `root` should carry: the value a reviewer pins."""
+    return hashlib.sha256(harness_record(root).encode('utf-8')).hexdigest()
+
+
 def main():
     import argparse
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('root', type=Path); p.add_argument('--out', type=Path, required=True)
+    p.add_argument('root', type=Path); p.add_argument('--out', type=Path)
+    p.add_argument('--print-harness-digest', action='store_true',
+                   help='print SHA-256 of the record this tree should carry; not an independent reviewer pin')
+    p.add_argument('--print-harness-record', action='store_true',
+                   help='print the harness record (sha256sum format) and exit')
     a = p.parse_args(); root = a.root.resolve()
+    if a.print_harness_digest:
+        print(harness_digest(root))
+        return
+    if a.print_harness_record:
+        print(harness_record(root), end='')
+        return
+    if a.out is None:
+        p.error('--out is required')
     if root == a.out.resolve() or root in a.out.resolve().parents:
         p.error('input manifest output must be outside the reviewed tree')
     try:

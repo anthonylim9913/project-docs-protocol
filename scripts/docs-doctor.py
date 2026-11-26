@@ -2256,19 +2256,31 @@ def check_unlisted_branches(rep, root, register_dir, top):
     def skip():
         rep.add("SKIP", check, "local branch history or STATUS.md could not be read")
 
-    refs = run_git(root, ["for-each-ref", "--format=%(refname) %(objectname)", "refs/heads/"])
+    refs = run_git(root, ["for-each-ref", "--format=%(refname) %(objectname) %(symref)",
+                          "refs/heads/", "refs/remotes/*/HEAD"])
     if refs is None:
         skip()
         return
     branches = []
+    # The trunk is not stranded work when Doctor runs from a feature branch: skip the
+    # conventional default names and whatever a remote declares as its default branch.
+    defaults = {"main", "master"}
     oid = r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})"
     for line in refs.splitlines():
-        match = re.fullmatch(r"refs/heads/(\S+) (" + oid + r")", line)
+        remote = re.fullmatch(r"refs/remotes/([^/\s]+)/HEAD " + oid + r" (\S*)", line)
+        if remote:
+            prefix = "refs/remotes/%s/" % remote.group(1)
+            if remote.group(2).startswith(prefix):
+                defaults.add(remote.group(2)[len(prefix):])
+            continue
+        match = re.fullmatch(r"refs/heads/(\S+) (" + oid + r") \S*", line)
         if not match:
             skip()
             return
         branches.append(match.groups())
-    history = run_git(root, ["-c", "log.diffMerges=separate", "log", "--root", "-m", "--always",
+    branches = [item for item in branches if item[0] not in defaults]
+    history = run_git(root, ["--no-replace-objects", "-c", "log.diffMerges=separate", "log", "--root", "-m",
+                             "--always", "--no-show-signature",
                              "--no-renames", "--no-relative", "--ignore-submodules=none",
                              "--format=%x00%H %P", "--name-only", "-z",
                              "--branches", "--not", "HEAD"])
@@ -2288,7 +2300,9 @@ def check_unlisted_branches(rep, root, register_dir, top):
         fields = header.split()
         if paths.startswith("\n"):
             paths = paths[1:]
-        nonregister = any(path and path not in registers for path in paths.split("\0"))
+        # A merge's diff against a parent replays the other side's paths (a trunk sync
+        # would look like work), so merges carry ancestry only.
+        nonregister = len(fields) <= 2 and any(path and path not in registers for path in paths.split("\0"))
         previous = graph.get(fields[0])
         graph[fields[0]] = (fields[1:], nonregister or bool(previous and previous[1]))
     try:
@@ -2299,9 +2313,10 @@ def check_unlisted_branches(rep, root, register_dir, top):
     if status is None:
         skip()
         return
-    # A mention is the whole name between delimiters that cannot be part of a branch
-    # name here (whitespace, quotes, brackets, list punctuation), so lane-one is not
-    # 'listed' by lane-one-more or lane-one+more. Sentence punctuation may follow it.
+    # A mention is the whole name set off by whitespace or backticks. One opening
+    # bracket, quote, pipe or asterisk may sit between the whitespace and the name, and
+    # closing or sentence punctuation may follow it before whitespace. Git allows most
+    # punctuation inside names, so lane-one is not 'listed' by lane-one,more.
     status = "\n".join(line for _, line, fenced in visible_lines(split_lines(status)) if not fenced)
     listed, unlisted = [], []
     for name, tip in branches:
@@ -2315,8 +2330,9 @@ def check_unlisted_branches(rep, root, register_dir, top):
             count += int(touches)
             pending.extend(parents)
         if count:
-            mentioned = re.search(r"(?<![^\s`'\"(\[|,;:*])" + re.escape(name)
-                                  + r"(?=[\s`'\")\]|,;:*]|[.!?](?:\s|$)|$)", status)
+            mentioned = re.search(r"(?:(?<![^\s`])|(?<=\s[(\[|'\"*])|(?<=^[(\[|'\"*])|(?<=[\s`]\*\*)|(?<=^\*\*))"
+                                  + re.escape(name) + r"(?=[\s`]|$|[.,;:!?)\]|'\"*]+(?:\s|$))",
+                                  status, re.MULTILINE)
             (listed if mentioned else unlisted).append((name, count))
 
     def describe(items):

@@ -1,3 +1,31 @@
+## 2026-11-26 — git-unlisted-branches: second review round; D-0047
+
+Three independent checkers reviewed the repaired, rebased branch. Privacy and
+rebase integrity passed. The branch-check reviewer confirmed the two earlier
+repairs and found more of the same kind, so the preceding entry's "closed" was
+too strong:
+
+- STATUS naming a longer branch with other punctuation Git allows
+  (`lane-one,more`, `lane-one;more`, `more(lane-one` and similar) still
+  listed `lane-one`. A mention now needs whitespace or backticks around the
+  whole name (D-0047 gives the exact rule).
+- From a feature branch, the trunk was reported as stranded once it moved
+  ahead. `main`, `master` and any remote's default branch are no longer counted.
+- A register-only branch was reported after merging the trunk into it. Merge
+  commits now count as ancestry only.
+- The history read also passes `--no-show-signature` and
+  `--no-replace-objects`.
+
+Each has a regression test that failed first, except the signature option,
+whose reported SKIP needs a signed commit and was not reproduced here. D-0047
+records the rules and their limits. Doctor stays 1.10.0.
+
+Corrections to the two entries below, which the rebase overtook: release
+tooling is merged, so the `fix/r1-findings` In flight row no longer exists.
+LG-0061 and LG-0062 stay VERIFYING; their evidence cells now give current
+counts. Measured on this tree: core 514 tests, research 123, Architect 118,
+755 in total.
+
 ## 2026-11-26 — git-unlisted-branches: two ways to report INFO over stranded work are closed
 
 An independent review of the stranded-work branch passed the proofs, the
@@ -72,6 +100,7 @@ is closed by its implementing lane: both new rows await independent review.
 The five prior OPEN rows and the fix/r1-findings In flight row remain.
 PROGRESS.md stays untracked. No companion tree, identity, hook installation,
 fetch, push, tag or publication changes; hosted CI remains unverified.
+
 ## 2026-11-26 — release tooling merged to main after hosted CI passed on all four jobs
 
 The release-tooling branch ran in hosted CI as a pull request before merging.

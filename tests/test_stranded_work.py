@@ -162,6 +162,88 @@ class StrandedWorkTests(unittest.TestCase):
         self.assertEqual(level, "WARN", message)
         self.assertIn("2 unlisted", message)
 
+    def test_punctuation_git_allows_in_names_does_not_list_a_shorter_branch(self):
+        self.init()
+        longer = ["lane-one,more", "lane-one;more", "lane-one|more", "lane-one'more", "lane-one)more",
+                  "lane-one]more", "more,lane-one", "more(lane-one", "more|lane-one", "more'lane-one"]
+        for name in ["lane-one"] + longer:
+            self.git("checkout", "-b", name, "trunk")
+            (self.project / "code.txt").write_text(name)
+            self.commit("work")
+        self.git("checkout", "trunk")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\n" + "\n".join("In flight: `%s`" % name for name in longer) + "\n")
+        self.commit("list the longer names")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "WARN", message)
+        self.assertIn("1 unlisted", message)
+        self.assertIn("lane-one (1 commits)", message)
+
+    def test_plain_mentions_with_sentence_punctuation_and_tables_are_listed(self):
+        self.init()
+        names = ["lane-a", "lane-b", "lane-c", "lane-d", "lane-e"]
+        for name in names:
+            self.git("checkout", "-b", name, "trunk")
+            (self.project / "code.txt").write_text(name)
+            self.commit("work")
+        self.git("checkout", "trunk")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\nRunning: lane-a, (lane-b) and **lane-c**.\n\n| Work | Branch |\n|---|---|\n| x |lane-d|\n| y | `lane-e` |\n")
+        self.commit("list")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "INFO", message)
+        self.assertIn("5 local branches", message)
+
+    def test_default_branch_ahead_of_a_feature_branch_is_not_stranded_work(self):
+        self.init()
+        self.git("branch", "-m", "trunk", "main")
+        self.git("checkout", "-b", "feature")
+        self.git("checkout", "main")
+        (self.project / "code.txt").write_text("main moved on")
+        self.commit("main work")
+        self.git("checkout", "feature")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "INFO", message)
+        self.assertIn("0 local branches", message)
+
+    def test_remote_default_branch_name_is_not_stranded_work(self):
+        self.init()
+        self.git("checkout", "-b", "feature")
+        self.git("checkout", "trunk")
+        (self.project / "code.txt").write_text("trunk moved on")
+        self.commit("trunk work")
+        self.git("update-ref", "refs/remotes/origin/trunk", "HEAD")
+        self.git("symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/trunk")
+        self.git("checkout", "feature")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "INFO", message)
+
+    def test_signature_display_setting_does_not_disable_the_check(self):
+        self.init()
+        self.git("checkout", "-b", "lane-s")
+        (self.project / "code.txt").write_text("s")
+        self.commit("work")
+        self.git("checkout", "trunk")
+        self.git("config", "log.showSignature", "true")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "WARN", message)
+
+    def test_merging_the_trunk_into_a_register_only_branch_is_not_counted(self):
+        self.init()
+        self.git("checkout", "-b", "notes-only")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\nnote\n")
+        self.commit("register only")
+        self.git("checkout", "trunk")
+        (self.project / "code.txt").write_text("trunk work")
+        self.commit("trunk work")
+        self.git("checkout", "notes-only")
+        self.git("merge", "--no-ff", "-m", "sync", "trunk")
+        self.git("checkout", "trunk")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "INFO", message)
+        self.assertIn("0 local branches", message)
+
     def test_capability_and_read_errors_are_skip_never_fail(self):
         for no_git, installed, top in ((True, True, "repo"), (False, False, "repo"), (False, True, None)):
             report = self.doctor.Report(echo=False)

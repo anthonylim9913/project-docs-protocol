@@ -9,10 +9,10 @@ Doctor 1.10.0 is unreleased branch work.** Both companions remain 0.2.2 with unc
 registered `sha256v2:` identities.
 
 The delegation candidate adds a paste-ready task brief, owner-assigned ids,
-and advisory local-branch and owed-fragment checks (D-0046). An independent
-review found two defects in the branch check; both are repaired (newest
-CHANGELOG entry). Its evidence supports closing LG-0062; LG-0061 waits for an
-independent review of the repairs.
+and advisory local-branch and owed-fragment checks (D-0046). Two review rounds
+found false results in the branch check; the repairs and their rules are in
+D-0047 and the newest CHANGELOG entry. Review evidence supports closing
+LG-0062; LG-0061 waits for an independent review of the last repairs.
 
 Release tooling (release check, optional privacy scan, pinned CI) merged after
 hosted CI passed on all four jobs. Hosted CI has not run on this branch.
@@ -43,7 +43,7 @@ hosted CI passed on all four jobs. Hosted CI has not run on this branch.
 
 ## Next
 
-1. Independently review the branch-check repairs, then close LG-0061 and LG-0062.
+1. Close LG-0062 at integration; review the D-0047 repairs, then close LG-0061.
 2. Run hosted CI on this branch, then merge when the owner agrees.
 3. LG-0044 stage 2 and LG-0060, followed by waves B and C.
 4. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.

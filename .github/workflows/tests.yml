@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,35 +18,47 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # ubuntu-latest (26.04) no longer offers Python 3.9; 24.04 still does.
+          # Versioned images prevent an OS alias upgrade from dropping Python
+          # 3.9 support; the macOS system interpreter has distinct cache behavior.
           - python-version: "3.9"
             os: ubuntu-24.04
+            interpreter: python3
           - python-version: "3.13"
-            os: ubuntu-latest
+            os: ubuntu-24.04
+            interpreter: python3
+          - python-version: system
+            os: macos-14
+            interpreter: /usr/bin/python3
+          - python-version: "3.14"
+            os: macos-14
+            interpreter: python3
+    env:
+      PYTHON: ${{ matrix.interpreter }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v5
+        if: matrix.python-version != 'system'
         with:
           python-version: ${{ matrix.python-version }}
       - name: Core suite
-        run: python3 -B -m unittest discover -v
+        run: '"$PYTHON" -B -m unittest discover -v'
       - name: Regression runner
         run: |
-          if [ -f tests/run_regression.py ]; then python3 -B tests/run_regression.py; fi
+          if [ -f tests/run_regression.py ]; then "$PYTHON" -B tests/run_regression.py; fi
       - name: Research companion suite
         working-directory: staging/research-protocol
-        run: python3 -B -m unittest discover -s tests -v
+        run: '"$PYTHON" -B -m unittest discover -s tests -v'
       - name: Architect companion suite
         working-directory: staging/architect-protocol
-        run: python3 -B -m unittest discover -s tests -v
+        run: '"$PYTHON" -B -m unittest discover -s tests -v'
       - name: Docs Doctor
         # Exit 0 passes and 1 (WARN only, advisory under D-0013) is accepted;
         # 2 (FAIL) and 3 (could not run) fail the job.
-        run: python3 -B scripts/docs-doctor.py . || [ $? -eq 1 ]
+        run: '"$PYTHON" -B scripts/docs-doctor.py . || [ $? -eq 1 ]'
       - name: Skill registry
-        run: python3 -B scripts/skill-registry.py .
+        run: '"$PYTHON" -B scripts/skill-registry.py .'
       - name: Whitespace
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -51,8 +66,11 @@ jobs:
         run: |
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             base="$PR_BASE_SHA"
-          else
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
             base="$PUSH_BEFORE_SHA"
+          else
+            # Scheduled/manual runs check the current tip's patch.
+            base=HEAD^
           fi
           if [ "$base" = "0000000000000000000000000000000000000000" ]; then
             base="$(git hash-object -t tree /dev/null)"

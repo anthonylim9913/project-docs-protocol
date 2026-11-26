@@ -1,0 +1,7 @@
+#!/bin/sh
+# Optional: copy to the path from `git rev-parse --git-path hooks/pre-push`.
+# Keep scripts/leak-scan.py in the adopting repository; configure a private
+# external patterns file via LEAK_SCAN_PATTERNS or git config leakscan.patterns.
+# Git supplies ref updates on stdin; remote name/URL arguments are not needed.
+repo_root=$(git rev-parse --show-toplevel) || exit 2
+exec python3 -B "$repo_root/scripts/leak-scan.py"

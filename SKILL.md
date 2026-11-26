@@ -438,6 +438,8 @@ A companion checker's FAIL is a failure, not advisory drift: only docs-doctor se
 - `scripts/docs-doctor.py` — the Doctor check. Python 3.9 or newer, standard library, read-only, git optional.
 - `scripts/docs-migrate.py` — reviewed STATUS-to-LEDGER migration; see `docs/MIGRATION.md`.
 - `scripts/skill-registry.py` — optional read-only validator for `SKILL-REGISTRY.md`.
+- `scripts/release-check.py` — local release gate: suites, measured current counts, Doctor, registry and whitespace.
+- `scripts/leak-scan.py`, `scripts/hooks/pre-push.sample` — optional history privacy scan using a private patterns file outside the repository; see README for installation.
 - `staging/research-protocol/`, `staging/architect-protocol/` — the optional companions; see *Optional companions*.
 - `tests/` — executable Doctor/migration tests and lifecycle artifact replays, with limits in `tests/README.md`.
 - `docs/` — this skill's own registers (it runs the protocol it ships), the anonymised audit evidence, and a worked Brief.

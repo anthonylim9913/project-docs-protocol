@@ -1,3 +1,56 @@
+## 2026-11-26 — unreleased release tooling: measured gates, optional private history scan and pinned CI
+
+Delegated lane `release-tooling` implements the supplied round-1 brief on its
+own branch. `scripts/release-check.py` runs all three suites for each selected
+interpreter, then Doctor, the registry gate required by D-0031 and whitespace.
+Doctor WARNs require an explicit override; its own checks and exit codes are
+unchanged. Measured counts are compared against README, STATUS and only this
+newest entry using a documented, narrow grammar. Ambiguous subset counts are
+reported as not checked; historical release entries remain byte-identical.
+The testing-only suite bypass explicitly says it is not a release check.
+
+`scripts/leak-scan.py` reads private regexes only from an external file, chosen
+by flag, environment or Git configuration. It checks each selected commit's
+changed blobs, message and author/committer names and emails; intermediate
+versions, root commits and merge-parent differences are included. New-branch
+hook input excludes commits reachable from any remote-tracking ref. Binary
+blobs are skipped and counted; other text is decoded with replacement. Reports
+name locations and pattern-file line numbers while withholding patterns and
+matched content. Configuration and Git errors fail closed. Separate Git metadata
+is also inside the repository for the external-file guard; whitespace in paths
+is preserved, and Python 3.9 symlink loops produce a fixed error without paths.
+The optional sample pre-push hook is documented but not installed. No real
+patterns, private values or generated reports are added to this repository.
+
+CI retains every existing check in one shared step list, pins Linux and macOS
+images, selects the interpreter through the matrix, and adds both system and
+setup-python macOS entries plus weekly/manual triggers. Scheduled/manual
+whitespace checks inspect the tip patch because those events have no push base.
+Permissions remain contents: read. Hosted CI cannot be run here; system Python
+presence/version and setup-python availability on the hosted image remain
+unverified. README and the file/test inventories describe the commands and
+limits. Both companion trees and their registered identities are unchanged.
+
+Regression first: the initial methods failed while the scripts were absent;
+additional external-metadata, whitespace-path and system-Python symlink-loop
+regressions failed before their repairs. All 34 new methods pass under both
+local interpreters and with the temporary directory inside this checkout.
+Direct full proofs: core 468 tests OK (1 skip) on Python 3.14.4 and system
+Python 3.9.6; research 123 tests OK (3 skips); Architect 118 tests OK.
+The measured total is 709 automated test methods. Doctor reports 41 checks,
+34 pass and 7 info, exit 0; registry PASS; git diff --check clean. Existing
+tests, assertions and gates are neither removed nor weakened. The release
+command will repeat the full gate against this assembled candidate.
+
+Close order is this single new CHANGELOG entry, live LEDGER read back unchanged,
+then STATUS rewritten. No decision or ledger ID is allocated, no finding is
+closed, and the five live OPEN rows retain their owner gates. PROGRESS.md is
+local and untracked. This is unreleased branch work for owner review; no tag,
+fetch, push, hook installation or publication is performed.
+
+The lane's sandbox could not write Git metadata, so the owning session made
+the commit, rewrote STATUS and re-ran the gates before the independent review.
+
 ## 2026-11-19 — CI: the Python 3.9 job moves to ubuntu-24.04, and one bytecode demonstration no longer assumes an in-tree cache
 
 The first tests-workflow run on the v0.7.0 commit failed in its Python 3.9 job before any test ran: `ubuntu-latest` now resolves to an image that offers no Python 3.9, so the setup step could not install it. The Python 3.13 job passed. The 3.9 job now runs on `ubuntu-24.04`; 3.13 stays on `ubuntu-latest`. The v0.7.0 tag is unchanged.

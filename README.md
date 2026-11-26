@@ -67,7 +67,7 @@ Plain text was a deliberate choice: it is the one format every model can read an
 ## Verified, not asserted
 
 - **Audited across 25 projects** before going public. In the 7-row churn table, the three roots with close instructions (one carrying the block verbatim, two hand-written) rewrote STATUS (churn 0.67–0.83); the four others, two without instructions and two with project-authored "top line" instructions, accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
-- **675 automated test methods**: 434 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
+- **709 automated test methods**: 468 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
 - **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
 - **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
 
@@ -109,11 +109,67 @@ Then, in any project, ask for "set up project docs". The skill recognises a proj
 
 The JSON says no more than the text report does: a structural PASS is still not semantic accuracy or a verified write order. Without `--json` the output is unchanged.
 
+## Releasing
+
+From the repository root, run:
+
+```sh
+python3 -B scripts/release-check.py
+```
+
+The gate runs core, research and Architect suites, then Doctor, the skill
+registry and `git diff --check`. It compares measured test counts with README,
+STATUS and the newest CHANGELOG entry; historical entries stay historical.
+Use repeatable `--python PATH` options to run the suites under more than one
+interpreter. Doctor WARNs fail unless you pass `--allow-doctor-warn`; other
+failures cannot be waived. `--skip-suites` is for testing the script and prints
+that its result is not a release check. The gate creates no report files and
+performs no network or release operations.
+
+The count parser recognizes explicit core/research/Architect labels before or
+after a number, optional “suite”, and totals written as “N automated test
+methods”, “N total”, “total N” or “N overall”. It ignores Markdown emphasis.
+Subset or unrecognized test counts are reported as “not checked”, never guessed.
+The exact bounded grammar is in `scripts/release-check.py`'s docstring.
+
+For an optional privacy check before every push, keep your patterns file private
+and **outside the repository**. Put one Python regular expression per line;
+blank lines and `#` comments are ignored. Configure its location with
+`--patterns PATH` when running the scanner directly, or `LEAK_SCAN_PATTERNS`,
+or `git config leakscan.patterns "$HOME/.config/leak-scan/patterns.txt"`
+(in that precedence order). No real patterns are shipped here.
+
+To install the sample hook in your local checkout, first check for an existing
+pre-push hook. If there is one, integrate the scanner invocation into it and
+preserve its other checks. Otherwise:
+
+```sh
+hook_path="$(git rev-parse --git-path hooks/pre-push)"
+mkdir -p "$(dirname "$hook_path")"
+cp scripts/hooks/pre-push.sample "$hook_path"
+chmod +x "$hook_path"
+```
+
+Adopters also copy `scripts/leak-scan.py` into their repository. The hook reads
+Git's ref updates on stdin. For a manual scan, run
+`python3 -B scripts/leak-scan.py --range BASE..HEAD`. Both forms scan changed
+blobs at every selected commit, commit messages, and author/committer names
+and emails. A new branch scans commits not reachable from any local
+remote-tracking ref; the scanner never fetches, so keep those refs current
+through your normal workflow. NUL bytes in the first 8,000 bytes mark binary
+blobs, which are skipped and counted; other text is decoded with replacement.
+Regexes apply to each line. Reports contain commit/path/line locations and
+pattern-file line numbers, without pattern or matched content. Exit codes are
+0 clean (also 0, with a notice, if unconfigured), 1 hits, 2 could not run.
+An unreadable configured file, invalid regex or Git error fails closed.
+The release gate does not run the privacy scan; the optional hook or manual
+range scan covers commit history, including the final release commit.
+
 ## Files
 
 - **`SKILL.md`** — the full operating instructions: all five modes, the extensions, and which check to run when.
 - **`templates/`** — starter files for every register and extension.
-- **`scripts/`** — Doctor, the reviewed ledger migration, and the skill-registry validator.
+- **`scripts/`** — Doctor, the reviewed ledger migration, the skill-registry validator, the release gate and the optional privacy scanner/hook.
 - **`staging/`** — the research and Architect companions.
 - **`tests/`** — the test suites. From the repository root, the core suite is `python3 -B -m unittest discover -v`; each companion has its own: `cd staging/research-protocol && python3 -B -m unittest discover -s tests -v`, and the same in `staging/architect-protocol`.
 - **`docs/`** — this project's own registers. It runs the system it ships, so its STATUS, CHANGELOG, DECISIONS and LEDGER are a working example.

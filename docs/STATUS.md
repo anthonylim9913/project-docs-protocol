@@ -1,6 +1,6 @@
 # STATUS
 
-*Last updated: 2026-11-19*
+*Last updated: 2026-11-26*
 
 ## Current phase
 
@@ -15,6 +15,12 @@ companions remain 0.2.2 with unchanged recorded `sha256v2:` identities.
 After the tag, the tests workflow moved its Python 3.9 job to `ubuntu-24.04`
 and one test stopped assuming an in-tree bytecode cache (CHANGELOG 2026-11-19).
 
+Unreleased on `chore/release-tooling` (CHANGELOG 2026-11-26): a one-command
+release gate (`scripts/release-check.py`), an optional privacy scan with a
+sample pre-push hook (`scripts/leak-scan.py`), and CI on pinned Linux and
+macOS images with a weekly run. Hosted CI has not run on these changes; the
+macOS system interpreter on the hosted image is unverified.
+
 Review limits: the non-UTF-8 filename case and three permission-mode subcases
 skip on this filesystem and were not independently verified.
 
@@ -24,7 +30,9 @@ skip on this filesystem and were not independently verified.
 LG-0052, LG-0056, LG-0057, LG-0058 and LG-0059 are CLOSED in the archive
 with the independent reviewer's observations; 8 rows are archived.
 
-*No items in flight.*
+| Work | Branch | End action |
+|---|---|---|
+| Delegated release tooling | `chore/release-tooling` | independent review, then owner decides on merge and hosted CI |
 
 ## Blocked
 

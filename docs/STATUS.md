@@ -24,6 +24,7 @@ hosted CI passed on all four jobs. Hosted CI has not run on this branch.
 | Work | Branch | End action |
 |---|---|---|
 | Delegation brief and stranded-work advisories | `feat/r3-stranded-work` | review of the branch-check repairs, then owner decides merge |
+| LG-0044 stage 2, delegated | `fix/lg-0044-external-judge` | owner folds in its owed entries, then independent stage-2 review |
 
 ## Blocked
 

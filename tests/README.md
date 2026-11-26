@@ -9,10 +9,17 @@ python3 -B tests/run_regression.py
 
 Both discover the same `test_*.py` suite and return a nonzero exit on failure. The explicit runner also refuses an empty suite. Tests use Python's standard library (Python 3.9 or newer). Most scratch projects live under ignored `tests/.tmp/`; Git checks, fresh-install checks and the JSON-mode fixtures use system temporary directories for their independent repositories and ancestor-free registers. Test cleanup removes those temporary projects. They need no private files, credentials or network service. The final local verification environment and actual test count are recorded in [the hardening review](../docs/HARDENING-REVIEW.md).
 
+Measured at the stage-2 review (commit `21d80b4`): 544 core tests, 123 research
+tests and 118 Architect tests, 785 total. Core discovery on Python 3.14.4 and system Python 3.9.6, and the explicit
+regression runner, each pass with one skip; research has three skips and
+Architect has none. Historical review counts remain observations
+of their recorded revisions.
+
 | Suite | What executes | What the result establishes |
 |---|---|---|
 | `test_skill_registry.py` and `test_registry_routing.py` | Real registry CLI plus an independent `struct.pack('>Q', ...)` v2 oracle and a seeded 2,000-tree comparison | Known-answer vector, legacy framing forgery rejected by v2, strict UTF-8 byte-order paths, non-UTF-8 refusal (skipped if the filesystem refuses the filename), unchanged metadata exclusions, malformed IDs, active/staged legacy refusal without digest disclosure, retired IDs not compared, unreviewed v2 output, and routing/template contracts. |
 | `test_release_check.py` and `test_leak_scan.py` | Disposable Git repositories, tiny real unittest suites, invented external regexes and local ref updates | Measured current counts and wrong-count refusal; interpreter repetition, Doctor WARN override and fatal checks; intermediate/merge blobs, metadata, binary skips, private diagnostics, hook ranges and fail-closed errors. New fixtures do not inspect ancestor registers or assume where the system temporary directory lives. |
+| `test_stranded_work.py` | Disposable repositories, 120 local branches, another worktree, remote refs and owed fragments | Two-call bound, exact non-register commit counts, listed/unlisted levels, merged/squash limits, read-error SKIPs, placeholder rejection and the self-contained brief. |
 | `test_doctor.py` | Real Doctor CLI against controlled registers | Specific check levels/exits for malformed headers, IDs and references, numeric aliases, archives, fences, footers, dates, staleness, schema and decision citations; file bytes and paths remain unchanged. |
 | `test_doctor_json.py` | Real Doctor CLI in text and `--json` mode on three [fixture projects](fixtures/doctor-json/README.md) copied outside this repository, plus exit-3 runs and an injected crash | Text output still equals the baseline captured before `--json` existed; JSON mode prints one parseable object with the same checks in the same order, matching summary counts, the same exit code and the same stderr, including when the checker cannot run. |
 | `test_doctor_markdown.py` | Complete authentic Install blocks in list and code contexts through Doctor | All three wiring checks, exit codes and read-only behavior; expectations compared separately with retained parser tokens. |
@@ -23,6 +30,8 @@ Both discover the same `test_*.py` suite and return a nonzero exit on failure. T
 | `test_lifecycle.py` | Recorded example edits followed by the real Doctor and a real artifact check | The retained examples preserve their explicit gates, IDs and provenance; Doctor diagnoses intermediate states; actual artifact content/hash checks detect corruption. |
 | `test_status_uniqueness.py` | Real Doctor CLI on handwritten dashboards | Repeated canonical peer headings and visible date fields warn with physical locations; hidden examples, custom headings and separate parent scopes do not collide. Read-only snapshots and ancestor-free projects keep unrelated warnings from making a negative test pass. |
 | `test_acceptance_manifest.py` and `test_acceptance_gates.py` | Frozen hardening fixture bytes plus the fail-closed acceptance validator under deliberate malformed/failure/skip/substitution/hash faults | A green child must have complete declared case identities, behavioral assertions, exit codes and runtime hashes; nonzero/error/skip/empty/malformed output is rejected. |
+| `test_acceptance_harness_binding.py` | Recorded judging bytes, pins, an audit of trusted file reads and a separate candidate checkout | Changed, missing, shadowed or substituted judging inputs are refused; the external judge accepts a control and rejects product mutants without importing candidate judging code. The Python 3.9 scan limitation is explicit. |
+| `test_acceptance_guard_removal.py` | Named semantic guards removed in disposable fixtures, the same mutation without re-recording, and three self-approving validator mutants | Existing guard assertions survive fixture re-recording; an unrecorded mutation fails integrity. `InTreeLimitTests` demonstrates why a trusted external judge is required. |
 | `run_acceptance.py` and `test_mutants.py` | The canonical four-case child runner against the real Doctor and migration CLIs, plus isolated source mutants | The unmutated runtime is accepted; each semantic mutant changes a targeted case and is rejected by the same validator with retained command, hash, stdout and stderr evidence. |
 
 `scenarios.json` is an index linking the eleven original scenario names to executable test methods. Several names share one mixed-answer test; the index is not counted as an additional passing test or as eleven independent agent executions.
@@ -34,7 +43,7 @@ produce a clean positive, not merely a stale-block warning. The acceptance
 validator's exhaustive check inventory adds the new SKIP; no expected case or
 gate is removed. Doctor JSON tests retain the captured 1.5.0 bytes and checksums,
 then derive exact current text expectations for the fourth clause and additional
-git SKIP/count. Historical installation captures remain observations, not current
+git SKIP/count, plus the two additive stranded-work results (one INFO, one SKIP). Historical installation captures remain observations, not current
 installation templates. Markdown visibility gains a separately recorded oracle
 snapshot, leaving earlier observations untouched.
 
@@ -48,7 +57,7 @@ The [observed installation and next session](fixtures/install-observation/README
 
 The frozen hardening inventory lives in `fixtures/hardening-2026-09-12/acceptance-cases.json`; `run_acceptance.py` executes its four real CLI cases, while `validate_acceptance.py` and `test_acceptance_gates.py` enforce declared case identities, behavioral assertions, child exits, and runtime hashes. The baseline comparator uses the corrected `edccbc2` source and includes `test_migrate_opaque.py`; its promoted baseline failures/errors are matched by identity rather than by a nonzero exit alone. Retained canonical control and mutant packets live under `fixtures/hardening-2026-09-12/final/acceptance-*.json`.
 
-## Default-bound input census (D-0029, stage 1)
+## Default-bound input census (D-0029)
 
 `input_manifest.py` binds every tracked or present file by default, including new
 root files, new directories and `.github/workflows/tests.yml`. Its only exclusions
@@ -71,6 +80,131 @@ covers default binding, deletions, omissions, edits and the exact exclusion list
 `acceptance_support.py` computes expected scope independently from committed paths
 and a literal restatement of these exclusions, never the generator's scope code.
 
-This is a scope repair pending independent review, not closure of LG-0044.
-In-tree validation still cannot establish independent approval of its own run;
-the trusted external judge, harness record and pin are stage-2 work under D-0029.
+LG-0044 closes only after independent stage-2 review. Author-run checks cannot
+establish independent approval of their own run.
+
+## Trusted external judge (D-0029, stage 2)
+
+The runner writes observations; only `validate_acceptance.py` reports acceptance.
+Both entry points restart themselves with `-I -B` and load the judging modules
+from bytes matching `tests/harness.sha256`. The 17 `HARNESS_FILES` are the five
+judging Python files, the case manifest, six hardening case fixtures, the JSON
+contract, two contiguous-delimiter fixtures, the twenty-finding STATUS fixture
+and `templates/LEDGER.md`. The record is bound as an input but cannot hash itself.
+An audit hook in `test_acceptance_harness_binding.py` checks the actual trusted
+file reads of both entry points against that exact set plus the record.
+
+After editing any harness file, regenerate the record last:
+
+```sh
+python3 -B tests/input_manifest.py . --print-harness-record > tests/harness.sha256
+shasum -a 256 -c --strict --quiet tests/harness.sha256
+```
+
+`--print-harness-digest` is a developer convenience, never the source of a
+reviewer's pin. A reviewer derives the pin independently from the **committed**
+record after reviewing the harness, records it outside the candidate before
+execution, and compares it with the record being used. A later harness edit
+invalidates that pin and requires another review. The in-tree checks provide
+**tamper evidence only**: an author can edit the checks that check the pin.
+`InTreeLimitTests` demonstrates three such self-approving mutants, each refused
+by a separate unchanged trusted judge. The existing semantic guard tests
+re-record their disposable fixtures to reach their intended assertion; a new
+negative control applies the same snapshot-guard mutation without re-recording
+and requires an integrity rejection.
+
+Independence is procedural. The trusted checkout must be a separately protected,
+clean checkout of a reviewed revision, and the candidate must be a clean checkout
+with identical judging files and record. For a harness change, the reviewer can
+review the candidate's committed harness and check it out separately as trusted;
+equal revisions alone prove neither complete coverage nor a bug-free harness.
+The following procedure needs Python **3.10+** for the full stdlib-shadowing scan.
+Python 3.9 remains supported by the suites and entry points, but emits an explicit
+warning and scans only known harness dependencies and builtins when the full
+stdlib inventory is unavailable. Checkouts must use LF and preserve path case.
+
+Before execution, record both full revisions and the interpreter identity outside
+both checkouts. Verify status with `git status --porcelain --ignored
+--untracked-files=all` in each: no output except excluded `.DS_Store` files is
+acceptable. Resolve every other entry, including ignored bytecode. Check that
+CHANGELOG and DECISIONS history was preserved despite their manifest exclusion.
+Set `TRUSTED`, `CANDIDATE` and `EVIDENCE` to absolute directories; keep evidence
+outside both trees. Set `REVIEWED_PIN` from the independent review record.
+Use an absolute trusted Python 3.10+ executable as `JUDGE_PYTHON`.
+
+```sh
+cd "$TRUSTED"
+TRUSTED_REV=$(git rev-parse HEAD)
+CANDIDATE_REV=$(git -C "$CANDIDATE" rev-parse HEAD)
+shasum -a 256 -c --strict --quiet tests/harness.sha256
+PIN=$(git show "$TRUSTED_REV:tests/harness.sha256" | shasum -a 256 | cut -c1-64)
+test "$PIN" = "$REVIEWED_PIN"
+test "$(shasum -a 256 tests/harness.sha256 | cut -c1-64)" = "$PIN"
+"$JUDGE_PYTHON" -I -B tests/run_acceptance.py --runtime-root "$CANDIDATE" \
+  --source-commit "$CANDIDATE_REV" --result "$EVIDENCE/result.json" --harness-sha256 "$PIN"
+"$JUDGE_PYTHON" -I -B tests/input_manifest.py "$CANDIDATE" --out "$EVIDENCE/inputs.json"
+```
+
+Independently cross-check the candidate manifest against Git object bytes before
+using its hash map. This separate standard-library snippet restates D-0029's
+exclusions literally rather than importing the generator's scope code. It also
+requires each on-disk included file to equal its committed bytes. The trusted
+census separately refuses stray, unreadable, linked or dirty inputs.
+
+```sh
+"$JUDGE_PYTHON" -I -B - "$CANDIDATE" "$CANDIDATE_REV" "$EVIDENCE" <<'PY'
+import hashlib, json, pathlib, subprocess, sys
+root, revision, evidence = pathlib.Path(sys.argv[1]), sys.argv[2], pathlib.Path(sys.argv[3])
+def git(*args):
+    p = subprocess.run(['git', '-C', str(root), *args], capture_output=True)
+    if p.returncode or p.stderr:
+        raise SystemExit('Git object cross-check failed')
+    return p.stdout
+excluded = {'docs/STATUS.md', 'docs/CHANGELOG.md', 'docs/DECISIONS.md',
+            'docs/LEDGER.md', 'docs/LEDGER-ARCHIVE.md',
+            'docs/HARDENING-REVIEW.md', 'docs/LESSONS-REVIEW.md'}
+values = {}
+for raw in git('ls-tree', '-r', '--name-only', '-z', revision).split(b'\0'):
+    if not raw:
+        continue
+    name = raw.decode('utf-8')
+    if (name in excluded or '.git' in name.split('/') or name.startswith('tests/.tmp/')
+            or name.rsplit('/', 1)[-1] == '.DS_Store'):
+        continue
+    blob = git('show', revision + ':' + name)
+    if (root / name).read_bytes() != blob:
+        raise SystemExit('candidate differs from Git object: ' + name)
+    values[name] = hashlib.sha256(blob).hexdigest()
+manifest = json.loads((evidence / 'inputs.json').read_text())
+if manifest['subject_commit'] != revision or manifest['files'] != values:
+    raise SystemExit('candidate input manifest differs from Git objects')
+(evidence / 'hashes.json').write_text(json.dumps(values, sort_keys=True) + '\n')
+PY
+"$JUDGE_PYTHON" -I -B tests/validate_acceptance.py --subject-root "$CANDIDATE" \
+  --harness-sha256 "$PIN" "$EVIDENCE/result.json" \
+  tests/fixtures/hardening-2026-09-12/acceptance-cases.json "$EVIDENCE/hashes.json"
+shasum -a 256 "$EVIDENCE/result.json"
+```
+
+Require the validator to print `{"accepted": true, "cases": 4}` and exit 0.
+Repeat the record checksum, external pin comparison, both revision checks and
+both clean-tree checks **after** execution; compare against the pre-run values.
+Retain commands, raw outputs, interpreter identity, revisions, externally
+recorded pin and acceptance packet checksum. Run negative controls with a wrong
+pin, changed runtime hashes and changed candidate judging bytes: all must be
+rejected. Keep those results with the review evidence. The binding and in-tree
+limit suites exercise these controls in disposable copies, plus semantic product
+mutants, shadowing modules/packages and bytecode; they do not constitute an
+independent reviewer signing off the final revision.
+
+The interpreter, Git, shasum and host remain trusted. Candidate product code runs
+**unsandboxed under the same user**; it can alter trusted tests or result files
+if permissions allow. Outside pre/post checks are required for the entry points
+and manifest generator; their checks are not a verify-then-execute security
+boundary. Post-checks cannot detect a forged result packet. Protect the trusted
+checkout and evidence with a separate OS user or VM for an untrusted candidate,
+or explicitly limit the assurance claim. Acceptance checks a packet's consistency
+and bound bytes, not whether events or independent review occurred. File modes,
+excluded registers/reports, `.DS_Store` and nested `.git` contents are not bound.
+Interpret migration-case failures against the candidate's LG-0051 repair, and do
+not mistake the explicit Python 3.9 scan warning for new product evidence.

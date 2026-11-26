@@ -122,6 +122,20 @@ class DoctorJsonTests(unittest.TestCase):
                         rb"(\d+) checks: (.*?) (\d+) skipped",
                         lambda match: str(int(match[1]) + 1).encode() + b" checks: " + match[2]
                         + b" " + str(int(match[3]) + 1).encode() + b" skipped", expected)
+                    # Additive deltas for Doctor 1.10.0; immutable capture stays intact.
+                    expected = expected.replace(
+                        b"SKIP  git-status-churn           git checks disabled (--no-git)\n",
+                        b"INFO  owed-fragments             0 owed-entry fragments beside the registers\n"
+                        b"SKIP  git-status-churn           git checks disabled (--no-git)\n")
+                    expected = expected.replace(
+                        b"SKIP  git-unrecorded-commits     git checks disabled (--no-git)\n",
+                        b"SKIP  git-unrecorded-commits     git checks disabled (--no-git)\n"
+                        b"SKIP  git-unlisted-branches      git checks disabled (--no-git)\n")
+                    expected = re.sub(
+                        rb"(\d+) checks: (.*?) (\d+) info, (\d+) skipped",
+                        lambda match: str(int(match[1]) + 2).encode() + b" checks: " + match[2]
+                        + b" " + str(int(match[3]) + 1).encode() + b" info, "
+                        + str(int(match[4]) + 1).encode() + b" skipped", expected)
                 target = self.project(name)
                 before = self.snapshot(target)
                 process = self.run_doctor(target, case["args"], json_mode=False)

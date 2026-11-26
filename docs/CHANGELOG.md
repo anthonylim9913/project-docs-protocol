@@ -1,3 +1,299 @@
+## 2026-11-27 — LG-0044, LG-0061 and LG-0062 closed on independent review; pre-merge register repairs
+
+Three independent read-only checkers reviewed the whole branch at `8a73ca2`.
+Privacy passed. The branch-check reviewer reproduced every Closes-when item
+of LG-0061 in temporary repositories and judged the row closable, with two
+repairs asked for: a name glued to a code span counted as a plain mention
+(fixed; the regression test failed first), and D-0049's stated limit was too
+narrow (it now also names leading punctuation, unspaced table cells, links
+and other marks, and per-line span pairing; edited in place because D-0049
+was written hours earlier on this unmerged branch). The register reviewer
+found STATUS contradicting itself about the LG-0044 review, an undercount of
+the review rounds, a stale date on LG-0061 and a stale count in
+`tests/README.md`; STATUS is rewritten and the count now names the reviewed
+commit.
+
+Closures, each moved to the archive with its pointer, check and reading:
+LG-0044 on the stage-2 reviewer's verdict for commit `21d80b4` and its own
+pin; LG-0061 on the branch-check reviewer's verdict at `8a73ca2`, with the
+one later repair stated in the row; LG-0062 on the first stage-2 reviewer's
+evidence. None was closed by the lane or session that wrote the code. The
+orchestrating session wrote the last small repairs to `git-unlisted-branches`
+itself and says so in each entry.
+
+Before these last edits the release check passed on `8a73ca2` under Python
+3.14.4 and 3.9.6 with nothing else running. Hosted CI has not run on this
+branch. Measured on this tree: core 547 tests, research 123, Architect 118,
+788 in total.
+
+## 2026-11-27 — git-unlisted-branches: code spans compared whole (D-0049)
+
+The reviewer's last narrow check confirmed the compact table-cell repair and
+that the harness record is byte-identical to the reviewed one, and found the
+backtick rule still wrong for a name such as ``more`lane-one`more`` inside a
+double-backtick span, which listed `lane-one`. Code spans are now paired as
+Markdown pairs them and compared whole; the regression test failed first.
+D-0049 records the rule and the limit that remains for plain prose, and why
+the rule stops here. LG-0061 stays VERIFYING. Measured on this tree: core 546
+tests, research 123, Architect 118, 787 in total.
+
+## 2026-11-27 — LG-0044: follow-up review supports closing at `21d80b4`; one branch-check regression repaired
+
+The same independent reviewer re-ran the D-0029 closing procedure on commit
+`21d80b4` with a pin it derived again from the committed record
+(`8c1177267e9ad41fd66c44130666f34443b6ad1dbcca557db9e89be9f98149f5`), Python
+3.14.4 and fresh clones: accepted with 4 cases, 228 files matched from Git
+objects, three negative controls rejected, post-run checks clean, packet
+SHA-256 `717cbf1e…`. It confirmed that the label correction changed one
+comment, four docstrings and one assertion message in five files and no
+logic. Its verdict: the evidence supports closing LG-0044 for that revision
+and pin. The row is closed at integration, not here.
+
+It also confirmed the backtick and shallow-clone repairs to
+`git-unlisted-branches` and found that the new mention rule had lost one case
+that worked before: a single-backticked name in a table cell written without
+padding spaces was no longer listed, a false WARN. A backticked mention is
+now recognised wherever the span sits, unless another backtick touches it.
+The regression test failed first. This file is not a judging file, so the
+reviewed harness record and pin are unchanged. LG-0061 stays VERIFYING until
+this repair is reviewed.
+
+The orchestrating session's release check on `21d80b4` passed every step on
+Python 3.9.6 and failed the core suite once on Python 3.14.4 while the
+reviewer was running in the same checkout; the failing test was not captured
+and the suite passed on an immediate clean rerun (544 tests). Measured on this
+tree: core 545 tests, research 123, Architect 118, 786 in total.
+
+## 2026-11-26 — LG-0044 stage 2: independent review passed the judge; void decision references corrected, record regenerated
+
+A separate model session ran the D-0029 closing procedure on commit `74705f2`
+with trusted and candidate clones, a pin it derived itself from the committed
+record (`32f5e062…`), and Python 3.14.4. The trusted validator printed
+`{"accepted": true, "cases": 4}`; the Git-object cross-check matched 228
+files; the three negative controls rejected; post-run checks were clean. All
+34 mutation and deletion checks of the 17 recorded files rejected, as did a
+planted `json.py`, planted bytecode, a wrong pin and a coordinated forged
+candidate. The in-tree limit reproduced as documented: after re-recording, a
+candidate's own validator accepts a forged packet, and the external judge
+still rejects it. The reviewer's read audit found exactly the 17 recorded
+files plus the record.
+
+It asked for one repair before closing: comments and one test message in five
+ported files cited a decision label from the alternate branch that does not
+exist here. They now cite D-0029. Three of those files are judging files, so
+the record was regenerated and the earlier pin no longer applies; the new
+record's SHA-256 begins `8c1177267e9a`. LG-0044 stays VERIFYING until
+the new record and pin are reviewed. Limits the reviewer stated: independence
+means a different model session, its own pin, separate clones and a fresh
+run; not a separate OS user or host. Candidate code ran as the same user.
+
+Rebased onto the branch-check repairs. Measured on this tree: core 544 tests,
+research 123, Architect 118, 785 in total.
+
+## 2026-11-26 — delegated r4-judge: LG-0044 external trusted judge, pending independent review
+
+Lane `r4-judge` on `fix/lg-0044-external-judge` rebased onto
+`feat/r3-stranded-work` at `d41ec26`, then ported the external-judge code and
+tests from `89ed3aa..88b46c2` with a three-way application. No alternate
+register commits, root README or MIGRATION edits were replayed. The root README
+count alone is updated from this lane's own measurements. Stage 1's
+strict census, Git-error handling and commit-identity validation remain intact.
+No exclusions changed. LG-0044 still requires the independent stage-2 review
+specified by D-0029; this author-run evidence cannot close it.
+
+The trusted runner and validator judge a separate candidate whose judging bytes
+must match their recorded files. Modules load from verified bytes with isolated
+entry points; the record and independently recorded external pin bind the
+harness. The manifest adds record/digest output options. All 17 judging files
+were re-derived from the trusted file reads: no entries were added or dropped
+versus the alternate. Five Python files, the case manifest, six case fixtures,
+the contract, two contiguous fixtures, the migration STATUS and LEDGER template
+remain the exact set; scripts execute as candidate product code, and test helpers
+and regression test files do not decide the acceptance verdict. The record is
+bound but does not hash itself. The imported audit test checks the read set.
+
+The owner ruling authorizes fixture-helper changes with byte-identical existing
+assertions. `AcceptanceGuardRemovalTests.removal()` now re-records its disposable
+mutants before the semantic check. A new regression applies its exact snapshot
+guard mutation without re-recording and requires an integrity rejection.
+`MutantSensitivityTests.validate()` keeps its body and assertions; its hash
+function import now comes directly from `input_manifest` because the isolated
+runner initializes its module globals only in main. Shared `copy_subject()`
+skips `.DS_Store` when copying fixtures; shared `generate()` retains the strict
+stage-1 scope restatement, factored into `reviewed_paths()` for the new external
+fixture helper as well. No other existing test helpers were adapted.
+
+A macOS temporary-path alias exposed a defect in the alternate's loaded-module
+origin check; normalizing the harness root fixes the imported regression without
+changing its assertion. Python 3.9 emits an explicit full-scan limitation and
+checks known harness dependency names plus builtins; Python 3.10+ uses the full
+stdlib inventory. The limitation warning is emitted at interpreter shutdown so
+rejection diagnostics keep their existing prefix; a Python 3.9 guard regression
+failed before that repair and now passes unchanged. Missing and linked harness
+errors also retain the existing required-input diagnostic wording, preserving
+all base assertions while rejecting earlier at the integrity boundary.
+D-0048 (the lane's placeholder D-NEW-1) records the 3.9 implementation choice.
+The test README describes the external review procedure and its assurance
+limits, including unsandboxed candidate execution and trusted host/tooling.
+
+Measured direct proofs on the final harness bytes: Python 3.14.4 discovery,
+system Python 3.9.6 discovery and `tests/run_regression.py` each ran 542 tests,
+OK with one skip. Research ran 123 tests, OK with three skips; Architect ran
+118 tests, OK without skips. Measured suites: 542 core, 123 research,
+118 Architect; 783 total. All 1,211 existing assertion
+expressions are byte-identical to the base, and every base test file remains.
+The documented external procedure also passed in disposable committed trusted
+and candidate copies, with the four-case verdict, Git-object hash cross-check,
+revision/clean-tree checks, external pin comparison and pre/post checksums.
+That is author-run verification, not independent approval or OS isolation.
+
+Doctor exits 1 with 43 checks: 34 pass, one owed-fragments WARN, zero FAIL,
+eight INFO and zero skipped. The registry validator passes. Whitespace,
+protected-register and scripts/staging/templates scope diffs are empty.
+The harness checksum passes with strict, quiet shasum verification.
+`python3 -B scripts/release-check.py --allow-doctor-warn` ran all three suites
+again and exits 1: core 542, research 123 and Architect 118 all PASS; Doctor's
+WARN is allowed; registry, working/staged/committed whitespace and all four
+root README count claims PASS. Its sole FAIL is the protected newest CHANGELOG
+entry's old core count: stated 514, measured 542. This is not waived or reported
+as a passing release gate. The owner must fold this real owed entry at Close
+and rerun the assembled release gate; the lane has no register-writing duty.
+Registers are untouched; `PROGRESS.md` remains untracked. The owner must fold
+both owed fragments, update current-state reporting in protocol order and retain
+the independent stage-2 review required by D-0029. Hosted CI, independent final
+review and candidate execution under a separate OS user or VM were not verified.
+
+Folded in by the owning session from the lane's owed fragments, which are now
+removed; the lane wrote no register. The session assigned D-0048, moved
+LG-0044 to VERIFYING and rewrote STATUS. Where this entry says the owner must
+fold it and that the release check fails on the older count, that was true of
+the lane's commit and is settled by this Close: the release check is rerun on
+the assembled tree, and its result is in the review record, not here.
+"The owner ruling" above is the orchestrating session's clarification under
+D-0029, not a new owner decision.
+## 2026-11-26 — git-unlisted-branches: third review; backticks inside names and shallow clones
+
+The independent stage-2 reviewer also re-reviewed this check. It confirmed
+every D-0047 rule, including a real SSH-signed commit with `log.showSignature`
+set and a replace ref, and found one more false INFO and one more false WARN:
+
+- Git allows a backtick inside a branch name, so STATUS naming
+  ``lane-one`more`` in a code span still listed `lane-one`. A backticked
+  mention must now be the whole name inside one pair of single backticks; a
+  plain mention must follow whitespace and end at whitespace, with only
+  brackets, quotes, pipes, asterisks or sentence punctuation in between.
+- In a shallow clone Git hides the parents of the boundary commit, so a merge
+  looked like ordinary work and a register-only branch was reported. The
+  check now reads Git's own shallow marker in the same history call and SKIPs.
+
+Both have regression tests that failed first. This narrows D-0047's wording
+on mentions without changing its rules. LG-0061 stays VERIFYING until these
+two repairs are reviewed. Measured on this tree: core 516 tests, research 123,
+Architect 118, 757 in total.
+
+## 2026-11-26 — git-unlisted-branches: second review round; D-0047
+
+Three independent checkers reviewed the repaired, rebased branch. Privacy and
+rebase integrity passed. The branch-check reviewer confirmed the two earlier
+repairs and found more of the same kind, so the preceding entry's "closed" was
+too strong:
+
+- STATUS naming a longer branch with other punctuation Git allows
+  (`lane-one,more`, `lane-one;more`, `more(lane-one` and similar) still
+  listed `lane-one`. A mention now needs whitespace or backticks around the
+  whole name (D-0047 gives the exact rule).
+- From a feature branch, the trunk was reported as stranded once it moved
+  ahead. `main`, `master` and any remote's default branch are no longer counted.
+- A register-only branch was reported after merging the trunk into it. Merge
+  commits now count as ancestry only.
+- The history read also passes `--no-show-signature` and
+  `--no-replace-objects`.
+
+Each has a regression test that failed first, except the signature option,
+whose reported SKIP needs a signed commit and was not reproduced here. D-0047
+records the rules and their limits. Doctor stays 1.10.0.
+
+Corrections to the two entries below, which the rebase overtook: release
+tooling is merged, so the `fix/r1-findings` In flight row no longer exists.
+LG-0061 and LG-0062 stay VERIFYING; their evidence cells now give current
+counts. Measured on this tree: core 514 tests, research 123, Architect 118,
+755 in total.
+
+## 2026-11-26 — git-unlisted-branches: two ways to report INFO over stranded work are closed
+
+An independent review of the stranded-work branch passed the proofs, the
+owed-fragments check, the delegation brief and the register bytes, and found
+two defects in `git-unlisted-branches`. Both made it report INFO while
+unlisted work existed, so the preceding entry's and D-0046's detection claims
+were too strong for that commit.
+
+- A user's Git settings could hide changed paths from the history read:
+  `diff.relative` when Doctor runs from a subfolder, and
+  `diff.ignoreSubmodules=all` for a commit that adds a submodule link. The
+  read now passes `--no-relative` and `--ignore-submodules=none`.
+- A branch counted as listed when STATUS named a longer branch that Git
+  allows, such as `lane-one+more` for `lane-one`. A mention is now the whole
+  name between whitespace, quotes, backticks, brackets or list punctuation
+  (`,` `;` `:` `|` `*`), optionally followed by sentence punctuation.
+
+The owning session made both repairs; each has a regression test that failed
+first. Doctor stays 1.10.0: no check was added and the release is unpublished.
+The reviewer's evidence supports closing LG-0062; LG-0061 stays VERIFYING
+until these repairs are reviewed independently. Both rows are unchanged.
+
+Measured on this tree: core 508 tests, research 123, Architect 118, 749 in
+total.
+
+## 2026-11-26 — delegated r3-delegation: brief delivery, stranded-work advisories and owner-assigned ids
+
+Delegated lane `r3-delegation` on `feat/r3-stranded-work` adds the paste-ready
+`templates/DELEGATION-BRIEF.md` (21 lines). Close now points to the brief as
+the reliable delivery channel when an agent never loads project wiring.
+It names register-writing duties and the required changes/choices/questions/
+evidence report. A delegated agent uses placeholders in reports or owed
+fragments; the owning session assigns real ids in ascending order at Close.
+This is the supplied policy, not a separate choice; the second reserved
+decision id remains unused.
+The wiring block and all its carriers are unchanged.
+
+D-0046 records local-head-only scope, ancestry limits and batched history.
+Doctor 1.10.0 adds two never-FAIL advisories: git-unlisted-branches detects
+non-register work outside HEAD on local branches, including other worktrees,
+and owed-fragments names the three owed-entry fragment types beside the
+selected registers even without Git. A listed branch is INFO; unlisted
+branches WARN, naming at most five with exact non-register commit counts.
+Two Git calls suffice regardless of branch count; history output and Python
+traversal still scale with history. Fully merged ancestry is excluded;
+squash/cherry-pick equivalence is not detected. Remote-tracking refs do not
+count. Git/read errors SKIP. Fragment presence errors SKIP; empty, directory
+or dangling fragment entries still WARN. Existing exit contracts stand.
+
+Regression first: the missing brief/checks and acceptance of a delegation
+placeholder failed before implementation. A later presence-error regression
+also failed before its repair. All 8 focused methods pass, including 120
+local branches in exactly two Git calls, a branch checked out in another
+worktree, mixed code/register work, empty and register-only commits, normal
+merge exclusion, squash-equivalent work, remote-only refs and read errors.
+D-NEW-1 headings now WARN as template residue and never reserve an ID;
+LG-NEW-1 already fails the unchanged ledger ID check.
+
+Measured direct proofs: core suite: 506 tests OK (1 skip), using system Python
+3.9.6;
+research suite: 123 tests OK (3 skips); Architect suite: 118 tests OK.
+The measured total is 747 automated test methods. The current-interpreter
+core repeat and assembled release-check readings will be in the lane handoff.
+README and tests/README describe the additions and measured counts. JSON
+schema remains 1: immutable 1.5.0 fixture bytes and hashes stay untouched;
+exact additive expectations account for one INFO and one SKIP, and the
+acceptance inventory adds both results without removing any assertion or gate.
+
+Close order: this one new top entry, reserved D-0046 appended, LG-0061 and
+LG-0062 added as VERIFYING, then STATUS rewritten below 60 lines. No finding
+is closed by its implementing lane: both new rows await independent review.
+The five prior OPEN rows and the fix/r1-findings In flight row remain.
+PROGRESS.md stays untracked. No companion tree, identity, hook installation,
+fetch, push, tag or publication changes; hosted CI remains unverified.
+
 ## 2026-11-26 — release tooling merged to main after hosted CI passed on all four jobs
 
 The release-tooling branch ran in hosted CI as a pull request before merging.

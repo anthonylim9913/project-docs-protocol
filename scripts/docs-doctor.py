@@ -51,7 +51,7 @@ import stat
 import subprocess
 import sys
 
-VERSION = "1.9.1"
+VERSION = "1.10.0"
 # Version of the --json document's shape; bumped only when a key is added, removed or redefined.
 JSON_SCHEMA = 1
 STRUCTURAL_LIMITS = (
@@ -1280,6 +1280,13 @@ def scan_decisions(register_dir, rep=None):
     }
     for i, lvl, title, fenced in headings(lines):
         m = DECISION_TITLE_RE.match(title)
+        # Delegation report placeholders never reserve a real register ID.
+        if re.match(r"^(?:\[[^\]]*\]\s*)?D-NEW-\d+\b", title):
+            if lvl >= 2 and not fenced:
+                d["template_heads"] += 1
+            elif lvl in (2, 3) and fenced:
+                d["fenced_heads"] += 1
+            continue
         if lvl not in (2, 3):
             if lvl >= 4 and not fenced:
                 if m and len(m.group(2)) <= ID_MAX_DIGITS:
@@ -1454,7 +1461,7 @@ def check_decisions(rep, dec):
     body_placeholders = sum(1 for l in unfenced_lines(lines) if PLACEHOLDER_RE.search(l))
     problems = []
     if template_heads:
-        problems.append("%d heading(s) still read D-NNNN / ADR-NNN / YYYY-MM-DD / D-XXXX with no real id" % template_heads)
+        problems.append("%d heading(s) still read D-NNNN / ADR-NNN / YYYY-MM-DD / D-XXXX / D-NEW-n with no real id" % template_heads)
     if fenced_heads:
         problems.append("%d heading(s) inside code fences (fenced template example never deleted)" % fenced_heads)
     if body_placeholders:
@@ -2145,15 +2152,18 @@ def check_git(rep, root, register_dir, no_git):
     if no_git:
         rep.add("SKIP", "git-status-churn", "git checks disabled (--no-git)")
         rep.add("SKIP", "git-unrecorded-commits", "git checks disabled (--no-git)")
+        rep.add("SKIP", "git-unlisted-branches", "git checks disabled (--no-git)")
         return
     if not shutil.which("git"):
         rep.add("SKIP", "git-status-churn", "git not installed — churn cannot be measured (STATUS size and session-stack checks cover the same failure)")
         rep.add("SKIP", "git-unrecorded-commits", "git not installed")
+        rep.add("SKIP", "git-unlisted-branches", "git not installed")
         return
     top = run_git(root, ["rev-parse", "--show-toplevel"])
     if top is None:
         rep.add("SKIP", "git-status-churn", "not inside a git repository — churn cannot be measured (STATUS size and session-stack checks cover the same failure)")
         rep.add("SKIP", "git-unrecorded-commits", "not inside a git repository")
+        rep.add("SKIP", "git-unlisted-branches", "not inside a git repository")
         return
     top = top.strip()
     try:
@@ -2167,6 +2177,7 @@ def check_git(rep, root, register_dir, no_git):
     else:
         rep.add("INFO", "git-repository", "project root is the repository root")
     check_unrecorded_commits(rep, root, register_dir, top)
+    check_unlisted_branches(rep, root, register_dir, top)
     status_rel = os.path.relpath(os.path.join(register_dir, "STATUS.md"), root)
     out = run_git(root, ["log", "--numstat", "--format=%H", "--", status_rel])
     if not out:
@@ -2234,6 +2245,144 @@ def check_unrecorded_commits(rep, root, register_dir, top):
             % (count, UNRECORDED_COMMITS_WARN))
 
 
+def check_unlisted_branches(rep, root, register_dir, top):
+    """Two Git reads regardless of branch count; graph size is history-dependent.
+
+    Only refs/heads participate, including branches held by other worktrees.
+    Ancestry detects normal merges, not squash/cherry-pick equivalence.
+    """
+    check = "git-unlisted-branches"
+
+    def skip():
+        rep.add("SKIP", check, "local branch history or STATUS.md could not be read")
+
+    refs = run_git(root, ["for-each-ref", "--format=%(refname) %(objectname) %(symref)",
+                          "refs/heads/", "refs/remotes/*/HEAD"])
+    if refs is None:
+        skip()
+        return
+    branches = []
+    # The trunk is not stranded work when Doctor runs from a feature branch: skip the
+    # conventional default names and whatever a remote declares as its default branch.
+    defaults = {"main", "master"}
+    oid = r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})"
+    for line in refs.splitlines():
+        remote = re.fullmatch(r"refs/remotes/([^/\s]+)/HEAD " + oid + r" (\S*)", line)
+        if remote:
+            prefix = "refs/remotes/%s/" % remote.group(1)
+            if remote.group(2).startswith(prefix):
+                defaults.add(remote.group(2)[len(prefix):])
+            continue
+        match = re.fullmatch(r"refs/heads/(\S+) (" + oid + r") \S*", line)
+        if not match:
+            skip()
+            return
+        branches.append(match.groups())
+    branches = [item for item in branches if item[0] not in defaults]
+    history = run_git(root, ["--no-replace-objects", "-c", "log.diffMerges=separate", "log", "--root", "-m",
+                             "--always", "--no-show-signature",
+                             "--no-renames", "--no-relative", "--ignore-submodules=none",
+                             "--decorate=full", "--format=%x00%H %P%x01%D", "--name-only", "-z",
+                             "--branches", "--not", "HEAD"])
+    if history is None or (history and not (history.startswith("\0") and history.endswith("\0"))):
+        skip()
+        return
+    registers = {os.path.relpath(os.path.join(register_dir, name), top).replace(os.sep, "/")
+                 for name in REGISTER + ("LEDGER.md", "LEDGER-ARCHIVE.md")}
+    graph = {}
+    for record in history.split("\0\0"):
+        if not record:
+            continue
+        header, _, paths = record.lstrip("\0").partition("\0")
+        header, _, decoration = header.partition("\1")
+        if "grafted" in decoration.split(", "):
+            # A shallow clone cuts parents off, so a merge would look like ordinary work.
+            rep.add("SKIP", check, "history is incomplete (shallow clone); local branch work cannot be counted")
+            return
+        if not re.fullmatch(oid + r"(?: " + oid + r")* ?", header):
+            skip()
+            return
+        fields = header.split()
+        if paths.startswith("\n"):
+            paths = paths[1:]
+        # A merge's diff against a parent replays the other side's paths (a trunk sync
+        # would look like work), so merges carry ancestry only.
+        nonregister = len(fields) <= 2 and any(path and path not in registers for path in paths.split("\0"))
+        previous = graph.get(fields[0])
+        graph[fields[0]] = (fields[1:], nonregister or bool(previous and previous[1]))
+    try:
+        status, _ = read_text(os.path.join(register_dir, "STATUS.md"))
+    except OSError:
+        skip()
+        return
+    if status is None:
+        skip()
+        return
+    # A mention is either the whole content of a code span (matching backtick runs, as
+    # Markdown pairs them; one padding space each side is ignored), or plain text
+    # outside code spans: the whole name after whitespace (or a line start) and at
+    # most two opening brackets, quotes, pipes or asterisks, followed by closing or
+    # sentence punctuation and whitespace. Git allows most punctuation, backticks
+    # included, inside names, so lane-one is not 'listed' by lane-one,more or by a
+    # span holding lane-one`more.
+    status = "\n".join(line for _, line, fenced in visible_lines(split_lines(status)) if not fenced)
+    span = re.compile(r"(?<!`)(`+)(?!`)(.+?)(?<!`)\1(?!`)")
+    spans = set()
+    for match in span.finditer(status):
+        content = match.group(2)
+        if content.startswith(" ") and content.endswith(" ") and content.strip(" "):
+            content = content[1:-1]
+        spans.add(content)
+    plain = span.sub("\x01", status)  # not whitespace: a name glued to a span is not a plain mention
+    listed, unlisted = [], []
+    for name, tip in branches:
+        pending, seen, count = [tip], set(), 0
+        while pending:
+            commit = pending.pop()
+            if commit in seen or commit not in graph:
+                continue
+            seen.add(commit)
+            parents, touches = graph[commit]
+            count += int(touches)
+            pending.extend(parents)
+        if count:
+            mentioned = name in spans or re.search(
+                r"(?:^|\s)[(\[|'\"*]{0,2}" + re.escape(name) + r"(?=[.,;:!?)\]|'\"*]*(?:\s|$))",
+                plain, re.MULTILINE)
+            (listed if mentioned else unlisted).append((name, count))
+
+    def describe(items):
+        return ", ".join("%s (%d commits)" % item for item in items[:5]) + (" ..." if len(items) > 5 else "")
+
+    if unlisted:
+        rep.add("WARN", check, "%d unlisted local branches with non-register work outside HEAD: %s; %d listed — advisory only; squash merges may remain"
+                % (len(unlisted), describe(unlisted), len(listed)))
+    elif listed:
+        rep.add("INFO", check, "%d local branches with non-register work outside HEAD, all listed in STATUS.md: %s — advisory only; squash merges may remain"
+                % (len(listed), describe(listed)))
+    else:
+        rep.add("INFO", check, "0 local branches with non-register work outside HEAD — local heads only; squash merges may remain")
+
+
+def check_owed_fragments(rep, register_dir):
+    names = ("CHANGELOG-ENTRIES-OWED.md", "DECISIONS-ENTRIES-OWED.md", "LEDGER-ENTRIES-OWED.md")
+    present = []
+    try:
+        for name in names:
+            try:
+                os.lstat(os.path.join(register_dir, name))
+            except FileNotFoundError:
+                continue
+            present.append(name)
+    except OSError:
+        rep.add("SKIP", "owed-fragments", "owed fragment presence could not be read")
+        return
+    if present:
+        rep.add("WARN", "owed-fragments", "unfolded fragments beside the registers: %s — owning session folds them in at Close" % ", ".join(present))
+    else:
+        rep.add("INFO", "owed-fragments", "0 owed-entry fragments beside the registers")
+
+
 # --- main ---------------------------------------------------------------
 
 def run(root, today, no_git, register=None, rep=None):
@@ -2273,6 +2422,7 @@ def run(root, today, no_git, register=None, rep=None):
     check_ancestor_register(rep, root)
     check_sibling_register(rep, root, register_dir)
     check_ledger(rep, register_dir, dec, today)
+    check_owed_fragments(rep, register_dir)
     check_git(rep, root, register_dir, no_git)
     c = rep.counts
     code = rep.exit_code()

@@ -47,7 +47,9 @@ Four mechanisms work together.
 
 **Integrity by design.** The write order is the safety mechanism: the history is written before the dashboard, so an interrupted session can lose a STATUS update but never the record of what happened. History registers are append-only by rule; Doctor does not verify byte history, so a committed rewrite of a past entry is not caught by it. STATUS has a size ceiling, because a growing dashboard is history leaking into it. Decisions name the alternatives they rejected, so a later session builds on them instead of re-arguing them.
 
-**Automated checks.** Doctor is a read-only health check with up to 44 named check types in a full register report, depending on what a project uses: wiring, register shape, write discipline, decision IDs, and the ledger's schema, lifecycle and evidence rules. An absent or unusable ledger substitutes a single aggregate `ledger` result for its detailed checks. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
+**Automated checks.** Doctor is a read-only health check with up to 46 named check types in a full register report, depending on what a project uses: wiring, register shape, write discipline, decision IDs, owed fragments and local branches, and the ledger's schema, lifecycle and evidence rules. An absent or unusable ledger substitutes a single aggregate `ledger` result for its detailed checks. Exit codes separate advisory drift from a broken property. With `--json` it prints the same report as one JSON object, for dashboards ([schema below](#doctor-output-for-dashboards)). It needs only Python's standard library.
+
+`git-unlisted-branches` checks local heads (including other worktrees) in two Git calls, regardless of branch count. It WARNs on branches absent from visible STATUS that have non-register work outside HEAD, naming up to five with exact commit counts; named branches are INFO. Fully merged ancestry is excluded; squash and cherry-pick equivalence is not detected. Remote-tracking branches are excluded. The `main` and `master` branches and any remote's default branch are never counted, and a merge commit counts only as ancestry. A branch is listed when STATUS shows its whole name set off by spaces or backticks; write names in backticks to be safe. A shallow clone is SKIPped, because its cut-off history cannot be counted. History size still affects output and traversal. `--no-git` and unavailable history SKIP. `owed-fragments` names any of the three `*-ENTRIES-OWED.md` fragments beside the registers with WARN, or INFO when none; it also runs without Git. Both checks are advisory and never FAIL.
 
 ## Extensions, adopted when a project needs them
 
@@ -67,7 +69,7 @@ Plain text was a deliberate choice: it is the one format every model can read an
 ## Verified, not asserted
 
 - **Audited across 25 projects** before going public. In the 7-row churn table, the three roots with close instructions (one carrying the block verbatim, two hand-written) rewrote STATUS (churn 0.67–0.83); the four others, two without instructions and two with project-authored "top line" instructions, accreted history (0.01–0.16). The largest CHANGELOG had 11,369 lines added and 1 deleted, with nothing enforcing it. The figures are in `docs/EVIDENCE.md`; the churn result is an association in a small, mixed sample, not proof of cause.
-- **739 automated test methods**: 498 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
+- **788 automated test methods**: 547 core, 123 research and 118 Architect; the 30 registry methods are included in core, not counted again. Python 3.9 or newer, standard library only. Filesystem-specific cases skip when the filesystem cannot establish their fixtures.
 - **Independently reviewed.** Since v0.3.0 every release has been reviewed by a separate model session, and v0.4.1 was held until its re-review passed.
 - **Tested with fresh sessions.** Three new agent sessions, each given an ordinary request with no hints, found the skill registry on their own. One used the skill the owner had authorised, one asked before adopting a skill that wasn't authorised, and one refused a skill that had changed since review and used its fallback.
 
@@ -86,14 +88,14 @@ mkdir -p ~/.codex/skills && ln -s ~/.claude/skills/project-docs-protocol ~/.code
 
 Then, in any project, ask for "set up project docs". The skill recognises a project already using the system by its three registers plus either the instruction block or the install note in the docs README; the three filenames alone are not enough, because other conventions use them too.
 
-**After upgrading.** Doctor may exit 1 with advisory `wiring-clauses` WARNs asking you to re-sync the block, or `git-unrecorded-commits` WARNs, where it exited 0 before. These diagnostics never cause exit 2.
+**After upgrading.** Doctor may exit 1 with advisory `wiring-clauses` WARNs asking you to re-sync the block, or `git-unrecorded-commits`, `git-unlisted-branches` or `owed-fragments` WARNs, where it exited 0 before. These diagnostics never cause exit 2.
 
 ## Doctor output for dashboards
 
 `python3 scripts/docs-doctor.py "<project-root>" --json` runs the same checks as the text report and prints them as exactly one JSON object on stdout, on one line (wrapped here for reading):
 
 ```json
-{"tool": "docs-doctor", "schema": 1, "version": "1.9.1", "root": "/abs/project", "register_dir": "/abs/project/docs",
+{"tool": "docs-doctor", "schema": 1, "version": "1.10.0", "root": "/abs/project", "register_dir": "/abs/project/docs",
  "today": "2026-10-23",
  "checks": [{"id": "wiring-block", "level": "PASS", "message": "present in 1 of 1 instructions files: AGENTS.md"}],
  "summary": {"pass": 1, "warn": 0, "fail": 0, "info": 0, "skip": 0},
@@ -160,7 +162,7 @@ Limits:
 ## Files
 
 - **`SKILL.md`** — the full operating instructions: all five modes, the extensions, and which check to run when.
-- **`templates/`** — starter files for every register and extension.
+- **`templates/`** — starter files for every register and extension, plus the paste-ready [delegation brief](templates/DELEGATION-BRIEF.md) for tasks whose agents may never load project wiring.
 - **`scripts/`** — Doctor, the reviewed ledger migration, the skill-registry validator, the release gate and the optional privacy scanner/hook.
 - **`staging/`** — the research and Architect companions.
 - **`tests/`** — the test suites. From the repository root, the core suite is `python3 -B -m unittest discover -v`; each companion has its own: `cd staging/research-protocol && python3 -B -m unittest discover -s tests -v`, and the same in `staging/architect-protocol`.

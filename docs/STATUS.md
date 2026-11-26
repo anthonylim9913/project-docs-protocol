@@ -1,25 +1,33 @@
 # STATUS
 
-*Last updated: 2026-11-26*
+*Last updated: 2026-11-27*
 
 ## Current phase
 
-**v0.7.0 is the latest public tag. Release tooling is on `main`, untagged.**
-Doctor remains 1.9.1 and both companions 0.2.2 with unchanged registered
+**v0.7.0 is the latest public tag. Release tooling is on `main`, untagged.
+Doctor 1.10.0 and the external trusted judge are reviewed branch work, not
+yet merged.** Both companions remain 0.2.2 with unchanged registered
 `sha256v2:` identities.
 
-Since the tag, `main` gained a one-command release check
-(`scripts/release-check.py`), an optional privacy scan with a sample pre-push
-hook (`scripts/leak-scan.py`, scope in D-0045), and CI on pinned Linux and
-macOS images with a weekly run. Two independent reviews asked for repairs
-before the merge; hosted CI then passed on all four jobs (CHANGELOG
-2026-11-26, four entries).
+The branch adds a paste-ready delegation brief, owner-assigned ids, two
+advisory Doctor checks for stranded work (`git-unlisted-branches`,
+`owed-fragments`; D-0046, D-0047, D-0049) and LG-0044 stage 2, the external
+trusted judge (D-0029, D-0048). Independent reviews support all three
+closures recorded on 2026-11-27: LG-0044, LG-0061 and LG-0062 are CLOSED in
+the archive with the reviewers' readings and stated limits.
+
+Hosted CI has not run on this branch. The local release check passed on
+Python 3.14.4 and 3.9.6 before the last small repair; rerun it before merging.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 OPEN, 0 VERIFYING; 8 archived rows, no P0/P1.
+`LEDGER.md` is authoritative: 4 OPEN, 0 VERIFYING; 11 archived rows, no P0/P1.
 
-*No items in flight.*
+| Work | Branch | End action |
+|---|---|---|
+| Delegation brief, stranded-work checks and LG-0044 stage 2 | `fix/lg-0044-external-judge` | hosted CI as a pull request, then owner decides merge |
+
+`feat/r3-stranded-work` is an older subset of that branch.
 
 ## Blocked
 
@@ -29,7 +37,6 @@ before the merge; hosted CI then passed on all four jobs (CHANGELOG
 
 | Item | Deferred to | Reason |
 |---|---|---|
-| LG-0044 stage 2 | separate follow-up | self-approval gap, D-0029 |
 | LG-0049 and LG-0053 | wave B | supplied passages and cache refusal, D-0030 |
 | LG-0048 | wave C | registry pointer, D-0031; release registry gate applies |
 | LG-0060 | separate test repair | temporary fixtures can inherit parent registers |
@@ -39,8 +46,9 @@ before the merge; hosted CI then passed on all four jobs (CHANGELOG
 
 ## Next
 
-1. LG-0044 stage 2 and LG-0060, followed by waves B and C.
-2. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
+1. Run hosted CI on the branch, then merge when the owner agrees.
+2. LG-0060, then waves B and C (LG-0049, LG-0053, LG-0048).
+3. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
 
 ## Open questions (owner)
 

@@ -4,7 +4,7 @@ Each case starts from a passing complete packet in a disposable committed copy,
 changes the harness or plants code beside it (never the packet's evidence of the
 product), and shows the change is refused instead of being approved by the
 changed code itself. The external cases use one unmodified copy as the trusted
-checkout and judge a separate candidate copy (D-0025).
+checkout and judge a separate candidate copy (D-0029).
 """
 import hashlib
 import json

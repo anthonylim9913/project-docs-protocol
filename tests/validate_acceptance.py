@@ -2,7 +2,7 @@
 """Validate one recorded acceptance-child result (fail closed).
 
 The judging code is loaded only from bytes that match `tests/harness.sha256`, in an
-isolated interpreter (`-I -B`), never through `sys.path` (D-0025). Run from a checkout
+isolated interpreter (`-I -B`), never through `sys.path` (D-0029). Run from a checkout
 you trust with `--subject-root CANDIDATE`, it judges a separate candidate tree without
 importing any of the candidate's code; that is the external check. Run inside the tree
 it judges, the same checks are a convenience: code in a tree cannot vouch for itself.

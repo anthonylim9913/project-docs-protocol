@@ -117,7 +117,7 @@ class AcceptanceGuardRemovalTests(unittest.TestCase):
 
 
 class InTreeLimitTests(unittest.TestCase):
-    """The documented limit of the in-tree check, tested rather than asserted (D-0025).
+    """The documented limit of the in-tree check, tested rather than asserted (D-0029).
 
     Each mutant edits the judging code inside the candidate and does not re-record. The
     candidate's own validator then approves a packet the real gate rejects, because code in a
@@ -168,7 +168,7 @@ class InTreeLimitTests(unittest.TestCase):
                 path.write_text(json.dumps(packet))
                 pin = ('--harness-sha256', self.pin) if name == 'verification-removed' else ()
                 inside = invoke(root, 'tests/validate_acceptance.py', *pin, path, MANIFEST, hashes)
-                self.assertEqual(inside.returncode, 0, 'in-tree limit no longer holds; update D-0025: ' + inside.stderr)
+                self.assertEqual(inside.returncode, 0, 'in-tree limit no longer holds; update D-0029: ' + inside.stderr)
                 _, outside = external(self.trusted, root, directory, '--harness-sha256', self.pin)
                 self.assertEqual(outside.returncode, 1, outside.stdout)
                 self.assertIn('REJECT: candidate judging files differ from the trusted checkout: tests/validate_acceptance.py',

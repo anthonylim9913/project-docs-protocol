@@ -15,8 +15,9 @@ D-0047 and the newest CHANGELOG entry. Review evidence supports closing
 LG-0062; LG-0061 waits for an independent review of the last repairs.
 
 LG-0044 stage 2 (the external trusted judge, D-0029, D-0048) is ported on its
-own branch and VERIFYING: the author-run procedure passed, which cannot close
-the row.
+own branch and VERIFYING. An independent review passed the closing procedure
+and tamper tests; the record was regenerated after a comment-only correction,
+so the row closes once the new record and pin are reviewed.
 
 Release tooling (release check, optional privacy scan, pinned CI) merged after
 hosted CI passed on all four jobs. Hosted CI has not run on this branch.

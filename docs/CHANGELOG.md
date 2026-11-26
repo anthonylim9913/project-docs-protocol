@@ -1,3 +1,29 @@
+## 2026-11-26 — LG-0044 stage 2: independent review passed the judge; void decision references corrected, record regenerated
+
+A separate model session ran the D-0029 closing procedure on commit `74705f2`
+with trusted and candidate clones, a pin it derived itself from the committed
+record (`32f5e062…`), and Python 3.14.4. The trusted validator printed
+`{"accepted": true, "cases": 4}`; the Git-object cross-check matched 228
+files; the three negative controls rejected; post-run checks were clean. All
+34 mutation and deletion checks of the 17 recorded files rejected, as did a
+planted `json.py`, planted bytecode, a wrong pin and a coordinated forged
+candidate. The in-tree limit reproduced as documented: after re-recording, a
+candidate's own validator accepts a forged packet, and the external judge
+still rejects it. The reviewer's read audit found exactly the 17 recorded
+files plus the record.
+
+It asked for one repair before closing: comments and one test message in five
+ported files cited a decision label from the alternate branch that does not
+exist here. They now cite D-0029. Three of those files are judging files, so
+the record was regenerated and the earlier pin no longer applies; the new
+record's SHA-256 begins `8c1177267e9a`. LG-0044 stays VERIFYING until
+the new record and pin are reviewed. Limits the reviewer stated: independence
+means a different model session, its own pin, separate clones and a fresh
+run; not a separate OS user or host. Candidate code ran as the same user.
+
+Rebased onto the branch-check repairs. Measured on this tree: core 544 tests,
+research 123, Architect 118, 785 in total.
+
 ## 2026-11-26 — delegated r4-judge: LG-0044 external trusted judge, pending independent review
 
 Lane `r4-judge` on `fix/lg-0044-external-judge` rebased onto

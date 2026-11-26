@@ -6,7 +6,7 @@ projects.  It emits the child result even when its self-check rejects it so a
 mutant run retains the semantic observation that caused rejection.  It never
 reports acceptance: that verdict is validate_acceptance.py's alone.  Like the
 validator, it runs isolated and loads the harness modules only from bytes that
-match tests/harness.sha256 (D-0025).
+match tests/harness.sha256 (D-0029).
 """
 from __future__ import annotations
 

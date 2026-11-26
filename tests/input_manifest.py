@@ -25,7 +25,7 @@ ROOT_FILES = {'SKILL.md', 'AGENTS.md', 'CLAUDE.md', 'README.md', 'LICENSE'}
 DOC_INPUTS = {'docs/README.md', 'docs/MIGRATION.md', 'docs/PROTOCOLS.md', 'docs/SKILL-REGISTRY.md',
               'docs/BRIEF-EXAMPLE.md', 'docs/EVIDENCE.md'}
 # Everything the verdict reads from the judging checkout: the code, the frozen cases and
-# contract, and the fixtures and template the expectations are computed from (D-0025). A test
+# contract, and the fixtures and template the expectations are computed from (D-0029). A test
 # audits the files the runner and validator open against this set. HARNESS_RECORD lists each
 # with its SHA-256 in `sha256sum` format; it is bound like any other input but not listed in itself.
 HARNESS_FILES = ('tests/validate_acceptance.py', 'tests/acceptance_gate.py', 'tests/acceptance_evidence.py',

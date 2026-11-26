@@ -244,6 +244,47 @@ class StrandedWorkTests(unittest.TestCase):
         self.assertEqual(level, "INFO", message)
         self.assertIn("0 local branches", message)
 
+    def test_backtick_inside_a_longer_name_does_not_list_a_shorter_branch(self):
+        self.init()
+        for name in ("lane-one", "lane-one`more"):
+            self.git("checkout", "-b", name, "trunk")
+            (self.project / "code.txt").write_text(name)
+            self.commit("work")
+        self.git("checkout", "trunk")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\nIn flight: ``lane-one`more``\n")
+        self.commit("list the longer name in a double-backtick span")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "WARN", message)
+        self.assertIn("lane-one (1 commits)", message)
+
+    def test_shallow_history_is_skipped_not_miscounted(self):
+        self.init()
+        self.git("checkout", "-b", "notes-only")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\nnote\n")
+        self.commit("register only")
+        self.git("checkout", "trunk")
+        (self.project / "code.txt").write_text("trunk work")
+        self.commit("trunk work")
+        self.git("checkout", "notes-only")
+        self.git("merge", "--no-ff", "-m", "sync", "trunk")
+        self.git("checkout", "trunk")
+        shallow = self.project.parent / (self.project.name + "-shallow")
+        self.addCleanup(shutil.rmtree, shallow, True)
+        done = subprocess.run(["git", "clone", "-q", "--depth", "1", "--no-single-branch",
+                               self.project.as_uri(), str(shallow)],
+                              capture_output=True, text=True, env=self.env, timeout=60)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        subprocess.run(["git", "-C", str(shallow), "branch", "-q", "notes-only", "origin/notes-only"],
+                       check=True, env=self.env, timeout=60)
+        report = self.doctor.Report(echo=False)
+        with patch.dict(os.environ, self.env):
+            self.doctor.check_unlisted_branches(report, str(shallow), str(shallow / "docs"), str(shallow))
+        level, _, message = report.lines[0]
+        self.assertEqual(level, "SKIP", message)
+        self.assertIn("shallow", message)
+
     def test_capability_and_read_errors_are_skip_never_fail(self):
         for no_git, installed, top in ((True, True, "repo"), (False, False, "repo"), (False, True, None)):
             report = self.doctor.Report(echo=False)

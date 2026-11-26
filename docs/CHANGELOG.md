@@ -1,3 +1,23 @@
+## 2026-11-26 — git-unlisted-branches: third review; backticks inside names and shallow clones
+
+The independent stage-2 reviewer also re-reviewed this check. It confirmed
+every D-0047 rule, including a real SSH-signed commit with `log.showSignature`
+set and a replace ref, and found one more false INFO and one more false WARN:
+
+- Git allows a backtick inside a branch name, so STATUS naming
+  ``lane-one`more`` in a code span still listed `lane-one`. A backticked
+  mention must now be the whole name inside one pair of single backticks; a
+  plain mention must follow whitespace and end at whitespace, with only
+  brackets, quotes, pipes, asterisks or sentence punctuation in between.
+- In a shallow clone Git hides the parents of the boundary commit, so a merge
+  looked like ordinary work and a register-only branch was reported. The
+  check now reads Git's own shallow marker in the same history call and SKIPs.
+
+Both have regression tests that failed first. This narrows D-0047's wording
+on mentions without changing its rules. LG-0061 stays VERIFYING until these
+two repairs are reviewed. Measured on this tree: core 516 tests, research 123,
+Architect 118, 757 in total.
+
 ## 2026-11-26 — git-unlisted-branches: second review round; D-0047
 
 Three independent checkers reviewed the repaired, rebased branch. Privacy and

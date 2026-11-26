@@ -2282,7 +2282,7 @@ def check_unlisted_branches(rep, root, register_dir, top):
     history = run_git(root, ["--no-replace-objects", "-c", "log.diffMerges=separate", "log", "--root", "-m",
                              "--always", "--no-show-signature",
                              "--no-renames", "--no-relative", "--ignore-submodules=none",
-                             "--format=%x00%H %P", "--name-only", "-z",
+                             "--decorate=full", "--format=%x00%H %P%x01%D", "--name-only", "-z",
                              "--branches", "--not", "HEAD"])
     if history is None or (history and not (history.startswith("\0") and history.endswith("\0"))):
         skip()
@@ -2294,6 +2294,11 @@ def check_unlisted_branches(rep, root, register_dir, top):
         if not record:
             continue
         header, _, paths = record.lstrip("\0").partition("\0")
+        header, _, decoration = header.partition("\1")
+        if "grafted" in decoration.split(", "):
+            # A shallow clone cuts parents off, so a merge would look like ordinary work.
+            rep.add("SKIP", check, "history is incomplete (shallow clone); local branch work cannot be counted")
+            return
         if not re.fullmatch(oid + r"(?: " + oid + r")* ?", header):
             skip()
             return
@@ -2313,10 +2318,11 @@ def check_unlisted_branches(rep, root, register_dir, top):
     if status is None:
         skip()
         return
-    # A mention is the whole name set off by whitespace or backticks. One opening
-    # bracket, quote, pipe or asterisk may sit between the whitespace and the name, and
-    # closing or sentence punctuation may follow it before whitespace. Git allows most
-    # punctuation inside names, so lane-one is not 'listed' by lane-one,more.
+    # A mention is the whole name after whitespace (or a line start) and at most two
+    # opening brackets, quotes, pipes or asterisks. It is either wrapped in one pair of
+    # single backticks, or followed by closing or sentence punctuation and whitespace.
+    # Git allows most punctuation, backticks included, inside names, so lane-one is not
+    # 'listed' by lane-one,more or by lane-one`more.
     status = "\n".join(line for _, line, fenced in visible_lines(split_lines(status)) if not fenced)
     listed, unlisted = [], []
     for name, tip in branches:
@@ -2330,9 +2336,9 @@ def check_unlisted_branches(rep, root, register_dir, top):
             count += int(touches)
             pending.extend(parents)
         if count:
-            mentioned = re.search(r"(?:(?<![^\s`])|(?<=\s[(\[|'\"*])|(?<=^[(\[|'\"*])|(?<=[\s`]\*\*)|(?<=^\*\*))"
-                                  + re.escape(name) + r"(?=[\s`]|$|[.,;:!?)\]|'\"*]+(?:\s|$))",
-                                  status, re.MULTILINE)
+            literal = re.escape(name)
+            mentioned = re.search(r"(?:^|\s)[(\[|'\"*]{0,2}(?:`" + literal + r"`(?!`)|"
+                                  + literal + r"(?=[.,;:!?)\]|'\"*]*(?:\s|$)))", status, re.MULTILINE)
             (listed if mentioned else unlisted).append((name, count))
 
     def describe(items):

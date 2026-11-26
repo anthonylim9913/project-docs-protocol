@@ -285,6 +285,19 @@ class StrandedWorkTests(unittest.TestCase):
         self.assertEqual(level, "SKIP", message)
         self.assertIn("shallow", message)
 
+    def test_backticked_name_in_a_compact_table_cell_is_listed(self):
+        self.init()
+        self.git("checkout", "-b", "lane-one")
+        (self.project / "code.txt").write_text("work")
+        self.commit("work")
+        self.git("checkout", "trunk")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\n|Work|Branch|\n|---|---|\n|x|`lane-one`|\n")
+        self.commit("list in a compact table")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "INFO", message)
+        self.assertIn("all listed", message)
+
     def test_capability_and_read_errors_are_skip_never_fail(self):
         for no_git, installed, top in ((True, True, "repo"), (False, False, "repo"), (False, True, None)):
             report = self.doctor.Report(echo=False)

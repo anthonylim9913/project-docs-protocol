@@ -1,3 +1,30 @@
+## 2026-11-27 — LG-0044: follow-up review supports closing at `21d80b4`; one branch-check regression repaired
+
+The same independent reviewer re-ran the D-0029 closing procedure on commit
+`21d80b4` with a pin it derived again from the committed record
+(`8c1177267e9ad41fd66c44130666f34443b6ad1dbcca557db9e89be9f98149f5`), Python
+3.14.4 and fresh clones: accepted with 4 cases, 228 files matched from Git
+objects, three negative controls rejected, post-run checks clean, packet
+SHA-256 `717cbf1e…`. It confirmed that the label correction changed one
+comment, four docstrings and one assertion message in five files and no
+logic. Its verdict: the evidence supports closing LG-0044 for that revision
+and pin. The row is closed at integration, not here.
+
+It also confirmed the backtick and shallow-clone repairs to
+`git-unlisted-branches` and found that the new mention rule had lost one case
+that worked before: a single-backticked name in a table cell written without
+padding spaces was no longer listed, a false WARN. A backticked mention is
+now recognised wherever the span sits, unless another backtick touches it.
+The regression test failed first. This file is not a judging file, so the
+reviewed harness record and pin are unchanged. LG-0061 stays VERIFYING until
+this repair is reviewed.
+
+The orchestrating session's release check on `21d80b4` passed every step on
+Python 3.9.6 and failed the core suite once on Python 3.14.4 while the
+reviewer was running in the same checkout; the failing test was not captured
+and the suite passed on an immediate clean rerun (544 tests). Measured on this
+tree: core 545 tests, research 123, Architect 118, 786 in total.
+
 ## 2026-11-26 — LG-0044 stage 2: independent review passed the judge; void decision references corrected, record regenerated
 
 A separate model session ran the D-0029 closing procedure on commit `74705f2`

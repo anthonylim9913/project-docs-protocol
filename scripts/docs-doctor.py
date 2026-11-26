@@ -2318,11 +2318,11 @@ def check_unlisted_branches(rep, root, register_dir, top):
     if status is None:
         skip()
         return
-    # A mention is the whole name after whitespace (or a line start) and at most two
-    # opening brackets, quotes, pipes or asterisks. It is either wrapped in one pair of
-    # single backticks, or followed by closing or sentence punctuation and whitespace.
-    # Git allows most punctuation, backticks included, inside names, so lane-one is not
-    # 'listed' by lane-one,more or by lane-one`more.
+    # A mention is the whole name either inside one pair of single backticks, wherever
+    # that span sits, or as plain text after whitespace (or a line start) and at most
+    # two opening brackets, quotes, pipes or asterisks, followed by closing or sentence
+    # punctuation and whitespace. Git allows most punctuation, backticks included,
+    # inside names, so lane-one is not 'listed' by lane-one,more or by lane-one`more.
     status = "\n".join(line for _, line, fenced in visible_lines(split_lines(status)) if not fenced)
     listed, unlisted = [], []
     for name, tip in branches:
@@ -2337,8 +2337,8 @@ def check_unlisted_branches(rep, root, register_dir, top):
             pending.extend(parents)
         if count:
             literal = re.escape(name)
-            mentioned = re.search(r"(?:^|\s)[(\[|'\"*]{0,2}(?:`" + literal + r"`(?!`)|"
-                                  + literal + r"(?=[.,;:!?)\]|'\"*]*(?:\s|$)))", status, re.MULTILINE)
+            mentioned = re.search(r"(?<!`)`" + literal + r"`(?!`)|(?:^|\s)[(\[|'\"*]{0,2}"
+                                  + literal + r"(?=[.,;:!?)\]|'\"*]*(?:\s|$))", status, re.MULTILINE)
             (listed if mentioned else unlisted).append((name, count))
 
     def describe(items):

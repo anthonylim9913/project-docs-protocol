@@ -20,7 +20,13 @@ change. The owner must clarify whether this fixture-only record regeneration
 is permitted with all existing assertions preserved. No implementation choice
 was made, no decision id was allocated, and no decision fragment is owed.
 The lane ran no suite, Doctor, registry, harness or release proofs and makes
-no passing-test or stage-2 acceptance claim. Whitespace and
-scripts/staging/templates scope diffs were empty. Only this handoff fragment is committed; `PROGRESS.md`
+no passing-test or stage-2 acceptance claim. Whitespace checks were empty.
+The requested scripts/staging/templates scope diff was initially empty, but
+`feat/r3-stranded-work` advanced from the lane's starting `f0267e3` to
+`d41ec26` during inspection. The final comparison against that moving ref
+shows `scripts/docs-doctor.py` (9 insertions, 25 deletions). The same scope
+diff against the immutable starting `f0267e3` remains empty; this lane changed
+no implementation files and did not move that other branch.
+Only this handoff fragment is committed; `PROGRESS.md`
 remains untracked. No registers, existing tests, code, exclusions, root README,
 MIGRATION, scripts, staging or templates changed.

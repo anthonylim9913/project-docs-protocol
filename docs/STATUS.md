@@ -4,8 +4,8 @@
 
 ## Current phase
 
-**v0.7.0 is the latest public tag. Release tooling and Doctor 1.10.0 are
-unreleased branch work.** Both companions remain 0.2.2 with unchanged
+**v0.7.0 is the latest public tag. Release tooling is on `main`, untagged;
+Doctor 1.10.0 is unreleased branch work.** Both companions remain 0.2.2 with unchanged
 registered `sha256v2:` identities.
 
 The delegation candidate adds a paste-ready task brief, owner-assigned ids,
@@ -14,8 +14,8 @@ review found two defects in the branch check; both are repaired (newest
 CHANGELOG entry). Its evidence supports closing LG-0062; LG-0061 waits for an
 independent review of the repairs.
 
-Release tooling includes the release gate, optional privacy scan and pinned
-CI. Hosted CI has not run; macOS jobs and action versions remain unverified.
+Release tooling (release check, optional privacy scan, pinned CI) merged after
+hosted CI passed on all four jobs. Hosted CI has not run on this branch.
 
 ## In flight
 
@@ -23,7 +23,6 @@ CI. Hosted CI has not run; macOS jobs and action versions remain unverified.
 
 | Work | Branch | End action |
 |---|---|---|
-| Release tooling with review repairs | `fix/r1-findings` | owner decides on hosted CI and merge |
 | Delegation brief and stranded-work advisories | `feat/r3-stranded-work` | review of the branch-check repairs, then owner decides merge |
 
 ## Blocked
@@ -45,7 +44,7 @@ CI. Hosted CI has not run; macOS jobs and action versions remain unverified.
 ## Next
 
 1. Independently review the branch-check repairs, then close LG-0061 and LG-0062.
-2. Run hosted CI on release tooling, then merge when the owner agrees.
+2. Run hosted CI on this branch, then merge when the owner agrees.
 3. LG-0044 stage 2 and LG-0060, followed by waves B and C.
 4. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
 

@@ -80,6 +80,66 @@ class WorkflowWhitespaceTests(unittest.TestCase):
         self.assertIn("trailing whitespace", result.stdout)
         self.assert_event_inputs()
 
+    def test_scheduled_and_manual_root_commit(self):
+        for event in ('schedule', 'workflow_dispatch'):
+            with self.subTest(event=event, tree='clean'):
+                result = self.run_step(event, 'ignored')
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        (self.root / 'tracked.txt').write_text('root trailing whitespace \n', encoding='utf-8')
+        self.git('add', '.')
+        self.git('-c', 'commit.gpgsign=false', 'commit', '--amend', '--no-edit', '-q')
+        for event in ('schedule', 'workflow_dispatch'):
+            with self.subTest(event=event, tree='bad'):
+                result = self.run_step(event, 'ignored')
+                self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn('trailing whitespace', result.stdout)
+
+    def test_scheduled_and_manual_normal_commit(self):
+        self.commit('older.txt', 'old trailing whitespace \n')
+        self.commit('tracked.txt', 'clean tip\n')
+        for event in ('schedule', 'workflow_dispatch'):
+            with self.subTest(event=event, tip='clean'):
+                result = self.run_step(event, 'ignored')
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.commit('tracked.txt', 'tip trailing whitespace \n')
+        for event in ('schedule', 'workflow_dispatch'):
+            with self.subTest(event=event, tip='bad'):
+                result = self.run_step(event, 'ignored')
+                self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn('trailing whitespace', result.stdout)
+
+    def test_scheduled_and_manual_merge_commit(self):
+        self.git('checkout', '-qb', 'fixture-side')
+        self.commit('side.txt', 'side trailing whitespace \n')
+        self.git('checkout', '-q', '-')
+        self.commit('main.txt', 'ordinary\n')
+        self.git('-c', 'commit.gpgsign=false', 'merge', '--no-ff', '-qm', 'fixture', 'fixture-side')
+        for event in ('schedule', 'workflow_dispatch'):
+            with self.subTest(event=event, merge='bad'):
+                result = self.run_step(event, 'ignored')
+                self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn('trailing whitespace', result.stdout)
+        # A second merge introduces clean content; old whitespace is unchanged.
+        self.git('checkout', '-q', 'fixture-side')
+        self.commit('side-clean.txt', 'ordinary\n')
+        self.git('checkout', '-q', '-')
+        self.git('-c', 'commit.gpgsign=false', 'merge', '--no-ff', '-qm', 'fixture', 'fixture-side')
+        for event in ('schedule', 'workflow_dispatch'):
+            with self.subTest(event=event, merge='clean'):
+                result = self.run_step(event, 'ignored')
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_current_hosted_images_actions_and_system_interpreter_probe(self):
+        workflow = WORKFLOW.read_text(encoding='utf-8')
+        self.assertEqual(workflow.count('os: macos-15'), 2)
+        self.assertNotIn('macos-14', workflow)
+        self.assertIn('uses: actions/checkout@v7', workflow)
+        self.assertIn('uses: actions/setup-python@v7', workflow)
+        steps = workflow.split('    steps:\n', 1)[1]
+        first = steps.split('      - ', 2)[1]
+        self.assertIn("if: matrix.python-version == 'system'", first)
+        self.assertIn('"$PYTHON" --version', first)
+
 
 if __name__ == "__main__":
     unittest.main()

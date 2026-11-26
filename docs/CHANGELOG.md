@@ -1,3 +1,53 @@
+## 2026-11-26 — repair release tooling after two FIX FIRST reviews
+
+Delegated lane `r1-fix` repairs the unreleased release-tooling candidate.
+Correction to the preceding entry's evidence: at commit `0bc0b82`, Doctor
+returned 33 pass, 1 warn (status-size, 62 lines), exit 1, rather than the
+claimed exit 0; hosted macOS used macos-14, retired on 2026-11-02. Hosted CI
+has not run for this repair, so hosted interpreter availability is unverified.
+
+Release-check now checks unstaged, staged and committed whitespace, with an
+explicit --base or the newest reachable tag and an INFO notice without one.
+Underscore emphasis is parsed; unattributed numeric test counts receive notices.
+Skipping suites ends INCOMPLETE, exit 3. Missing interpreters and zero-test
+suites already failed; regression coverage now explicitly protects both.
+
+The privacy scanner adds changed paths (including deletions and binary paths),
+published ref names and annotated tag messages and tagger identities. D-0045
+records the scope choices. Matching paths are redacted; regex compilation,
+argument and unexpected errors emit fixed diagnostics without private text or
+tracebacks. The hook forwards destination arguments. New refs exclude only
+that remote's tracking history, and manual hook input without a remote excludes
+nothing. Empty configured patterns and empty hook input fail closed; delete-only
+input remains clean. Pattern files accept a UTF-8 BOM and strip trailing
+whitespace. Git ignores replace objects and disables lazy fetching; missing
+objects fail. TIP ranges include roots. Case aliases and hard links to tracked
+files are refused, including invocation from a subdirectory. README states
+stale tracking refs, slow regexes, binary/UTF-16 skips and filesystem guard limits.
+
+CI uses macos-15 and checkout/setup-python v7, retains existing inputs and
+checks, and probes the system interpreter first. Scheduled/manual whitespace
+uses the empty tree on a root and the first parent otherwise. New tests cover
+both triggers on root, normal and merge commits, without changing the existing
+CI assertions. README's Releasing section is shortened and its counts updated.
+
+Regression first: release, scanner and CI failures were reproduced before their
+repairs; all 66 focused methods pass. Direct full proofs: core 497 tests OK
+(1 skip) on Python 3.14.4 and system Python 3.9.6; research 123 tests OK
+(3 skips); Architect 118 tests OK. The total is 738 automated test methods.
+Doctor: 41 checks, 34 pass, 0 warn, 7 info, exit 0; registry PASS; git diff
+--check clean. The assembled release-check returns PASS, exit 0.
+The orchestrator clarified that the stop rule protects assertions on main;
+three branch-added assertions change to the requested contracts: suite bypass
+exit 0 becomes 3, TIP is no longer invalid, and new-ref exclusion is scoped to
+a supplied destination. No assertion on main, Doctor check or gate is changed.
+
+Close order: this one new CHANGELOG entry, appended D-0045, live LEDGER read
+unchanged, then STATUS rewritten below 60 lines. Existing CHANGELOG and
+DECISIONS bytes are preserved. No ledger IDs or closures; the five live rows
+and both registered companion identities remain unchanged. PROGRESS.md stays
+local and untracked. No push, fetch, tag, hook installation or publication.
+
 ## 2026-11-26 — unreleased release tooling: measured gates, optional private history scan and pinned CI
 
 Delegated lane `release-tooling` implements the supplied round-1 brief on its

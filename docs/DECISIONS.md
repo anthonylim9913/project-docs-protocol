@@ -272,3 +272,36 @@
 **Decision:** Keep the anchor query and use one NUL-delimited Git log for the entire ancestry range, with separate merge-parent diffs grouped by commit identity. Force log.diffMerges=separate for that command so a user preference cannot omit another parent's register change. Exclude a merge if any parent's diff touches the selected register; retain empty commits and exact counts. Git subprocess count stays two regardless of range size; output size and parsing remain history-dependent, and the existing command timeout and SKIP fallback remain in force. Doctor becomes 1.9.1 under D-0024; JSON schema stays 1, and no check or exit level changes.
 **Reasoning:** Agent's implementation assessment under the supplied ruling. Rejected a named cap: it would replace exact counts with lower bounds and a scanned-commit cap could leave the WARN threshold undecidable when many commits touch registers. Batching removes process-launch overhead while preserving exact advisory output and D-0043's counting semantics. The patch version identifies this check implementation correction even though no named check is added.
 **Consequences:** Red-first tests bound the total Git calls on a real 2,000-commit temporary history and exercise a second-parent-only register change with separate and first-parent Git settings. Existing anchor, threshold, layouts, register exclusions and read-error tests remain. README's JSON example moves to 1.9.1; the release remains an unreleased v0.7.0 candidate requiring the owner's release gate. This is lane evidence, not a new independent review of the correction.
+
+## D-0045 — 2026-11-26 — privacy scans include names and pushed tag metadata
+
+**Context:** Two independent reviews of the unreleased tooling found that a
+blob/message/commit-identity scan misses private text present only in a changed
+filename, pushed ref name or annotated tag. Excluding every remote's history
+can also hide commits that the destination has never received.
+**Decision:** Apply private patterns to every changed path in each scanned
+commit, including deletions, binary paths and submodule paths, as well as its
+complete changed text blobs, message and author/committer names and emails.
+In hook mode, scan both local and destination ref names for non-deletion
+updates and each pushed annotated tag object's message and tagger name/email,
+including nested tag chains, even when its commits were excluded. Delete-only
+input publishes no new names or objects and is clean. New refs exclude only
+commits reachable from tracking refs for the supplied destination remote;
+without a remote name, exclude nothing. Explicit TIP ranges include all
+reachable commits, including the root; A..B excludes A's reachable history.
+**Reasoning:** The supplied repair brief selects broader name/tag coverage and
+destination-specific exclusion. Agent assessment: retaining the blob-only
+scope misses private identifiers without any private file content; excluding
+all remotes trades less scanning for false clean results at a new destination.
+Scanning every reachable commit for every new ref would avoid stale tracking
+exclusions but repeats known destination history. The selected destination-only
+scope retains the requested optimization while manual use remains conservative.
+**Consequences:** Reports redact any path matching a pattern and use fixed
+labels for ref/tag fields. No private regexes or matched text enter reports.
+A stale tracking ref for a branch deleted on the server still hides commits;
+the scanner never fetches. NUL-bearing blobs in the first 8,000 bytes, including
+UTF-16 text, are skipped and counted. Slow regexes have no timeout. The external
+patterns-file guard covers case aliases, symlinks and hard links to tracked
+files; untracked/metadata hard links and concurrent filesystem changes remain
+outside its guarantee. This choice does not authorize publication or close any
+ledger row. Regression tests cover the added surfaces and failure paths.

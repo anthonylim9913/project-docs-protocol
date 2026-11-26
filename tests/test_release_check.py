@@ -129,10 +129,71 @@ class ReleaseCheckTests(unittest.TestCase):
 
     def test_skip_suites_is_explicitly_not_a_release_check(self):
         result = self.run_check('--skip-suites')
-        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(result.returncode, 3, result.stdout)
         self.assertIn('not a release check', result.stdout)
+        self.assertEqual(result.stdout.splitlines()[-1],
+                         'INCOMPLETE release-check (suites skipped)')
         self.assertNotIn('PASS core', result.stdout)
         self.assertIn('not checked', result.stdout)
+
+    def git(self, *args):
+        return subprocess.run(['git', *args], cwd=self.root, check=True,
+                              capture_output=True, text=True).stdout.strip()
+
+    def commit(self):
+        self.git('add', '.')
+        self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
+                 '-c', 'commit.gpgsign=false', 'commit', '-qm', 'fixture')
+        return self.git('rev-parse', 'HEAD')
+
+    def test_staged_whitespace_fails(self):
+        self.write('bad.txt', 'bad whitespace  \n')
+        self.git('add', '.')
+        result = self.run_check()
+        self.assertEqual(result.returncode, 1, result.stdout)
+        self.assertIn('FAIL git diff --check --cached', result.stdout)
+
+    def test_committed_whitespace_uses_explicit_base_or_newest_reachable_tag(self):
+        base = self.commit()
+        self.git('tag', 'fixture-base')
+        self.write('bad.txt', 'bad whitespace  \n')
+        self.commit()
+        for args in ((), ('--base', base)):
+            with self.subTest(args=args):
+                result = self.run_check(*args)
+                self.assertEqual(result.returncode, 1, result.stdout)
+                self.assertIn('FAIL committed whitespace', result.stdout)
+
+    def test_no_reachable_tag_reports_committed_range_not_checked(self):
+        self.commit()
+        result = self.run_check()
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn('INFO committed range not checked', result.stdout)
+
+    def test_underscore_emphasis_is_checked(self):
+        for label in ('_core_', '__core__'):
+            with self.subTest(label=label):
+                self.write('README.md', label + ' 999 tests\n')
+                result = self.run_check()
+                self.assertEqual(result.returncode, 1, result.stdout)
+                self.assertIn('stated 999; measured 1', result.stdout)
+
+    def test_unattributed_counts_with_long_labels_and_partial_attribution_have_notice(self):
+        for claim in ('27 very long descriptive fixture integration tests',
+                      '1 core tests and 27 other very long fixture methods',
+                      'tests: 27', 'the suite ran 27 checks as tests'):
+            with self.subTest(claim=claim):
+                self.write('README.md', claim + '\n')
+                result = self.run_check()
+                self.assertEqual(result.returncode, 0, result.stdout)
+                self.assertIn('README.md:1: not checked', result.stdout)
+
+    def test_zero_discovered_tests_fails(self):
+        self.write('tests/test_example.py', '')
+        result = self.run_check()
+        self.assertEqual(result.returncode, 1, result.stdout)
+        self.assertIn('FAIL core', result.stdout)
+        self.assertIn('0 tests; exit ', result.stdout)
 
     def test_missing_count_document_fails_closed(self):
         (self.root / 'README.md').unlink()

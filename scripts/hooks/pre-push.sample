@@ -2,6 +2,9 @@
 # Optional: copy to the path from `git rev-parse --git-path hooks/pre-push`.
 # Keep scripts/leak-scan.py in the adopting repository; configure a private
 # external patterns file via LEAK_SCAN_PATTERNS or git config leakscan.patterns.
-# Git supplies ref updates on stdin; remote name/URL arguments are not needed.
-repo_root=$(git rev-parse --show-toplevel) || exit 2
-exec python3 -B "$repo_root/scripts/leak-scan.py"
+# Git supplies ref updates on stdin and the destination remote name/URL as arguments.
+repo_root=$(GIT_NO_LAZY_FETCH=1 git --no-replace-objects rev-parse --show-toplevel 2>/dev/null) || {
+    printf '%s\n' 'ERROR leak-scan: could not locate repository' >&2
+    exit 2
+}
+exec python3 -B "$repo_root/scripts/leak-scan.py" "$@"

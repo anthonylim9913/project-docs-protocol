@@ -27,18 +27,21 @@ jobs:
             os: ubuntu-24.04
             interpreter: python3
           - python-version: system
-            os: macos-14
+            os: macos-15
             interpreter: /usr/bin/python3
           - python-version: "3.14"
-            os: macos-14
+            os: macos-15
             interpreter: python3
     env:
       PYTHON: ${{ matrix.interpreter }}
     steps:
-      - uses: actions/checkout@v4
+      - name: System interpreter version
+        if: matrix.python-version == 'system'
+        run: '"$PYTHON" --version'
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: matrix.python-version != 'system'
         with:
           python-version: ${{ matrix.python-version }}
@@ -70,7 +73,11 @@ jobs:
             base="$PUSH_BEFORE_SHA"
           else
             # Scheduled/manual runs check the current tip's patch.
-            base=HEAD^
+            if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+              base=HEAD^
+            else
+              base="$(git hash-object -t tree /dev/null)"
+            fi
           fi
           if [ "$base" = "0000000000000000000000000000000000000000" ]; then
             base="$(git hash-object -t tree /dev/null)"

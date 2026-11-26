@@ -28,7 +28,8 @@ CLAIM = re.compile(
     r'\b(?:(?P<before>' + NUMBER + r')\s+(?P<suffix>' + LABEL + r')\b|'
     r'(?P<prefix>' + LABEL + r')\b(?:\s+suite)?\s*[:=]?\s*(?P<after>' + NUMBER + r')\b|'
     r'(?P<total>' + NUMBER + r')\s+automated test methods\b)', re.I)
-OTHER_COUNT = re.compile(r'\b' + NUMBER + r'\s+(?:[A-Za-z-]+\s+){0,2}(?:tests|methods)\b', re.I)
+TEST_WORD = re.compile(r'\b(?:tests?|methods?)\b', re.I)
+COUNT_NUMBER = re.compile(r'\b' + NUMBER + r'\b')
 RAN = re.compile(r'^Ran (\d+) tests? in .+$', re.M)
 
 
@@ -61,7 +62,7 @@ def count_claims(root, measured):
                 in_entry = True
             if name == 'docs/CHANGELOG.md' and not in_entry:
                 continue
-            plain = line.replace('*', '').replace('`', '')
+            plain = line.replace('*', '').replace('_', '').replace('`', '')
             spans = []
             for match in CLAIM.finditer(plain):
                 spans.append(match.span())
@@ -77,9 +78,15 @@ def count_claims(root, measured):
                     passed = False
                 else:
                     checked += 1
-            for match in OTHER_COUNT.finditer(plain):
-                if not any(start <= match.start() < end for start, end in spans):
-                    print('INFO counts {}:{}: not checked (unattributed test count)'.format(name, lineno))
+            # Any remaining number on a test-count line needs a notice. This
+            # deliberately favors an extra notice over silently losing prose
+            # outside the bounded attribution grammar (including reversed or
+            # arbitrarily long labels and mixed attributed/subset counts).
+            remainder = list(plain)
+            for start, end in spans:
+                remainder[start:end] = ' ' * (end - start)
+            if TEST_WORD.search(plain) and COUNT_NUMBER.search(''.join(remainder)):
+                print('INFO counts {}:{}: not checked (unattributed test count)'.format(name, lineno))
         print('{} counts {}: {} claims checked{}'.format(
             'PASS' if passed else 'INFO', name, checked,
             '' if measured else '; suites not checked'))
@@ -91,6 +98,7 @@ def main(argv=None):
     parser.add_argument('--python', action='append', metavar='PATH', help='suite interpreter (repeatable; default: running interpreter)')
     parser.add_argument('--allow-doctor-warn', action='store_true', help='accept Doctor exit 1 (WARN only)')
     parser.add_argument('--skip-suites', action='store_true', help='script testing only; result is not a release check')
+    parser.add_argument('--base', metavar='REF', help='committed whitespace base (default: newest reachable tag)')
     args = parser.parse_args(argv)
     root = Path(__file__).resolve().parents[1]
     passed = True
@@ -118,10 +126,21 @@ def main(argv=None):
             if len(measured) == len(SUITES):
                 measured['total'] = sum(measured.values())
             measurements.append(measured)
-    for label, command in (
+    checks = [
             ('Doctor', [sys.executable, '-B', 'scripts/docs-doctor.py', '.']),
             ('skill-registry', [sys.executable, '-B', 'scripts/skill-registry.py', '.']),
-            ('git diff --check', ['git', 'diff', '--check'])):
+            ('git diff --check', ['git', 'diff', '--check']),
+            ('git diff --check --cached', ['git', 'diff', '--check', '--cached'])]
+    base = args.base
+    if base is None:
+        code, output = run(['git', 'describe', '--tags', '--abbrev=0', 'HEAD'], root)
+        if code == 0:
+            base = output.strip()
+        else:
+            print('INFO committed range not checked (no reachable tag)')
+    if base is not None:
+        checks.append(('committed whitespace', ['git', 'diff', '--check', base, 'HEAD', '--']))
+    for label, command in checks:
         code, output = run(command, root)
         warn = label == 'Doctor' and code == 1
         ok = code == 0 or (warn and args.allow_doctor_warn)
@@ -133,8 +152,10 @@ def main(argv=None):
     for measured in measurements or [{}]:
         if not count_claims(root, measured):
             passed = False
-    print('{} release-check{}'.format('PASS' if passed else 'FAIL',
-                                      ' (not a release check: suites skipped)' if args.skip_suites else ''))
+    if args.skip_suites:
+        print('INCOMPLETE release-check (suites skipped)')
+        return 3
+    print('{} release-check'.format('PASS' if passed else 'FAIL'))
     return 0 if passed else 1
 
 

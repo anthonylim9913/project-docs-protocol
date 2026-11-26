@@ -2269,7 +2269,8 @@ def check_unlisted_branches(rep, root, register_dir, top):
             return
         branches.append(match.groups())
     history = run_git(root, ["-c", "log.diffMerges=separate", "log", "--root", "-m", "--always",
-                             "--no-renames", "--format=%x00%H %P", "--name-only", "-z",
+                             "--no-renames", "--no-relative", "--ignore-submodules=none",
+                             "--format=%x00%H %P", "--name-only", "-z",
                              "--branches", "--not", "HEAD"])
     if history is None or (history and not (history.startswith("\0") and history.endswith("\0"))):
         skip()
@@ -2298,7 +2299,9 @@ def check_unlisted_branches(rep, root, register_dir, top):
     if status is None:
         skip()
         return
-    # Token boundaries prevent lane-one from being 'listed' by lane-one-more.
+    # A mention is the whole name between delimiters that cannot be part of a branch
+    # name here (whitespace, quotes, brackets, list punctuation), so lane-one is not
+    # 'listed' by lane-one-more or lane-one+more. Sentence punctuation may follow it.
     status = "\n".join(line for _, line, fenced in visible_lines(split_lines(status)) if not fenced)
     listed, unlisted = [], []
     for name, tip in branches:
@@ -2312,7 +2315,8 @@ def check_unlisted_branches(rep, root, register_dir, top):
             count += int(touches)
             pending.extend(parents)
         if count:
-            mentioned = re.search(r"(?<![\w./-])" + re.escape(name) + r"(?![\w./-])", status)
+            mentioned = re.search(r"(?<![^\s`'\"(\[|,;:*])" + re.escape(name)
+                                  + r"(?=[\s`'\")\]|,;:*]|[.!?](?:\s|$)|$)", status)
             (listed if mentioned else unlisted).append((name, count))
 
     def describe(items):

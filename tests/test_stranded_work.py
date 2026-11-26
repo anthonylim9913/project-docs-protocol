@@ -124,6 +124,44 @@ class StrandedWorkTests(unittest.TestCase):
         self.assertIn("squashed (1 commits)", message)
         self.assertNotIn("merged (", message)
 
+    def test_longer_branch_name_does_not_list_a_shorter_one(self):
+        self.init()
+        for name in ("lane-one", "lane-one+more", "lane-one@x", "lane-one=y"):
+            self.git("checkout", "-b", name, "trunk")
+            (self.project / "code.txt").write_text(name)
+            self.commit("work on " + name)
+        self.git("checkout", "trunk")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\nIn flight: `lane-one+more`, (lane-one@x), and lane-one=y.\n")
+        self.commit("list three of four")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "WARN", message)
+        self.assertIn("1 unlisted", message)
+        self.assertIn("lane-one (1 commits)", message)
+        self.assertIn("3 listed", message)
+
+    def test_user_git_configuration_cannot_hide_changed_paths(self):
+        self.init()
+        nested = self.project / "nested"
+        nested.mkdir()
+        (nested / "keep.txt").write_text("x")
+        self.commit("nested folder")
+        self.git("checkout", "-b", "lane-outside")
+        (self.project / "outside.txt").write_text("work outside the nested folder")
+        self.commit("outside work")
+        self.git("checkout", "-b", "lane-gitlink", "trunk")
+        self.git("update-index", "--add", "--cacheinfo", "160000," + self.git("rev-parse", "HEAD") + ",component")
+        self.git("commit", "-m", "add a gitlink")
+        self.git("checkout", "-f", "trunk")
+        self.git("config", "diff.relative", "true")
+        self.git("config", "diff.ignoreSubmodules", "all")
+        report = self.doctor.Report(echo=False)
+        with patch.dict(os.environ, self.env):
+            self.doctor.check_unlisted_branches(report, str(nested), str(self.project / "docs"), str(self.project))
+        level, _, message = report.lines[0]
+        self.assertEqual(level, "WARN", message)
+        self.assertIn("2 unlisted", message)
+
     def test_capability_and_read_errors_are_skip_never_fail(self):
         for no_git, installed, top in ((True, True, "repo"), (False, False, "repo"), (False, True, None)):
             report = self.doctor.Report(echo=False)

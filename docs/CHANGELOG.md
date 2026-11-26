@@ -1,3 +1,28 @@
+## 2026-11-26 — git-unlisted-branches: two ways to report INFO over stranded work are closed
+
+An independent review of the stranded-work branch passed the proofs, the
+owed-fragments check, the delegation brief and the register bytes, and found
+two defects in `git-unlisted-branches`. Both made it report INFO while
+unlisted work existed, so the preceding entry's and D-0046's detection claims
+were too strong for that commit.
+
+- A user's Git settings could hide changed paths from the history read:
+  `diff.relative` when Doctor runs from a subfolder, and
+  `diff.ignoreSubmodules=all` for a commit that adds a submodule link. The
+  read now passes `--no-relative` and `--ignore-submodules=none`.
+- A branch counted as listed when STATUS named a longer branch that Git
+  allows, such as `lane-one+more` for `lane-one`. A mention is now the whole
+  name between whitespace, quotes, backticks, brackets or list punctuation
+  (`,` `;` `:` `|` `*`), optionally followed by sentence punctuation.
+
+The owning session made both repairs; each has a regression test that failed
+first. Doctor stays 1.10.0: no check was added and the release is unpublished.
+The reviewer's evidence supports closing LG-0062; LG-0061 stays VERIFYING
+until these repairs are reviewed independently. Both rows are unchanged.
+
+Measured on this tree: core 508 tests, research 123, Architect 118, 749 in
+total.
+
 ## 2026-11-26 — delegated r3-delegation: brief delivery, stranded-work advisories and owner-assigned ids
 
 Delegated lane `r3-delegation` on `feat/r3-stranded-work` adds the paste-ready

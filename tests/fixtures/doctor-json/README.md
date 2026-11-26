@@ -27,7 +27,10 @@ stdout byte for byte, with exactly these expected-output transformations:
   text adding `delegation`, because the project fixtures carry the current block.
 - After `git-status-churn`, insert the `git-unrecorded-commits` SKIP line with
   `git checks disabled (--no-git)`, matching the recorded arguments.
-- For register cases only, increase total checks and skipped checks by one;
+- Doctor 1.10.0 adds `owed-fragments` INFO (zero fragments) before the Git
+  lines and `git-unlisted-branches` SKIP after `git-unrecorded-commits`.
+- For register cases only, increase total checks by three, skipped checks by two
+  and INFO by one;
   leave every other summary count, diagnostic, exit code and stderr unchanged.
 
 These are explicit expected deltas from the immutable Doctor 1.5.0 capture,

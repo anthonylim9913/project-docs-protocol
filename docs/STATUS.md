@@ -4,22 +4,26 @@
 
 ## Current phase
 
-**v0.7.0 is the latest public tag. Release tooling is on `main`, untagged.**
-Doctor remains 1.9.1 and both companions 0.2.2 with unchanged registered
-`sha256v2:` identities.
+**v0.7.0 is the latest public tag. Release tooling and Doctor 1.10.0 are
+unreleased branch work.** Both companions remain 0.2.2 with unchanged
+registered `sha256v2:` identities.
 
-Since the tag, `main` gained a one-command release check
-(`scripts/release-check.py`), an optional privacy scan with a sample pre-push
-hook (`scripts/leak-scan.py`, scope in D-0045), and CI on pinned Linux and
-macOS images with a weekly run. Two independent reviews asked for repairs
-before the merge; hosted CI then passed on all four jobs (CHANGELOG
-2026-11-26, four entries).
+The delegation candidate adds a paste-ready task brief, owner-assigned ids,
+and advisory local-branch and owed-fragment checks (D-0046). Developer proofs
+cover 506 core, 123 research and 118 Architect tests; independent review of
+LG-0061 and LG-0062 is pending. See the newest CHANGELOG entry and lane handoff.
+
+Release tooling includes the release gate, optional privacy scan and pinned
+CI. Hosted CI has not run; macOS jobs and action versions remain unverified.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 OPEN, 0 VERIFYING; 8 archived rows, no P0/P1.
+`LEDGER.md` is authoritative: 5 OPEN, 2 VERIFYING; 8 archived rows, no P0/P1.
 
-*No items in flight.*
+| Work | Branch | End action |
+|---|---|---|
+| Release tooling with review repairs | `fix/r1-findings` | owner decides on hosted CI and merge |
+| Delegation brief and stranded-work advisories | `feat/r3-stranded-work` | independent review of LG-0061/LG-0062, then owner decides merge |
 
 ## Blocked
 
@@ -39,8 +43,10 @@ before the merge; hosted CI then passed on all four jobs (CHANGELOG
 
 ## Next
 
-1. LG-0044 stage 2 and LG-0060, followed by waves B and C.
-2. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
+1. Independently review the delegation candidate before closing its rows.
+2. Run hosted CI on release tooling, then merge when the owner agrees.
+3. LG-0044 stage 2 and LG-0060, followed by waves B and C.
+4. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
 
 ## Open questions (owner)
 

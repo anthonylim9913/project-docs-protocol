@@ -110,6 +110,7 @@ def doctor_diagnostic(stage, status):
         'status-template-residue': 'PASS', 'decisions-ids': 'INFO', 'decisions-template-residue': 'PASS',
         'brand-placeholders': 'INFO', 'nested-register': 'PASS', 'sibling-register': 'PASS',
         'ledger': 'SKIP', 'git-status-churn': 'SKIP', 'git-unrecorded-commits': 'SKIP'}
+    expected.update({'owed-fragments': 'INFO', 'git-unlisted-branches': 'SKIP'})
     observations = re.findall(r'^(PASS|FAIL|WARN|INFO|SKIP)[ \t]+([a-z][a-z-]+)[ \t]+(.+)$', stage['stdout'], re.M)
     require(len(observations) == len(expected) and {name: value for value, name, _ in observations} == expected,
             'doctor observation scope')

@@ -1,3 +1,52 @@
+## 2026-11-26 — delegated r3-delegation: brief delivery, stranded-work advisories and owner-assigned ids
+
+Delegated lane `r3-delegation` on `feat/r3-stranded-work` adds the paste-ready
+`templates/DELEGATION-BRIEF.md` (21 lines). Close now points to the brief as
+the reliable delivery channel when an agent never loads project wiring.
+It names register-writing duties and the required changes/choices/questions/
+evidence report. A delegated agent uses placeholders in reports or owed
+fragments; the owning session assigns real ids in ascending order at Close.
+This is the supplied policy, not a separate choice; the second reserved
+decision id remains unused.
+The wiring block and all its carriers are unchanged.
+
+D-0046 records local-head-only scope, ancestry limits and batched history.
+Doctor 1.10.0 adds two never-FAIL advisories: git-unlisted-branches detects
+non-register work outside HEAD on local branches, including other worktrees,
+and owed-fragments names the three owed-entry fragment types beside the
+selected registers even without Git. A listed branch is INFO; unlisted
+branches WARN, naming at most five with exact non-register commit counts.
+Two Git calls suffice regardless of branch count; history output and Python
+traversal still scale with history. Fully merged ancestry is excluded;
+squash/cherry-pick equivalence is not detected. Remote-tracking refs do not
+count. Git/read errors SKIP. Fragment presence errors SKIP; empty, directory
+or dangling fragment entries still WARN. Existing exit contracts stand.
+
+Regression first: the missing brief/checks and acceptance of a delegation
+placeholder failed before implementation. A later presence-error regression
+also failed before its repair. All 8 focused methods pass, including 120
+local branches in exactly two Git calls, a branch checked out in another
+worktree, mixed code/register work, empty and register-only commits, normal
+merge exclusion, squash-equivalent work, remote-only refs and read errors.
+D-NEW-1 headings now WARN as template residue and never reserve an ID;
+LG-NEW-1 already fails the unchanged ledger ID check.
+
+Measured direct proofs: core suite: 506 tests OK (1 skip), using system Python
+3.9.6;
+research suite: 123 tests OK (3 skips); Architect suite: 118 tests OK.
+The measured total is 747 automated test methods. The current-interpreter
+core repeat and assembled release-check readings will be in the lane handoff.
+README and tests/README describe the additions and measured counts. JSON
+schema remains 1: immutable 1.5.0 fixture bytes and hashes stay untouched;
+exact additive expectations account for one INFO and one SKIP, and the
+acceptance inventory adds both results without removing any assertion or gate.
+
+Close order: this one new top entry, reserved D-0046 appended, LG-0061 and
+LG-0062 added as VERIFYING, then STATUS rewritten below 60 lines. No finding
+is closed by its implementing lane: both new rows await independent review.
+The five prior OPEN rows and the fix/r1-findings In flight row remain.
+PROGRESS.md stays untracked. No companion tree, identity, hook installation,
+fetch, push, tag or publication changes; hosted CI remains unverified.
 ## 2026-11-26 — release tooling merged to main after hosted CI passed on all four jobs
 
 The release-tooling branch ran in hosted CI as a pull request before merging.

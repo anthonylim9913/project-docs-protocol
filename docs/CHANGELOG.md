@@ -1,3 +1,31 @@
+## 2026-11-27 — LG-0044, LG-0061 and LG-0062 closed on independent review; pre-merge register repairs
+
+Three independent read-only checkers reviewed the whole branch at `8a73ca2`.
+Privacy passed. The branch-check reviewer reproduced every Closes-when item
+of LG-0061 in temporary repositories and judged the row closable, with two
+repairs asked for: a name glued to a code span counted as a plain mention
+(fixed; the regression test failed first), and D-0049's stated limit was too
+narrow (it now also names leading punctuation, unspaced table cells, links
+and other marks, and per-line span pairing; edited in place because D-0049
+was written hours earlier on this unmerged branch). The register reviewer
+found STATUS contradicting itself about the LG-0044 review, an undercount of
+the review rounds, a stale date on LG-0061 and a stale count in
+`tests/README.md`; STATUS is rewritten and the count now names the reviewed
+commit.
+
+Closures, each moved to the archive with its pointer, check and reading:
+LG-0044 on the stage-2 reviewer's verdict for commit `21d80b4` and its own
+pin; LG-0061 on the branch-check reviewer's verdict at `8a73ca2`, with the
+one later repair stated in the row; LG-0062 on the first stage-2 reviewer's
+evidence. None was closed by the lane or session that wrote the code. The
+orchestrating session wrote the last small repairs to `git-unlisted-branches`
+itself and says so in each entry.
+
+Before these last edits the release check passed on `8a73ca2` under Python
+3.14.4 and 3.9.6 with nothing else running. Hosted CI has not run on this
+branch. Measured on this tree: core 547 tests, research 123, Architect 118,
+788 in total.
+
 ## 2026-11-27 — git-unlisted-branches: code spans compared whole (D-0049)
 
 The reviewer's last narrow check confirmed the compact table-cell repair and

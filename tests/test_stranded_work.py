@@ -314,6 +314,18 @@ class StrandedWorkTests(unittest.TestCase):
         self.assertIn("lane-one (1 commits)", message)
         self.assertIn("3 listed", message)
 
+    def test_name_glued_to_a_code_span_is_not_a_plain_mention(self):
+        self.init()
+        self.git("checkout", "-b", "lane-one")
+        (self.project / "code.txt").write_text("work")
+        self.commit("work")
+        self.git("checkout", "trunk")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\nIn flight: `x`lane-one\n")
+        self.commit("glued")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "WARN", message)
+
     def test_capability_and_read_errors_are_skip_never_fail(self):
         for no_git, installed, top in ((True, True, "repo"), (False, False, "repo"), (False, True, None)):
             report = self.doctor.Report(echo=False)

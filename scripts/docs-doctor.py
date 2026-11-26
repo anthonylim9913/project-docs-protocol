@@ -2333,7 +2333,7 @@ def check_unlisted_branches(rep, root, register_dir, top):
         if content.startswith(" ") and content.endswith(" ") and content.strip(" "):
             content = content[1:-1]
         spans.add(content)
-    plain = span.sub(" ", status)
+    plain = span.sub("\x01", status)  # not whitespace: a name glued to a span is not a plain mention
     listed, unlisted = [], []
     for name, tip in branches:
         pending, seen, count = [tip], set(), 0

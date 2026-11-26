@@ -9,8 +9,8 @@ python3 -B tests/run_regression.py
 
 Both discover the same `test_*.py` suite and return a nonzero exit on failure. The explicit runner also refuses an empty suite. Tests use Python's standard library (Python 3.9 or newer). Most scratch projects live under ignored `tests/.tmp/`; Git checks, fresh-install checks and the JSON-mode fixtures use system temporary directories for their independent repositories and ancestor-free registers. Test cleanup removes those temporary projects. They need no private files, credentials or network service. The final local verification environment and actual test count are recorded in [the hardening review](../docs/HARDENING-REVIEW.md).
 
-Measured for the stage-2 candidate: 542 core tests, 123 research tests and 118
-Architect tests, 783 total. Core discovery on Python 3.14.4 and system Python 3.9.6, and the explicit
+Measured at the stage-2 review (commit `21d80b4`): 544 core tests, 123 research
+tests and 118 Architect tests, 785 total. Core discovery on Python 3.14.4 and system Python 3.9.6, and the explicit
 regression runner, each pass with one skip; research has three skips and
 Architect has none. Historical review counts remain observations
 of their recorded revisions.

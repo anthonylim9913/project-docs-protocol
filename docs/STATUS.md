@@ -4,32 +4,30 @@
 
 ## Current phase
 
-**v0.7.0 is the latest public tag. Release tooling is on `main`, untagged;
-Doctor 1.10.0 is unreleased branch work.** Both companions remain 0.2.2 with unchanged
-registered `sha256v2:` identities.
+**v0.7.0 is the latest public tag. Release tooling is on `main`, untagged.
+Doctor 1.10.0 and the external trusted judge are reviewed branch work, not
+yet merged.** Both companions remain 0.2.2 with unchanged registered
+`sha256v2:` identities.
 
-The delegation candidate adds a paste-ready task brief, owner-assigned ids,
-and advisory local-branch and owed-fragment checks (D-0046). Two review rounds
-found false results in the branch check; the repairs and their rules are in
-D-0047 and the newest CHANGELOG entry. Review evidence supports closing
-LG-0062; LG-0061 waits for an independent review of the last repairs.
+The branch adds a paste-ready delegation brief, owner-assigned ids, two
+advisory Doctor checks for stranded work (`git-unlisted-branches`,
+`owed-fragments`; D-0046, D-0047, D-0049) and LG-0044 stage 2, the external
+trusted judge (D-0029, D-0048). Independent reviews support all three
+closures recorded on 2026-11-27: LG-0044, LG-0061 and LG-0062 are CLOSED in
+the archive with the reviewers' readings and stated limits.
 
-LG-0044 stage 2 (the external trusted judge, D-0029, D-0048) is ported on its
-own branch and VERIFYING. An independent review passed the closing procedure
-and tamper tests, again on the regenerated record: its evidence supports
-closing the row at integration (CHANGELOG 2026-11-27).
-
-Release tooling (release check, optional privacy scan, pinned CI) merged after
-hosted CI passed on all four jobs. Hosted CI has not run on this branch.
+Hosted CI has not run on this branch. The local release check passed on
+Python 3.14.4 and 3.9.6 before the last small repair; rerun it before merging.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 4 OPEN, 3 VERIFYING; 8 archived rows, no P0/P1.
+`LEDGER.md` is authoritative: 4 OPEN, 0 VERIFYING; 11 archived rows, no P0/P1.
 
 | Work | Branch | End action |
 |---|---|---|
-| Delegation brief and stranded-work advisories | `feat/r3-stranded-work` | review of the branch-check repairs, then owner decides merge |
-| LG-0044 stage 2, external trusted judge | `fix/lg-0044-external-judge` | independent stage-2 review (D-0029), then owner decides merge |
+| Delegation brief, stranded-work checks and LG-0044 stage 2 | `fix/lg-0044-external-judge` | hosted CI as a pull request, then owner decides merge |
+
+`feat/r3-stranded-work` is an older subset of that branch.
 
 ## Blocked
 
@@ -48,10 +46,9 @@ hosted CI passed on all four jobs. Hosted CI has not run on this branch.
 
 ## Next
 
-1. Close LG-0062 at integration; review the D-0047 repairs, then close LG-0061.
-2. Run hosted CI on this branch, then merge when the owner agrees.
-3. Independent stage-2 review of LG-0044; LG-0060; then waves B and C.
-4. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
+1. Run hosted CI on the branch, then merge when the owner agrees.
+2. LG-0060, then waves B and C (LG-0049, LG-0053, LG-0048).
+3. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
 
 ## Open questions (owner)
 

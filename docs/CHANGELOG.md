@@ -1,3 +1,14 @@
+## 2026-11-27 — git-unlisted-branches: code spans compared whole (D-0049)
+
+The reviewer's last narrow check confirmed the compact table-cell repair and
+that the harness record is byte-identical to the reviewed one, and found the
+backtick rule still wrong for a name such as ``more`lane-one`more`` inside a
+double-backtick span, which listed `lane-one`. Code spans are now paired as
+Markdown pairs them and compared whole; the regression test failed first.
+D-0049 records the rule and the limit that remains for plain prose, and why
+the rule stops here. LG-0061 stays VERIFYING. Measured on this tree: core 546
+tests, research 123, Architect 118, 787 in total.
+
 ## 2026-11-27 — LG-0044: follow-up review supports closing at `21d80b4`; one branch-check regression repaired
 
 The same independent reviewer re-ran the D-0029 closing procedure on commit

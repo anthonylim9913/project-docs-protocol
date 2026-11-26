@@ -298,6 +298,22 @@ class StrandedWorkTests(unittest.TestCase):
         self.assertEqual(level, "INFO", message)
         self.assertIn("all listed", message)
 
+    def test_code_spans_are_compared_whole(self):
+        self.init()
+        for name in ("lane-one", "more`lane-one`more", "lane-two", "lane-three"):
+            self.git("checkout", "-b", name, "trunk")
+            (self.project / "code.txt").write_text(name)
+            self.commit("work")
+        self.git("checkout", "trunk")
+        with (self.project / "docs/STATUS.md").open("a") as out:
+            out.write("\nIn flight: ``more`lane-one`more``, `` lane-two `` and `lane-three`.\n")
+        self.commit("list three of four in code spans")
+        level, _, message = self.branch_report()
+        self.assertEqual(level, "WARN", message)
+        self.assertIn("1 unlisted", message)
+        self.assertIn("lane-one (1 commits)", message)
+        self.assertIn("3 listed", message)
+
     def test_capability_and_read_errors_are_skip_never_fail(self):
         for no_git, installed, top in ((True, True, "repo"), (False, False, "repo"), (False, True, None)):
             report = self.doctor.Report(echo=False)

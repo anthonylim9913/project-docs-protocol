@@ -14,17 +14,21 @@ found false results in the branch check; the repairs and their rules are in
 D-0047 and the newest CHANGELOG entry. Review evidence supports closing
 LG-0062; LG-0061 waits for an independent review of the last repairs.
 
+LG-0044 stage 2 (the external trusted judge, D-0029, D-0048) is ported on its
+own branch and VERIFYING: the author-run procedure passed, which cannot close
+the row.
+
 Release tooling (release check, optional privacy scan, pinned CI) merged after
 hosted CI passed on all four jobs. Hosted CI has not run on this branch.
 
 ## In flight
 
-`LEDGER.md` is authoritative: 5 OPEN, 2 VERIFYING; 8 archived rows, no P0/P1.
+`LEDGER.md` is authoritative: 4 OPEN, 3 VERIFYING; 8 archived rows, no P0/P1.
 
 | Work | Branch | End action |
 |---|---|---|
 | Delegation brief and stranded-work advisories | `feat/r3-stranded-work` | review of the branch-check repairs, then owner decides merge |
-| LG-0044 stage 2, delegated | `fix/lg-0044-external-judge` | owner folds in its owed entries, then independent stage-2 review |
+| LG-0044 stage 2, external trusted judge | `fix/lg-0044-external-judge` | independent stage-2 review (D-0029), then owner decides merge |
 
 ## Blocked
 
@@ -34,7 +38,6 @@ hosted CI passed on all four jobs. Hosted CI has not run on this branch.
 
 | Item | Deferred to | Reason |
 |---|---|---|
-| LG-0044 stage 2 | separate follow-up | self-approval gap, D-0029 |
 | LG-0049 and LG-0053 | wave B | supplied passages and cache refusal, D-0030 |
 | LG-0048 | wave C | registry pointer, D-0031; release registry gate applies |
 | LG-0060 | separate test repair | temporary fixtures can inherit parent registers |
@@ -46,7 +49,7 @@ hosted CI passed on all four jobs. Hosted CI has not run on this branch.
 
 1. Close LG-0062 at integration; review the D-0047 repairs, then close LG-0061.
 2. Run hosted CI on this branch, then merge when the owner agrees.
-3. LG-0044 stage 2 and LG-0060, followed by waves B and C.
+3. Independent stage-2 review of LG-0044; LG-0060; then waves B and C.
 4. Decide whether the Doctor limits in the v0.7.0 entry need ledger rows.
 
 ## Open questions (owner)
